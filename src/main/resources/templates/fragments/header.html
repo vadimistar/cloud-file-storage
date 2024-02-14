@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">Cloud Storage</a>
+            <div>
+                <ul class="navbar-nav gap-2">
+                    <li class="nav-item" th:if="${username==null}">
+                        <a href="/login" type="button" class="fw-bold btn btn-outline-secondary">Log in</a>
+                    </li>
+                    <li class="nav-item" th:if="${username==null}">
+                        <a href="/register" type="button" class="fw-bold btn btn-primary">Register</a>
+                    </li>
+                    <li class="nav-item" th:unless="${username==null}">
+                        <a href="/logout" class="nav-link fw-bold">Log out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+</body>
+</html>
