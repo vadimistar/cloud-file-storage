@@ -2,21 +2,13 @@ package com.vadimistar.cloudfilestorage.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class LoginController {
 
     @GetMapping("/login")
-    public String loginPage() {
+    public String login(@RequestParam(required = false, defaultValue = "false") boolean registered) {
         return "login";
-    }
-
-    @PostMapping("/login")
-    public RedirectView doLogin(){
-        System.out.println("123");
-
-        return new RedirectView("/");
     }
 }

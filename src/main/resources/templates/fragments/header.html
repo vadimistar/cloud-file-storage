@@ -17,6 +17,9 @@
                         <a href="/register" type="button" class="fw-bold btn btn-primary">Register</a>
                     </li>
                     <li class="nav-item" th:unless="${username==null}">
+                        <p th:text="*{username}"></p>
+                    </li>
+                    <li class="nav-item" th:unless="${username==null}">
                         <a href="/logout" class="nav-link fw-bold">Log out</a>
                     </li>
                 </ul>

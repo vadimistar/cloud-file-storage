@@ -1,35 +1,48 @@
 package com.vadimistar.cloudfilestorage.controllers;
 
-import com.vadimistar.cloudfilestorage.dto.UserDto;
-import jakarta.servlet.http.HttpServletRequest;
+import com.vadimistar.cloudfilestorage.dto.RegisterDto;
+import com.vadimistar.cloudfilestorage.exceptions.PasswordMismatchException;
+import com.vadimistar.cloudfilestorage.exceptions.UserAlreadyExistsException;
+import com.vadimistar.cloudfilestorage.services.UserService;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
+@AllArgsConstructor
 public class RegisterController {
+
+    private final UserService userService;
 
     @GetMapping("/register")
     public String registerView(Model model) {
-        model.addAttribute("user", new UserDto());
+        model.addAttribute("user", RegisterDto.builder().build());
         return "register";
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute("user") @Valid UserDto userDto,
+    public String register(@ModelAttribute("user") @Valid RegisterDto registerDto,
                                       BindingResult bindingResult,
                                       Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("user", userDto);
-            return "/register";
+            model.addAttribute("user", registerDto);
+            return "register";
         }
 
-        return "redirect:/register?success";
+        try {
+            userService.registerUser(registerDto);
+        } catch (UserAlreadyExistsException | PasswordMismatchException e) {
+            model.addAttribute("user", registerDto);
+            bindingResult.addError(new ObjectError("error", e.getMessage()));
+            return "register";
+        }
+
+        return "redirect:/login?registered=true";
     }
 }

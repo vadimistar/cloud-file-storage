@@ -1,6 +1,6 @@
 package com.vadimistar.cloudfilestorage.validation;
 
-import com.vadimistar.cloudfilestorage.dto.UserDto;
+import com.vadimistar.cloudfilestorage.dto.RegisterDto;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -11,7 +11,7 @@ public class ConfirmPasswordValidator implements ConstraintValidator<ConfirmPass
 
     @Override
     public boolean isValid(Object object, ConstraintValidatorContext constraintValidatorContext) {
-        UserDto user = (UserDto) object;
+        RegisterDto user = (RegisterDto) object;
         return user.getPassword().equals(user.getConfirmPassword());
     }
 }

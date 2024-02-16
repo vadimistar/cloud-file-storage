@@ -11,13 +11,21 @@
             <div class="col-4 card">
                 <div class="card-body">
                     <form method="post" th:action="@{/login}">
+                        <div th:if="${param.registered}" class="alert alert-success mt-3">
+                            <p>
+                                Check your email: we've sent you a verification link. Click on the link to confirm your email address and activate your account.
+                            </p>
+                            <p>
+                                Didn't receive an email? Check your spam folder. If you still don't see it, you can request a new verification email.
+                            </p>
+                        </div>
                         <div class="form-group mt-3">
                             <label for="username">Username</label>
-                            <input type="text" class="form-control" id="username" placeholder="Username" required>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
                         </div>
                         <div class="form-group mt-3">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Password" required>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
                         </div>
                         <div class="form-check mt-3">
                             <input type="checkbox" class="form-check-input" id="rememberMe" />
