@@ -11,6 +11,14 @@
             <div class="col-4 card">
                 <div class="card-body">
                     <form method="post" th:action="@{/register}" th:object="${user}">
+                        <div th:if="${param.success}" class="alert alert-success">
+                            <p>
+                                Check your email: we've sent you a verification link. Click on the link to confirm your email address and activate your account.
+                            </p>
+                            <p>
+                                Didn't receive an email? Check your spam folder. If you still don't see it, you can request a new verification email.
+                            </p>
+                        </div>
                         <div class="form-group mt-3">
                             <label for="username">Username</label>
                             <input type="text" class="form-control" id="username" placeholder="Username" th:field="*{username}" required>
@@ -37,7 +45,7 @@
                             <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm password" th:field="*{confirmPassword}" required>
                         </div>
                         <p th:each="error : ${#fields.globalErrors()}" th:text="${error}" class="alert alert-danger mt-3">
-                            Validation error
+                            Global error
                         </p>
                         <button type="submit" class="btn btn-primary mt-3">
                             Register
