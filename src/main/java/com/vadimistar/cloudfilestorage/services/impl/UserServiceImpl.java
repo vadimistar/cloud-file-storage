@@ -5,7 +5,7 @@ import com.vadimistar.cloudfilestorage.entities.User;
 import com.vadimistar.cloudfilestorage.exceptions.PasswordMismatchException;
 import com.vadimistar.cloudfilestorage.exceptions.UserAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.repositories.UserRepository;
-import com.vadimistar.cloudfilestorage.security.UserDetailsImpl;
+import com.vadimistar.cloudfilestorage.config.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;

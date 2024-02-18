@@ -13,6 +13,9 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @AllArgsConstructor
@@ -28,8 +31,9 @@ public class RegisterController {
 
     @PostMapping("/register")
     public String register(@ModelAttribute("user") @Valid RegisterDto registerDto,
-                                      BindingResult bindingResult,
-                                      Model model) {
+                         BindingResult bindingResult,
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("user", registerDto);
             return "register";
@@ -43,6 +47,6 @@ public class RegisterController {
             return "register";
         }
 
-        return "redirect:/login?registered=true";
+        return "redirect:/login?registered";
     }
 }
