@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.security;
+package com.vadimistar.cloudfilestorage.config;
 
 import com.vadimistar.cloudfilestorage.entities.User;
 import org.springframework.security.core.GrantedAuthority;
