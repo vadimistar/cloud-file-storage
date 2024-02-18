@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
 </head>
@@ -10,17 +10,19 @@
             <a class="navbar-brand fw-bold" href="/">Cloud Storage</a>
             <div>
                 <ul class="navbar-nav gap-2">
-                    <li class="nav-item" th:if="${username==null}">
+                    <li class="nav-item" sec:authorize="isAnonymous()">
                         <a href="/login" type="button" class="fw-bold btn btn-outline-secondary">Log in</a>
                     </li>
-                    <li class="nav-item" th:if="${username==null}">
+                    <li class="nav-item" sec:authorize="isAnonymous()">
                         <a href="/register" type="button" class="fw-bold btn btn-primary">Register</a>
                     </li>
-                    <li class="nav-item" th:unless="${username==null}">
-                        <p th:text="*{username}"></p>
+                    <li class="my-auto" sec:authorize="isAuthenticated()">
+                        <p class="my-auto fw-bold" sec:authentication="name"></p>
                     </li>
-                    <li class="nav-item" th:unless="${username==null}">
-                        <a href="/logout" class="nav-link fw-bold">Log out</a>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <form method="post" th:action="@{/logout}">
+                            <button type="submit" class="btn btn-light shadow-none">Log out</button>
+                        </form>
                     </li>
                 </ul>
             </div>
