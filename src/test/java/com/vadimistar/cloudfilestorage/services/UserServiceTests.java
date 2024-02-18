@@ -33,7 +33,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void register_ok() {
+    public void register_ok_createsRecordInDatabase() {
         RegisterDto registerDto = RegisterDto.builder()
                 .username("user")
                 .email("user@mail.com")
@@ -42,6 +42,7 @@ public class UserServiceTests {
                 .build();
 
         assertDoesNotThrow(() -> userService.registerUser(registerDto));
+        assertEquals(1, userRepository.count());
     }
 
     @SneakyThrows
