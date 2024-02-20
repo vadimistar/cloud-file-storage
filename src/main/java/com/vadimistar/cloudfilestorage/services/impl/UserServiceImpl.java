@@ -57,4 +57,9 @@ public class UserServiceImpl implements UserService {
         return user.map(UserDetailsImpl::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User with this username is not found"));
     }
+
+    @Override
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.getUserByUsername(username);
+    }
 }

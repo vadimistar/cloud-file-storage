@@ -1,18 +1,28 @@
 package com.vadimistar.cloudfilestorage.services.impl;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.vadimistar.cloudfilestorage.config.MinioConfig;
+import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
+import com.vadimistar.cloudfilestorage.services.BucketService;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import io.minio.*;
 import io.minio.errors.*;
+import io.minio.messages.Item;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -21,6 +31,8 @@ public class FileServiceImpl implements FileService {
     private final MinioConfig minioConfig;
 
     private final MinioClient minioClient;
+
+    private final BucketService bucketService;
 
     private static final long FILE_PART_SIZE = -1;
 
@@ -85,6 +97,31 @@ public class FileServiceImpl implements FileService {
         deleteFile(userId, getFolderPath(path));
     }
 
+    public List<FileDto> getFilesInFolder(long userId, String path) throws FileServiceException {
+        path = getPathForUser(userId, getFolderPath(path));
+        List<FileDto> files = new ArrayList<>();
+
+        try {
+            for (Result<Item> itemResult : minioClient.listObjects(ListObjectsArgs.builder()
+                    .bucket(minioConfig.getMinioBucketName())
+                    .prefix(path)
+                    .build())) {
+                Item item = itemResult.get();
+                files.add(FileDto.builder()
+                        .name(getFileName(item.objectName()))
+                        .isDirectory(item.isDir())
+                        .path(getFilePath(item.objectName()))
+                        .build());
+            }
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new FileServiceException(e.getMessage());
+        }
+
+        return files;
+    }
+
     private static final String USER_PATH_FORMAT = "user-%d-files/%s";
 
     private static String getPathForUser(long userId, String path) {
@@ -92,9 +129,21 @@ public class FileServiceImpl implements FileService {
     }
 
     private static String getFolderPath(String path) {
-        if (!path.endsWith("/")) {
-            return path + "/";
-        }
+        if (path.isEmpty()) { return path; }
+        if (!path.endsWith("/")) { return path + "/"; }
         return path;
+    }
+
+    private static String getFileName(String path) {
+        String[] pathParts = path.split("/");
+        return pathParts[pathParts.length - 1];
+    }
+
+    private static String getFilePath(String path) {
+        String[] pathParts = path.split("/", 2);
+        if (pathParts.length > 1) {
+            return pathParts[1];
+        }
+        return pathParts[0];
     }
 }

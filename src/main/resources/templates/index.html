@@ -6,6 +6,69 @@
 </head>
 <body>
     <header th:insert="~{fragments/header.html :: header}"></header>
+    <div class="container">
+        <div class="row">
+            <div th:insert="~{fragments/search.html :: search}"></div>
+        </div>
+        <div class="row">
+            <div class="w-25 py-2 px-2">
+                <form method="post" th:action="@{/upload(path=${param.path})}" enctype="multipart/form-data">
+                    <input class="form-control" type="file" name="file" multiple/>
+                    <div class="form-group mt-2">
+                        <button type="submit" class="btn btn-primary w-100">Upload file</button>
+                    </div>
+                </form>
+            </div>
+            <div class="w-25 py-2 px-2">
+                <form method="post" th:action="@{/upload(path=${param.path})}" enctype="multipart/form-data">
+                    <input class="form-control" type="file" name="file" webkitdirectory />
+                    <div class="form-group mt-2">
+                        <button type="submit" class="btn btn-primary w-100">Upload folder</button>
+                    </div>
+                </form>
+            </div>
+            <div class="w-25 py-2 px-2 mt-auto">
+                <form method="post" th:action="@{/create-folder(path=${param.path})}">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary w-100">Create folder</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="mx-2 my-2 bg-light">
+                <nav class="mx-2 mt-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item" th:each="folder : ${previousFolders}"><a th:href="${folder.getPath()}" th:text="${folder.getName()}"></a></li>
+                        <li class="breadcrumb-item active" th:text="${currentFolder}"></li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+            <div class="d-flex mx-2 my-2 px-0 gap-3">
+                <div class="bg-light" style="width: 180px; height: 270px;" th:each="file : ${files}">
+                    <div class="text-end">
+                        <button class="btn btn-light">●●●</button>
+                    </div>
+                    <div th:if="${file.isDirectory()}">
+                        <a class="d-block" th:href="@{'/?path=' + ${file.getPath()}}">
+                            <div class="text-center my-2">
+                                <img th:src="@{/assets/folder.png}" alt=""/>
+                            </div>
+                            <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
+                        </a>
+                    </div>
+                    <div th:unless="${file.isDirectory()}">
+                        <div class="text-center my-2">
+                            <img th:src="@{/assets/file.png}" alt=""/>
+                        </div>
+                        <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </body>
 </html>

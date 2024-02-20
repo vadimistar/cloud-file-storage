@@ -1,8 +1,10 @@
 package com.vadimistar.cloudfilestorage.services;
 
+import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
 
 import java.io.InputStream;
+import java.util.List;
 
 public interface FileService {
 
@@ -16,4 +18,5 @@ public interface FileService {
 
     void deleteFolder(long userId, String path) throws FileServiceException;
 
+    List<FileDto> getFilesInFolder(long userId, String path) throws FileServiceException;
 }
