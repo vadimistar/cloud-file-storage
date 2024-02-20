@@ -11,10 +11,10 @@
             <div>
                 <ul class="navbar-nav gap-2">
                     <li class="nav-item" sec:authorize="isAnonymous()">
-                        <a href="/login" type="button" class="fw-bold btn btn-outline-secondary">Log in</a>
+                        <a href="/login" type="button" class="btn btn-outline-secondary">Log in</a>
                     </li>
                     <li class="nav-item" sec:authorize="isAnonymous()">
-                        <a href="/register" type="button" class="fw-bold btn btn-primary">Register</a>
+                        <a href="/register" type="button" class="btn btn-primary">Register</a>
                     </li>
                     <li class="my-auto" sec:authorize="isAuthenticated()">
                         <p class="my-auto fw-bold" sec:authentication="name"></p>
