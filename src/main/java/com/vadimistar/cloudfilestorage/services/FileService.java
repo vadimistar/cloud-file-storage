@@ -5,6 +5,7 @@ import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 
 public interface FileService {
 
@@ -19,4 +20,8 @@ public interface FileService {
     void deleteFolder(long userId, String path) throws FileServiceException;
 
     List<FileDto> getFilesInFolder(long userId, String path) throws FileServiceException;
+
+    boolean isFileExists(long userId, String path) throws FileServiceException;
+
+    Optional<InputStream> downloadFile(long userId, String path) throws FileServiceException;
 }

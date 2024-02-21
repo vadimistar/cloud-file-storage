@@ -1,7 +1,5 @@
 package com.vadimistar.cloudfilestorage.services.impl;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.vadimistar.cloudfilestorage.config.MinioConfig;
 import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
@@ -10,19 +8,17 @@ import com.vadimistar.cloudfilestorage.services.FileService;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.messages.Item;
-import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -46,7 +42,7 @@ public class FileServiceImpl implements FileService {
         try {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(minioConfig.getMinioBucketName())
-                    .object(getPathForUser(userId, path))
+                    .object(getObjectPath(userId, path))
                     .stream(inputStream, objectSize, FILE_PART_SIZE)
                     .build());
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
@@ -61,11 +57,11 @@ public class FileServiceImpl implements FileService {
         try {
             minioClient.copyObject(CopyObjectArgs.builder()
                     .bucket(minioConfig.getMinioBucketName())
-                    .object(getPathForUser(userId, newPath))
+                    .object(getObjectPath(userId, newPath))
                     .source(
                             CopySource.builder()
                                     .bucket(minioConfig.getMinioBucketName())
-                                    .object(getPathForUser(userId, oldPath))
+                                    .object(getObjectPath(userId, oldPath))
                                     .build()
                     )
                     .build());
@@ -83,7 +79,7 @@ public class FileServiceImpl implements FileService {
         try {
             minioClient.removeObject(RemoveObjectArgs.builder()
                     .bucket(minioConfig.getMinioBucketName())
-                    .object(getPathForUser(userId, path))
+                    .object(getObjectPath(userId, path))
                     .build());
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
@@ -98,33 +94,66 @@ public class FileServiceImpl implements FileService {
     }
 
     public List<FileDto> getFilesInFolder(long userId, String path) throws FileServiceException {
-        path = getPathForUser(userId, getFolderPath(path));
+        String objectPath = getObjectPath(userId, getFolderPath(path));
         List<FileDto> files = new ArrayList<>();
 
         try {
             for (Result<Item> itemResult : minioClient.listObjects(ListObjectsArgs.builder()
                     .bucket(minioConfig.getMinioBucketName())
-                    .prefix(path)
+                    .prefix(objectPath)
                     .build())) {
                 Item item = itemResult.get();
                 files.add(FileDto.builder()
                         .name(getFileName(item.objectName()))
                         .isDirectory(item.isDir())
-                        .path(getFilePath(item.objectName()))
+                        .path(URLEncoder.encode(getFilePath(item.objectName()), StandardCharsets.UTF_8))
                         .build());
             }
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
                  InternalException e) {
+            // TODO: maybe change to one type (Exception)?
+
             throw new FileServiceException(e.getMessage());
         }
 
         return files;
     }
 
+    @Override
+    public boolean isFileExists(long userId, String path) throws FileServiceException {
+        try {
+            minioClient.statObject(StatObjectArgs.builder()
+                            .bucket(minioConfig.getMinioBucketName())
+                            .object(getObjectPath(userId, path))
+                            .build());
+            return true;
+        } catch (ErrorResponseException e) {
+            return false;
+        } catch (Exception e) {
+            throw new FileServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Optional<InputStream> downloadFile(long userId, String path) throws FileServiceException {
+        String objectPath = getObjectPath(userId, path);
+
+        try {
+            return Optional.of(minioClient.getObject(GetObjectArgs.builder()
+                    .bucket(minioConfig.getMinioBucketName())
+                    .object(objectPath)
+                    .build()));
+        } catch (ErrorResponseException e) {
+            return Optional.empty();
+        } catch (Exception e) {
+            throw new FileServiceException(e.getMessage());
+        }
+    }
+
     private static final String USER_PATH_FORMAT = "user-%d-files/%s";
 
-    private static String getPathForUser(long userId, String path) {
+    private static String getObjectPath(long userId, String path) {
         return USER_PATH_FORMAT.formatted(userId, path);
     }
 
