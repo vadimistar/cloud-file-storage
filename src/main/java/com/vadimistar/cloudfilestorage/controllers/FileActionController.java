@@ -5,10 +5,12 @@ import com.vadimistar.cloudfilestorage.entities.User;
 import com.vadimistar.cloudfilestorage.repositories.UserRepository;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import com.vadimistar.cloudfilestorage.services.UserService;
+import com.vadimistar.cloudfilestorage.utils.PathUtils;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -26,15 +28,22 @@ public class FileActionController {
     @SneakyThrows
     @GetMapping("/file-action")
     public String fileActionView(@RequestParam String path,
-                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                 @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                 Model model) {
         User user = userService.getUserByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User with this username does not exist"));
 
         String decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8);
 
-        if (!fileService.isFileExists(user.getId(), decodedPath)) {
+        boolean fileExists = fileService.isFileExists(user.getId(), decodedPath);
+        boolean folderExists = fileService.isFolderExists(user.getId(), decodedPath);
+
+        if (!fileExists && !folderExists) {
             return "redirect:/?fileNotExists";
         }
+
+        model.addAttribute("isDirectory", fileExists && !folderExists);
+        model.addAttribute("name", PathUtils.getFilename(decodedPath));
 
         return "file-action";
     }
