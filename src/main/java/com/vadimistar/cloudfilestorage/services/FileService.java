@@ -24,4 +24,6 @@ public interface FileService {
     boolean isFileExists(long userId, String path) throws FileServiceException;
 
     Optional<InputStream> downloadFile(long userId, String path) throws FileServiceException;
+
+    boolean isFolderExists(long userId, String path) throws FileServiceException;
 }

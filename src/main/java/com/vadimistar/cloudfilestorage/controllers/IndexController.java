@@ -7,20 +7,19 @@ import com.vadimistar.cloudfilestorage.entities.User;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import com.vadimistar.cloudfilestorage.services.UserService;
+import com.vadimistar.cloudfilestorage.utils.NavigationFoldersParser;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.yaml.snakeyaml.util.UriEncoder;
 
-import java.net.URLEncoder;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @AllArgsConstructor
@@ -30,37 +29,33 @@ public class IndexController {
 
     private final FileService fileService;
 
+    @SneakyThrows
     @GetMapping("/")
     public String indexPage(@RequestParam(required = false, defaultValue = "") String path,
                             Model model,
                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<FolderDto> previousFolders = new ArrayList<>();
-        FolderDto homeFolder = new FolderDto("/", "/");
-        previousFolders.add(homeFolder);
+        User user = userService.getUserByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User with this username is not found"));
 
-        String[] pathParts = path.split("/");
+        String decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8);
 
-        StringBuilder pathBuilder = new StringBuilder("/?path=");
-        for (int i = 0; i < pathParts.length - 1; i ++) {
-            pathBuilder.append(URLEncoder.encode(pathParts[i], StandardCharsets.UTF_8));
-            previousFolders.add(new FolderDto(pathParts[i], pathBuilder.toString()));
-            pathBuilder.append(URLEncoder.encode("/", StandardCharsets.UTF_8));
+        if (!fileService.isFolderExists(user.getId(), decodedPath)) {
+            return "redirect:/?folderNotExists";
         }
 
+        List<FolderDto> navigationFolders = NavigationFoldersParser.parseNavigationFolders(path);
+
+        List<FolderDto> previousFolders = null;
         String currentFolder = "/";
-        if (previousFolders.isEmpty()) {
-            if (!path.isEmpty()) {
-                currentFolder = path;
-            }
+        if (!navigationFolders.isEmpty()) {
+            previousFolders = navigationFolders.subList(0, navigationFolders.size() - 1);
+            currentFolder = navigationFolders.get(navigationFolders.size() - 1).getName();
         } else {
-            currentFolder = pathParts[pathParts.length - 1];
+            previousFolders = new ArrayList<>();
         }
 
         model.addAttribute("previousFolders", previousFolders);
         model.addAttribute("currentFolder", currentFolder);
-
-        User user = userService.getUserByUsername(userDetails.getUsername())
-                        .orElseThrow(() -> new RuntimeException("User with this username is not found"));
 
         List<FileDto> files;
         try {

@@ -124,9 +124,9 @@ public class FileServiceImpl implements FileService {
     public boolean isFileExists(long userId, String path) throws FileServiceException {
         try {
             minioClient.statObject(StatObjectArgs.builder()
-                            .bucket(minioConfig.getMinioBucketName())
-                            .object(getObjectPath(userId, path))
-                            .build());
+                    .bucket(minioConfig.getMinioBucketName())
+                    .object(getObjectPath(userId, path))
+                    .build());
             return true;
         } catch (ErrorResponseException e) {
             return false;
@@ -146,6 +146,22 @@ public class FileServiceImpl implements FileService {
                     .build()));
         } catch (ErrorResponseException e) {
             return Optional.empty();
+        } catch (Exception e) {
+            throw new FileServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean isFolderExists(long userId, String path) throws FileServiceException {
+        if (path.isEmpty()) { return true; }
+        String objectPath = getObjectPath(userId, getFolderPath(path));
+
+        try {
+            Iterator<Result<Item>> objects = minioClient.listObjects(ListObjectsArgs.builder()
+                    .bucket(minioConfig.getMinioBucketName())
+                    .prefix(objectPath)
+                    .build()).iterator();
+            return objects.hasNext();
         } catch (Exception e) {
             throw new FileServiceException(e.getMessage());
         }
