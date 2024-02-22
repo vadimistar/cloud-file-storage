@@ -9,6 +9,7 @@ import io.minio.*;
 import io.minio.errors.*;
 import io.minio.messages.Item;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -136,16 +137,16 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Optional<InputStream> downloadFile(long userId, String path) throws FileServiceException {
+    public byte[] downloadFile(long userId, String path) throws FileServiceException {
         String objectPath = getObjectPath(userId, path);
 
-        try {
-            return Optional.of(minioClient.getObject(GetObjectArgs.builder()
-                    .bucket(minioConfig.getMinioBucketName())
-                    .object(objectPath)
-                    .build()));
-        } catch (ErrorResponseException e) {
-            return Optional.empty();
+        GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+                .bucket(minioConfig.getMinioBucketName())
+                .object(objectPath)
+                .build();
+
+        try (GetObjectResponse object = minioClient.getObject(getObjectArgs)) {
+            return object.readAllBytes();
         } catch (Exception e) {
             throw new FileServiceException(e.getMessage());
         }
