@@ -5,8 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class PathUtils {
 
-    public static String getFilename(String path) {
-        String[] pathParts = path.split("/");
-        return pathParts[pathParts.length - 1];
+    public static String getRelativePath(String path, String directory) {
+        return StringUtils.removePrefix(path, directory);
     }
 }

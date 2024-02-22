@@ -34,7 +34,7 @@
                         <p class="h4 mt-2 text-center" th:text="${name}"></p>
                         <div class="my-3">
                             <a th:href="@{/file-action(path=${param.path},rename=true)}" class="btn btn-primary">Rename</a>
-                            <a th:unless="${isDirectory}" th:href="@{/download(path=${param.path})}" class="btn btn-success">Download</a>
+                            <a th:href="@{/download(path=${param.path})}" class="btn btn-success">Download</a>
                             <a th:href="@{/delete(path=${param.path})}" class="btn btn-danger">Delete</a>
                         </div>
                     </div>

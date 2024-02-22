@@ -2,7 +2,6 @@ package com.vadimistar.cloudfilestorage.services;
 
 import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
-import org.springframework.core.io.ByteArrayResource;
 
 import java.io.InputStream;
 import java.util.List;
@@ -22,9 +21,13 @@ public interface FileService {
 
     List<FileDto> getFilesInFolder(long userId, String path) throws FileServiceException;
 
+    byte[] downloadFolder(long userId, String path) throws FileServiceException;
+
     boolean isFileExists(long userId, String path) throws FileServiceException;
 
     byte[] downloadFile(long userId, String path) throws FileServiceException;
 
     boolean isFolderExists(long userId, String path) throws FileServiceException;
+
+    Optional<FileDto> statFile(long userId, String path) throws FileServiceException;
 }

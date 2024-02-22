@@ -11,15 +11,19 @@ import io.minio.messages.Item;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import static com.vadimistar.cloudfilestorage.utils.PathUtils.getRelativePath;
 
 @Service
 @AllArgsConstructor
@@ -94,7 +98,46 @@ public class FileServiceImpl implements FileService {
         deleteFile(userId, getFolderPath(path));
     }
 
+    @Override
     public List<FileDto> getFilesInFolder(long userId, String path) throws FileServiceException {
+        return listFiles(userId, path, false);
+    }
+
+    @Override
+    public byte[] downloadFolder(long userId, String path) throws FileServiceException {
+        List<FileDto> files = listFiles(userId, path, true);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
+            for (FileDto fileDto : files) {
+                if (fileDto.isDirectory()) {
+                    continue;
+                }
+
+                String relativePath = getRelativePath(fileDto.getPath(), path);
+
+                ByteArrayResource byteArrayResource = new ByteArrayResource(
+                        downloadFile(userId, fileDto.getPath())
+                );
+
+                ZipEntry zipEntry = new ZipEntry(relativePath);
+                zipEntry.setSize(byteArrayResource.contentLength());
+                zipEntry.setTime(System.currentTimeMillis());
+                zipOutputStream.putNextEntry(zipEntry);
+                StreamUtils.copy(byteArrayResource.getInputStream(), zipOutputStream);
+                zipOutputStream.closeEntry();
+            }
+
+            zipOutputStream.finish();
+        } catch (IOException e) {
+            throw new FileServiceException(e.getMessage());
+        }
+
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    private List<FileDto> listFiles(long userId, String path, boolean recursive) throws FileServiceException {
         String objectPath = getObjectPath(userId, getFolderPath(path));
         List<FileDto> files = new ArrayList<>();
 
@@ -102,12 +145,18 @@ public class FileServiceImpl implements FileService {
             for (Result<Item> itemResult : minioClient.listObjects(ListObjectsArgs.builder()
                     .bucket(minioConfig.getMinioBucketName())
                     .prefix(objectPath)
+                    .recursive(recursive)
                     .build())) {
                 Item item = itemResult.get();
+
+                if (objectPath.equals(item.objectName())) {
+                    continue;
+                }
+
                 files.add(FileDto.builder()
                         .name(getFileName(item.objectName()))
                         .isDirectory(item.isDir())
-                        .path(URLEncoder.encode(getFilePath(item.objectName()), StandardCharsets.UTF_8))
+                        .path(getFilePath(item.objectName()))
                         .build());
             }
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
@@ -163,6 +212,47 @@ public class FileServiceImpl implements FileService {
                     .prefix(objectPath)
                     .build()).iterator();
             return objects.hasNext();
+        } catch (Exception e) {
+            throw new FileServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Optional<FileDto> statFile(long userId, String path) throws FileServiceException {
+        String[] partParts = path.split("/");
+        if (partParts.length == 0) {
+            return Optional.empty();
+        }
+        String filename = partParts[partParts.length - 1];
+
+        try {
+            minioClient.statObject(StatObjectArgs.builder()
+                    .bucket(minioConfig.getMinioBucketName())
+                    .object(getObjectPath(userId, path))
+                    .build());
+
+            return Optional.of(FileDto.builder()
+                    .isDirectory(path.endsWith("/"))
+                    .name(filename)
+                    .path(path)
+                    .build());
+
+        } catch (ErrorResponseException e) {
+            Iterator<Result<Item>> objects = minioClient.listObjects(ListObjectsArgs.builder()
+                    .bucket(minioConfig.getMinioBucketName())
+                    .prefix(getObjectPath(userId, getFolderPath(path)))
+                    .build()).iterator();
+
+            if (objects.hasNext()) {
+                return Optional.of(FileDto.builder()
+                        .isDirectory(true)
+                        .name(filename)
+                        .path(path)
+                        .build());
+            }
+
+            return Optional.empty();
+
         } catch (Exception e) {
             throw new FileServiceException(e.getMessage());
         }

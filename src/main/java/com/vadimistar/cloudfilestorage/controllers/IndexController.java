@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +61,9 @@ public class IndexController {
         List<FileDto> files;
         try {
             files = fileService.getFilesInFolder(user.getId(), path);
+            for (FileDto file : files) {
+                file.setPath(URLEncoder.encode(file.getPath(), StandardCharsets.UTF_8));
+            }
         } catch (FileServiceException e) {
             throw new RuntimeException(e);
         }
