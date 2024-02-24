@@ -8,6 +8,7 @@ import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import com.vadimistar.cloudfilestorage.services.UserService;
 import com.vadimistar.cloudfilestorage.utils.NavigationFoldersParser;
+import com.vadimistar.cloudfilestorage.utils.URLUtils;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,10 +39,10 @@ public class IndexController {
         User user = userService.getUserByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User with this username is not found"));
 
-        String decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8);
+        String decodedPath = URLUtils.decode(path);
 
-        if (!fileService.isFolderExists(user.getId(), decodedPath)) {
-            return "redirect:/?folderNotExists";
+        if (!fileService.isDirectory(user.getId(), decodedPath)) {
+            return "redirect:/error?notFound";
         }
 
         List<FolderDto> navigationFolders = NavigationFoldersParser.parseNavigationFolders(path);
@@ -60,9 +61,9 @@ public class IndexController {
 
         List<FileDto> files;
         try {
-            files = fileService.getFilesInFolder(user.getId(), path);
+            files = fileService.getFilesInDirectory(user.getId(), path);
             for (FileDto file : files) {
-                file.setPath(URLEncoder.encode(file.getPath(), StandardCharsets.UTF_8));
+                file.setPath(URLUtils.encode(file.getPath()));
             }
         } catch (FileServiceException e) {
             throw new RuntimeException(e);

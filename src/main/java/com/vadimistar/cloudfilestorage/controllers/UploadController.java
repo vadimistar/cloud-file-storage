@@ -5,6 +5,7 @@ import com.vadimistar.cloudfilestorage.entities.User;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import com.vadimistar.cloudfilestorage.services.UserService;
+import com.vadimistar.cloudfilestorage.utils.URLUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -33,7 +34,7 @@ public class UploadController {
             User user = userService.getUserByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("User with this username is not found"));
 
-            String directory = URLDecoder.decode(path, StandardCharsets.UTF_8);
+            String directory = URLUtils.decode(path);
 
             for (MultipartFile file : files) {
                 try {

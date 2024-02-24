@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static com.vadimistar.cloudfilestorage.utils.PathUtils.getParentDirectory;
 import static com.vadimistar.cloudfilestorage.utils.PathUtils.getRelativePath;
 
 @Service
@@ -46,44 +47,99 @@ public class FileServiceImpl implements FileService {
     public void uploadFile(long userId, InputStream inputStream, long objectSize, String path) throws FileServiceException {
         try {
             minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(minioConfig.getMinioBucketName())
+                    .bucket(minioConfig.getBucketName())
                     .object(getObjectPath(userId, path))
                     .stream(inputStream, objectSize, FILE_PART_SIZE)
                     .build());
-        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                 InternalException e) {
+        } catch (Exception e) {
             throw new FileServiceException(e.getMessage());
         }
     }
 
     @Override
-    public void renameFile(long userId, String oldPath, String newPath) throws FileServiceException {
+    public String renameFile(long userId, String oldPath, String name) throws FileServiceException {
+        String newPath = getParentDirectory(oldPath) + "/" + name;
+
         try {
             minioClient.copyObject(CopyObjectArgs.builder()
-                    .bucket(minioConfig.getMinioBucketName())
+                    .bucket(minioConfig.getBucketName())
                     .object(getObjectPath(userId, newPath))
                     .source(
                             CopySource.builder()
-                                    .bucket(minioConfig.getMinioBucketName())
+                                    .bucket(minioConfig.getBucketName())
                                     .object(getObjectPath(userId, oldPath))
                                     .build()
                     )
                     .build());
-        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                 InternalException e) {
+        } catch (Exception e) {
             throw new FileServiceException(e.getMessage());
         }
 
         deleteFile(userId, oldPath);
+
+        return newPath;
+    }
+
+    @Override
+    public String renameDirectory(long userId, String oldPath, String name) throws FileServiceException {
+        List<String> filesToRename = new ArrayList<>();
+        List<String> directoriesToRename = new ArrayList<>();
+        String newPath = getFolderPath(getParentDirectory(oldPath) + "/" + name);
+
+        try {
+            for (Result<Item> itemResult : minioClient.listObjects(ListObjectsArgs.builder()
+                    .bucket(minioConfig.getBucketName())
+                    .prefix(getObjectPath(userId, oldPath))
+                    .recursive(true)
+                    .build())) {
+                Item item = itemResult.get();
+
+                if (item.isDir() || item.size() == 0) {
+                    directoriesToRename.add(item.objectName());
+                } else {
+                    filesToRename.add(item.objectName());
+                }
+            }
+
+            for (String file : filesToRename) {
+                minioClient.copyObject(CopyObjectArgs.builder()
+                        .bucket(minioConfig.getBucketName())
+                        .object(file.replaceFirst(oldPath, newPath))
+                        .source(
+                                CopySource.builder()
+                                        .bucket(minioConfig.getBucketName())
+                                        .object(file)
+                                        .build()
+                        )
+                        .build());
+
+                minioClient.removeObject(RemoveObjectArgs.builder()
+                        .bucket(minioConfig.getBucketName())
+                        .object(file)
+                        .build());
+            }
+
+            for (String directory : directoriesToRename) {
+                createEmptyObject(directory);
+
+                minioClient.removeObject(RemoveObjectArgs.builder()
+                        .bucket(minioConfig.getBucketName())
+                        .object(directory)
+                        .build());
+            }
+
+        } catch (Exception e) {
+            throw new FileServiceException(e.getMessage());
+        }
+
+        return newPath;
     }
 
     @Override
     public void deleteFile(long userId, String path) throws FileServiceException {
         try {
             minioClient.removeObject(RemoveObjectArgs.builder()
-                    .bucket(minioConfig.getMinioBucketName())
+                    .bucket(minioConfig.getBucketName())
                     .object(getObjectPath(userId, path))
                     .build());
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
@@ -94,17 +150,33 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void deleteFolder(long userId, String path) throws FileServiceException {
+    public void deleteDirectory(long userId, String path) throws FileServiceException {
         deleteFile(userId, getFolderPath(path));
     }
 
     @Override
-    public List<FileDto> getFilesInFolder(long userId, String path) throws FileServiceException {
+    public List<FileDto> getFilesInDirectory(long userId, String path) throws FileServiceException {
         return listFiles(userId, path, false);
     }
 
     @Override
-    public byte[] downloadFolder(long userId, String path) throws FileServiceException {
+    public byte[] downloadFile(long userId, String path) throws FileServiceException {
+        String objectPath = getObjectPath(userId, path);
+
+        GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+                .bucket(minioConfig.getBucketName())
+                .object(objectPath)
+                .build();
+
+        try (GetObjectResponse object = minioClient.getObject(getObjectArgs)) {
+            return object.readAllBytes();
+        } catch (Exception e) {
+            throw new FileServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public byte[] downloadDirectory(long userId, String path) throws FileServiceException {
         List<FileDto> files = listFiles(userId, path, true);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -137,13 +209,24 @@ public class FileServiceImpl implements FileService {
         return byteArrayOutputStream.toByteArray();
     }
 
+    @Override
+    public boolean isDirectory(long userId, String path) throws FileServiceException {
+        Iterator<Result<Item>> itemResult = minioClient.listObjects(ListObjectsArgs.builder()
+                .bucket(minioConfig.getBucketName())
+                .prefix(getFolderPath(getObjectPath(userId, path)))
+                .recursive(false)
+                .build()).iterator();
+
+        return itemResult.hasNext();
+    }
+
     private List<FileDto> listFiles(long userId, String path, boolean recursive) throws FileServiceException {
         String objectPath = getObjectPath(userId, getFolderPath(path));
         List<FileDto> files = new ArrayList<>();
 
         try {
             for (Result<Item> itemResult : minioClient.listObjects(ListObjectsArgs.builder()
-                    .bucket(minioConfig.getMinioBucketName())
+                    .bucket(minioConfig.getBucketName())
                     .prefix(objectPath)
                     .recursive(recursive)
                     .build())) {
@@ -159,11 +242,7 @@ public class FileServiceImpl implements FileService {
                         .path(getFilePath(item.objectName()))
                         .build());
             }
-        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                 InternalException e) {
-            // TODO: maybe change to one type (Exception)?
-
+        } catch (Exception e) {
             throw new FileServiceException(e.getMessage());
         }
 
@@ -171,54 +250,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public boolean isFileExists(long userId, String path) throws FileServiceException {
-        try {
-            minioClient.statObject(StatObjectArgs.builder()
-                    .bucket(minioConfig.getMinioBucketName())
-                    .object(getObjectPath(userId, path))
-                    .build());
-            return true;
-        } catch (ErrorResponseException e) {
-            return false;
-        } catch (Exception e) {
-            throw new FileServiceException(e.getMessage());
-        }
-    }
-
-    @Override
-    public byte[] downloadFile(long userId, String path) throws FileServiceException {
-        String objectPath = getObjectPath(userId, path);
-
-        GetObjectArgs getObjectArgs = GetObjectArgs.builder()
-                .bucket(minioConfig.getMinioBucketName())
-                .object(objectPath)
-                .build();
-
-        try (GetObjectResponse object = minioClient.getObject(getObjectArgs)) {
-            return object.readAllBytes();
-        } catch (Exception e) {
-            throw new FileServiceException(e.getMessage());
-        }
-    }
-
-    @Override
-    public boolean isFolderExists(long userId, String path) throws FileServiceException {
-        if (path.isEmpty()) { return true; }
-        String objectPath = getObjectPath(userId, getFolderPath(path));
-
-        try {
-            Iterator<Result<Item>> objects = minioClient.listObjects(ListObjectsArgs.builder()
-                    .bucket(minioConfig.getMinioBucketName())
-                    .prefix(objectPath)
-                    .build()).iterator();
-            return objects.hasNext();
-        } catch (Exception e) {
-            throw new FileServiceException(e.getMessage());
-        }
-    }
-
-    @Override
-    public Optional<FileDto> statFile(long userId, String path) throws FileServiceException {
+    public Optional<FileDto> statObject(long userId, String path) throws FileServiceException {
         String[] partParts = path.split("/");
         if (partParts.length == 0) {
             return Optional.empty();
@@ -227,7 +259,7 @@ public class FileServiceImpl implements FileService {
 
         try {
             minioClient.statObject(StatObjectArgs.builder()
-                    .bucket(minioConfig.getMinioBucketName())
+                    .bucket(minioConfig.getBucketName())
                     .object(getObjectPath(userId, path))
                     .build());
 
@@ -239,7 +271,7 @@ public class FileServiceImpl implements FileService {
 
         } catch (ErrorResponseException e) {
             Iterator<Result<Item>> objects = minioClient.listObjects(ListObjectsArgs.builder()
-                    .bucket(minioConfig.getMinioBucketName())
+                    .bucket(minioConfig.getBucketName())
                     .prefix(getObjectPath(userId, getFolderPath(path)))
                     .build()).iterator();
 
@@ -256,6 +288,14 @@ public class FileServiceImpl implements FileService {
         } catch (Exception e) {
             throw new FileServiceException(e.getMessage());
         }
+    }
+
+    private void createEmptyObject(String objectName) throws Exception {
+        minioClient.putObject(PutObjectArgs.builder()
+                .bucket(minioConfig.getBucketName())
+                .object(objectName)
+                .stream(new ByteArrayInputStream(new byte[] {}), 0, FILE_PART_SIZE)
+                .build());
     }
 
     private static final String USER_PATH_FORMAT = "user-%d-files/%s";
