@@ -219,7 +219,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public boolean isDirectory(long userId, String path) throws FileServiceException {
+    public boolean isDirectoryExists(long userId, String path) throws FileServiceException {
         Iterator<Result<Item>> itemResult = minioClient.listObjects(ListObjectsArgs.builder()
                 .bucket(minioConfig.getBucketName())
                 .prefix(getFolderPath(getObjectPath(userId, path)))

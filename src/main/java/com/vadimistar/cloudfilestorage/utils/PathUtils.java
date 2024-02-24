@@ -17,4 +17,15 @@ public class PathUtils {
                 Paths.get(path).getParent(), ""
         ).toString().replace("\\", "/");
     }
+
+    public static boolean isHomeDirectory(String path) {
+        return path.isEmpty() || path.equals("/");
+    }
+
+    public static String getChildPath(String parent, String child) {
+        if (isHomeDirectory(parent)) {
+            return child;
+        }
+        return StringUtils.addSuffix(parent, "/") + child;
+    }
 }

@@ -45,25 +45,29 @@
                 </nav>
             </div>
         </div>
-        <div class="row">
-            <div class="d-flex mx-2 my-2 px-0 gap-3">
-                <div class="bg-light" style="width: 180px; height: 270px;" th:each="file : ${files}">
-                    <div class="text-end">
-                        <a th:href="@{/file-action(path=${file.getPath()})}" class="btn btn-light">●●●</a>
-                    </div>
-                    <div th:if="${file.isDirectory()}">
-                        <a class="d-block" th:href="@{'/?path=' + ${file.getPath()}}">
-                            <div class="text-center my-2">
-                                <img th:src="@{/assets/folder.png}" alt=""/>
+        <div class="container">
+            <div class="row">
+                <div class="col-auto" th:each="file : ${files}">
+                    <div class="my-2">
+                        <div class="bg-light" style="width: 180px; height: 270px;">
+                            <div class="text-end">
+                                <a th:href="@{/file-action(path=${file.getPath()})}" class="btn btn-light">●●●</a>
                             </div>
-                            <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
-                        </a>
-                    </div>
-                    <div th:unless="${file.isDirectory()}">
-                        <div class="text-center my-2">
-                            <img th:src="@{/assets/file.png}" alt=""/>
+                            <div th:if="${file.isDirectory()}">
+                                <a class="d-block" th:href="@{'/?path=' + ${file.getPath()}}">
+                                    <div class="text-center my-2">
+                                        <img th:src="@{/assets/folder.png}" alt=""/>
+                                    </div>
+                                    <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
+                                </a>
+                            </div>
+                            <div th:unless="${file.isDirectory()}">
+                                <div class="text-center my-2">
+                                    <img th:src="@{/assets/file.png}" alt=""/>
+                                </div>
+                                <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
+                            </div>
                         </div>
-                        <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
                     </div>
                 </div>
             </div>

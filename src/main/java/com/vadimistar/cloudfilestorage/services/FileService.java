@@ -29,5 +29,5 @@ public interface FileService {
 
     Optional<FileDto> statObject(long userId, String path) throws FileServiceException;
 
-    boolean isDirectory(long userId, String path) throws FileServiceException;
+    boolean isDirectoryExists(long userId, String path) throws FileServiceException;
 }
