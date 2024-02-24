@@ -13,21 +13,21 @@ public interface FileService {
 
     void uploadFile(long userId, InputStream inputStream, long objectSize, String path) throws FileServiceException;
 
-    void renameFile(long userId, String oldPath, String newPath) throws FileServiceException;
+    String renameFile(long userId, String oldPath, String name) throws FileServiceException;
+
+    String renameDirectory(long userId, String oldPath, String name) throws FileServiceException;
 
     void deleteFile(long userId, String path) throws FileServiceException;
 
-    void deleteFolder(long userId, String path) throws FileServiceException;
+    void deleteDirectory(long userId, String path) throws FileServiceException;
 
-    List<FileDto> getFilesInFolder(long userId, String path) throws FileServiceException;
+    List<FileDto> getFilesInDirectory(long userId, String path) throws FileServiceException;
 
-    byte[] downloadFolder(long userId, String path) throws FileServiceException;
-
-    boolean isFileExists(long userId, String path) throws FileServiceException;
+    byte[] downloadDirectory(long userId, String path) throws FileServiceException;
 
     byte[] downloadFile(long userId, String path) throws FileServiceException;
 
-    boolean isFolderExists(long userId, String path) throws FileServiceException;
+    Optional<FileDto> statObject(long userId, String path) throws FileServiceException;
 
-    Optional<FileDto> statFile(long userId, String path) throws FileServiceException;
+    boolean isDirectory(long userId, String path) throws FileServiceException;
 }

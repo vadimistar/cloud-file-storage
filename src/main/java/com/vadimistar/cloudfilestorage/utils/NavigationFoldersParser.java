@@ -21,9 +21,9 @@ public class NavigationFoldersParser {
 
         StringBuilder pathBuilder = new StringBuilder("/?path=");
         for (int i = 0; i < pathParts.length - 1; i ++) {
-            pathBuilder.append(URLEncoder.encode(pathParts[i], StandardCharsets.UTF_8));
+            pathBuilder.append(URLUtils.encode(pathParts[i]));
             result.add(new FolderDto(pathParts[i], pathBuilder.toString()));
-            pathBuilder.append(URLEncoder.encode("/", StandardCharsets.UTF_8));
+            pathBuilder.append(URLUtils.encode("/"));
         }
 
         result.add(new FolderDto(pathParts[pathParts.length - 1], path));

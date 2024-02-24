@@ -21,7 +21,7 @@
                         </div>
                     </div>
                     <div th:if="${param.rename}">
-                        <form th:action="@{/rename}">
+                        <form th:action="@{/rename}" method="post">
                             <input class="h4 mt-2 text-center" th:value="${name}" name="name" />
                             <div class="my-3">
                                 <button class="btn btn-success" type="submit">Apply</button>

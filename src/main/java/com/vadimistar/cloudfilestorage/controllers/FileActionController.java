@@ -6,6 +6,7 @@ import com.vadimistar.cloudfilestorage.entities.User;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import com.vadimistar.cloudfilestorage.services.UserService;
 import com.vadimistar.cloudfilestorage.utils.StringUtils;
+import com.vadimistar.cloudfilestorage.utils.URLUtils;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.core.io.ByteArrayResource;
@@ -15,20 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.ByteArrayOutputStream;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Optional;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import static com.vadimistar.cloudfilestorage.utils.PathUtils.getRelativePath;
-import static com.vadimistar.cloudfilestorage.utils.StringUtils.addSuffix;
 
 @Controller
 @AllArgsConstructor
@@ -46,12 +41,12 @@ public class FileActionController {
         User user = userService.getUserByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User with this username does not exist"));
 
-        String decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8);
+        String decodedPath = URLUtils.decode(path);
 
-        Optional<FileDto> file = fileService.statFile(user.getId(), decodedPath);
+        Optional<FileDto> file = fileService.statObject(user.getId(), decodedPath);
 
         if (file.isEmpty()) {
-            return "redirect:/?fileNotExists";
+            return "redirect:/error?notFound";
         }
 
         model.addAttribute("isDirectory", file.get().isDirectory());
@@ -67,14 +62,14 @@ public class FileActionController {
         User user = userService.getUserByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User with this username does not exist"));
 
-        String decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8);
+        String decodedPath = URLUtils.decode(path);
 
-        Optional<FileDto> file = fileService.statFile(user.getId(), decodedPath);
+        Optional<FileDto> file = fileService.statObject(user.getId(), decodedPath);
 
         if (file.isEmpty()) {
             return ResponseEntity
                     .status(HttpStatus.FOUND)
-                    .header(HttpHeaders.LOCATION, "/?fileNotExists")
+                    .header(HttpHeaders.LOCATION, "/error?notFound")
                     .body(null);
         }
 
@@ -82,7 +77,7 @@ public class FileActionController {
             decodedPath = StringUtils.addSuffix(decodedPath, "/");
 
             ByteArrayResource folder = new ByteArrayResource(
-                    fileService.downloadFolder(user.getId(), decodedPath)
+                    fileService.downloadDirectory(user.getId(), decodedPath)
             );
 
             String folderName = StringUtils.removeSuffix(decodedPath, "/");
@@ -101,5 +96,32 @@ public class FileActionController {
                 .ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.get().getName() + "\"")
                 .body(byteArrayResource);
+    }
+
+    @SneakyThrows
+    @PostMapping("/rename")
+    public String rename(@RequestParam String path,
+                         @RequestParam String name,
+                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userService.getUserByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User with this username does not exist"));
+
+        String decodedPath = URLUtils.decode(path);
+
+        Optional<FileDto> file = fileService.statObject(user.getId(), decodedPath);
+
+        if (file.isEmpty()) {
+            return "redirect:/error?notFound";
+        }
+
+        String newPath;
+
+        if (file.get().isDirectory()) {
+            newPath = fileService.renameDirectory(user.getId(), decodedPath, name);
+        } else {
+            newPath = fileService.renameFile(user.getId(), decodedPath, name);
+        }
+
+        return "redirect:/file-action?path=" + URLUtils.encode(newPath);
     }
 }

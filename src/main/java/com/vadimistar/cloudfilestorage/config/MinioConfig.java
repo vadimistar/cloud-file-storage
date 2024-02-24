@@ -1,11 +1,7 @@
 package com.vadimistar.cloudfilestorage.config;
 
-import com.vadimistar.cloudfilestorage.services.BucketService;
 import io.minio.MinioClient;
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
-import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,23 +10,23 @@ import org.springframework.context.annotation.Configuration;
 public class MinioConfig {
 
     @Value("${minio.endpoint}")
-    private String minioEndpoint;
+    private String endpoint;
 
     @Value("${minio.access-key}")
-    private String minioAccessKey;
+    private String accessKey;
 
     @Value("${minio.secret-key}")
-    private String minioSecretKey;
+    private String secretKey;
 
     @Getter
     @Value("${minio.bucket-name}")
-    private String minioBucketName;
+    private String bucketName;
 
     @Bean
     public MinioClient minioClient() {
         return MinioClient.builder()
-                .endpoint(minioEndpoint)
-                .credentials(minioAccessKey, minioSecretKey)
+                .endpoint(endpoint)
+                .credentials(accessKey, secretKey)
                 .build();
     }
 }

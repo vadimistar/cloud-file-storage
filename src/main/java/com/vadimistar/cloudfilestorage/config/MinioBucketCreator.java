@@ -17,8 +17,8 @@ public class MinioBucketCreator {
     @PostConstruct
     @SneakyThrows
     public void createBucketIfNotExists() {
-        if (!bucketService.isBucketExists(minioConfig.getMinioBucketName())) {
-            bucketService.createBucket(minioConfig.getMinioBucketName());
+        if (!bucketService.isBucketExists(minioConfig.getBucketName())) {
+            bucketService.createBucket(minioConfig.getBucketName());
         }
     }
 }
