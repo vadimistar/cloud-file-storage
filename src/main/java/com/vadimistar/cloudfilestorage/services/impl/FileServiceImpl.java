@@ -3,7 +3,6 @@ package com.vadimistar.cloudfilestorage.services.impl;
 import com.vadimistar.cloudfilestorage.config.MinioConfig;
 import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
-import com.vadimistar.cloudfilestorage.services.BucketService;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import io.minio.*;
 import io.minio.errors.*;
@@ -13,10 +12,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -33,8 +29,6 @@ public class FileServiceImpl implements FileService {
     private final MinioConfig minioConfig;
 
     private final MinioClient minioClient;
-
-    private final BucketService bucketService;
 
     private static final long FILE_PART_SIZE = -1;
 
@@ -151,7 +145,22 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void deleteDirectory(long userId, String path) throws FileServiceException {
-        deleteFile(userId, getFolderPath(path));
+        try {
+            Iterable<Result<Item>> items = minioClient.listObjects(ListObjectsArgs.builder()
+                    .bucket(minioConfig.getBucketName())
+                    .prefix(getObjectPath(userId, getFolderPath(path)))
+                    .recursive(true)
+                    .build());
+
+            for (Result<Item> item : items) {
+                minioClient.removeObject(RemoveObjectArgs.builder()
+                        .bucket(minioConfig.getBucketName())
+                        .object(item.get().objectName())
+                        .build());
+            }
+        } catch (Exception e) {
+            throw new FileServiceException(e.getMessage());
+        }
     }
 
     @Override
