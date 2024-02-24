@@ -2,12 +2,14 @@ package com.vadimistar.cloudfilestorage.controllers;
 
 import com.vadimistar.cloudfilestorage.config.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.dto.FileDto;
+import com.vadimistar.cloudfilestorage.dto.RenameRequestDto;
 import com.vadimistar.cloudfilestorage.entities.User;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import com.vadimistar.cloudfilestorage.services.UserService;
 import com.vadimistar.cloudfilestorage.utils.PathUtils;
 import com.vadimistar.cloudfilestorage.utils.StringUtils;
 import com.vadimistar.cloudfilestorage.utils.URLUtils;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.core.io.ByteArrayResource;
@@ -18,6 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -102,13 +105,12 @@ public class FileActionController {
 
     @SneakyThrows
     @PostMapping("/rename")
-    public String rename(@RequestParam String path,
-                         @RequestParam String name,
+    public String rename(@ModelAttribute @Valid RenameRequestDto request,
                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userService.getUserByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User with this username does not exist"));
 
-        String decodedPath = URLUtils.decode(path);
+        String decodedPath = URLUtils.decode(request.getPath());
 
         Optional<FileDto> file = fileService.statObject(user.getId(), decodedPath);
 
@@ -119,9 +121,9 @@ public class FileActionController {
         String newPath;
 
         if (file.get().isDirectory()) {
-            newPath = fileService.renameDirectory(user.getId(), decodedPath, name);
+            newPath = fileService.renameDirectory(user.getId(), decodedPath, request.getName());
         } else {
-            newPath = fileService.renameFile(user.getId(), decodedPath, name);
+            newPath = fileService.renameFile(user.getId(), decodedPath, request.getName());
         }
 
         return "redirect:/file-action?path=" + URLUtils.encode(newPath);
