@@ -5,6 +5,7 @@ import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.entities.User;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import com.vadimistar.cloudfilestorage.services.UserService;
+import com.vadimistar.cloudfilestorage.utils.PathUtils;
 import com.vadimistar.cloudfilestorage.utils.StringUtils;
 import com.vadimistar.cloudfilestorage.utils.URLUtils;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.File;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -123,5 +125,31 @@ public class FileActionController {
         }
 
         return "redirect:/file-action?path=" + URLUtils.encode(newPath);
+    }
+
+    @SneakyThrows
+    @GetMapping("/delete")
+    public String delete(@RequestParam String path,
+                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userService.getUserByUsername(userDetails.getUsername())
+                        .orElseThrow(() -> new RuntimeException("User with this username is not found"));
+
+        String decodedPath = URLUtils.decode(path);
+
+        Optional<FileDto> file = fileService.statObject(user.getId(), decodedPath);
+
+        if (file.isEmpty()) {
+            return "redirect:/error?notFound";
+        }
+
+        if (file.get().isDirectory()) {
+            fileService.deleteDirectory(user.getId(), decodedPath);
+        } else {
+            fileService.deleteFile(user.getId(), decodedPath);
+        }
+
+        String parentDirectory = PathUtils.getParentDirectory(decodedPath);
+
+        return "redirect:/?path=" + URLUtils.encode(parentDirectory);
     }
 }
