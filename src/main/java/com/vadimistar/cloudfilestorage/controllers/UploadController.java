@@ -1,8 +1,8 @@
 package com.vadimistar.cloudfilestorage.controllers;
 
-import com.vadimistar.cloudfilestorage.config.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.entities.User;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
+import com.vadimistar.cloudfilestorage.exceptions.UserNotLoggedInException;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import com.vadimistar.cloudfilestorage.services.UserService;
 import com.vadimistar.cloudfilestorage.utils.URLUtils;
@@ -17,6 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 
 @Controller
 @AllArgsConstructor
@@ -28,12 +29,11 @@ public class UploadController {
 
     @PostMapping("/upload")
     public String upload(@RequestParam(value = "file") MultipartFile[] files,
-                           @RequestParam(value = "path") String path,
-                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                         @RequestParam(value = "path") String path,
+                         Principal principal) {
+        User user = userService.getUserByUsername(principal.getName())
+                .orElseThrow(UserNotLoggedInException::new);
         if (files.length != 0) {
-            User user = userService.getUserByUsername(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User with this username is not found"));
-
             String directory = URLUtils.decode(path);
 
             for (MultipartFile file : files) {

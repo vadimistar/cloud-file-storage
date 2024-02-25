@@ -5,15 +5,16 @@ import com.vadimistar.cloudfilestorage.entities.User;
 import com.vadimistar.cloudfilestorage.exceptions.PasswordMismatchException;
 import com.vadimistar.cloudfilestorage.exceptions.UserAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.repositories.UserRepository;
-import com.vadimistar.cloudfilestorage.config.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -53,8 +54,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.getUserByUsername(username);
-        return user.map(UserDetailsImpl::new)
+        return userRepository.getUserByUsername(username)
+                .map(user -> new org.springframework.security.core.userdetails.User(
+                        username,
+                        user.getPassword(),
+                        List.of(new SimpleGrantedAuthority("user"))
+                ))
                 .orElseThrow(() -> new UsernameNotFoundException("User with this username is not found"));
     }
 
