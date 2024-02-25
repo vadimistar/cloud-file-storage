@@ -4,6 +4,8 @@ import com.vadimistar.cloudfilestorage.config.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.dto.RenameRequestDto;
 import com.vadimistar.cloudfilestorage.entities.User;
+import com.vadimistar.cloudfilestorage.exceptions.ResourceNotFoundException;
+import com.vadimistar.cloudfilestorage.exceptions.UserNotLoggedInException;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import com.vadimistar.cloudfilestorage.services.UserService;
 import com.vadimistar.cloudfilestorage.utils.PathUtils;
@@ -65,17 +67,14 @@ public class FileActionController {
     public ResponseEntity<?> download(@RequestParam String path,
                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userService.getUserByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User with this username does not exist"));
+                .orElseThrow(UserNotLoggedInException::new);
 
         String decodedPath = URLUtils.decode(path);
 
         Optional<FileDto> file = fileService.statObject(user.getId(), decodedPath);
 
         if (file.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.FOUND)
-                    .header(HttpHeaders.LOCATION, "/error?notFound")
-                    .body(null);
+            throw new ResourceNotFoundException();
         }
 
         if (file.get().isDirectory()) {

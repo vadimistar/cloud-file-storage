@@ -4,6 +4,7 @@ import com.vadimistar.cloudfilestorage.config.MinioConfig;
 import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
 import com.vadimistar.cloudfilestorage.services.FileService;
+import com.vadimistar.cloudfilestorage.utils.URLUtils;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.messages.Item;
@@ -16,6 +17,7 @@ import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -165,7 +167,26 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public List<FileDto> getFilesInDirectory(long userId, String path) throws FileServiceException {
-        return listFiles(userId, path, false);
+        String objectPath = getObjectPath(userId, getFolderPath(path));
+        ListObjectsArgs listObjectsArgs = ListObjectsArgs.builder()
+                .bucket(minioConfig.getBucketName())
+                .prefix(objectPath)
+                .build();
+        Iterable<Result<Item>> items = minioClient.listObjects(listObjectsArgs);
+        List<FileDto> files = new ArrayList<>();
+        for (Result<Item> item : items) {
+            try {
+                FileDto file = FileDto.builder()
+                        .name(getFileName(item.get().objectName()))
+                        .isDirectory(item.get().isDir())
+                        .path(getFilePath(item.get().objectName()))
+                        .build();
+                files.add(file);
+            } catch (Exception e) {
+                throw new FileServiceException(e.getMessage());
+            }
+        }
+        return files;
     }
 
     @Override
@@ -314,18 +335,19 @@ public class FileServiceImpl implements FileService {
     }
 
     private static String getFolderPath(String path) {
-        if (path.isEmpty()) { return path; }
-        if (!path.endsWith("/")) { return path + "/"; }
-        return path;
+        if (path.isEmpty() || path.endsWith("/")) {
+            return path;
+        }
+        return path + "/";
     }
 
-    private static String getFileName(String path) {
-        String[] pathParts = path.split("/");
+    private static String getFileName(String objectName) {
+        String[] pathParts = objectName.split("/");
         return pathParts[pathParts.length - 1];
     }
 
-    private static String getFilePath(String path) {
-        String[] pathParts = path.split("/", 2);
+    private static String getFilePath(String objectName) {
+        String[] pathParts = objectName.split("/", 2);
         if (pathParts.length > 1) {
             return pathParts[1];
         }

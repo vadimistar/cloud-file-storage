@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class FolderDto {
+public class BreadcrumbElementDto {
 
     private String name;
 

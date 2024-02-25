@@ -39,8 +39,9 @@
             <div class="mx-2 my-2 bg-light">
                 <nav class="mx-2 mt-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item" th:each="folder : ${previousFolders}"><a th:href="${folder.getPath()}" th:text="${folder.getName()}"></a></li>
-                        <li class="breadcrumb-item active" th:text="${currentFolder}"></li>
+                        <li class="breadcrumb-item" th:each="breadcrumbElement : ${breadcrumb}">
+                            <a th:href="${breadcrumbElement.getPath()}" th:text="${breadcrumbElement.getName()}"></a>
+                        </li>
                     </ol>
                 </nav>
             </div>
