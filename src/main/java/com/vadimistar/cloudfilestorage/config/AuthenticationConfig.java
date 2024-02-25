@@ -17,11 +17,10 @@ public class AuthenticationConfig {
     private PasswordEncoder passwordEncoder;
 
     @Bean
-    public AuthenticationManager authenticationManager() {
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
-
-        return new ProviderManager(daoAuthenticationProvider);
+        return daoAuthenticationProvider;
     }
 }

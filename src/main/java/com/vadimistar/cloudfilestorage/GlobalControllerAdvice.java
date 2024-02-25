@@ -25,6 +25,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public RedirectView handleException(Exception e, RedirectAttributes redirectAttributes) {
+        System.out.println(e.getMessage());
         redirectAttributes.addFlashAttribute("error", e.getMessage());
 
         return new RedirectView("/error", true);
