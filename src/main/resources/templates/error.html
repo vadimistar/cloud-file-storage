@@ -7,9 +7,6 @@
 <body>
     <header th:insert="~{fragments/header.html :: header}"></header>
     <div class="container">
-        <div class="row">
-            <div th:insert="~{fragments/search.html :: search}"></div>
-        </div>
         <div th:if="${param.notFound}" class="row justify-content-center">
             <div class="mt-3 alert alert-danger w-75">
                 <p>
