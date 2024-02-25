@@ -1,5 +1,6 @@
 package com.vadimistar.cloudfilestorage.controllers;
 
+import com.vadimistar.cloudfilestorage.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.dto.RenameRequestDto;
 import com.vadimistar.cloudfilestorage.entities.User;
@@ -43,11 +44,8 @@ public class FileActionController {
     @SneakyThrows
     @GetMapping("/file-action")
     public String fileAction(@RequestParam String path,
-                             Principal principal,
+                             @AuthorizedUser User user,
                              Model model) {
-        User user = userService.getUserByUsername(principal.getName())
-                .orElseThrow(() -> new RuntimeException("User with this username does not exist"));
-
         String decodedPath = URLUtils.decode(path);
 
         Optional<FileDto> file = fileService.statObject(user.getId(), decodedPath);
@@ -65,10 +63,7 @@ public class FileActionController {
     @SneakyThrows
     @GetMapping("/download")
     public ResponseEntity<?> download(@RequestParam String path,
-                                      Principal principal) {
-        User user = userService.getUserByUsername(principal.getName())
-                .orElseThrow(UserNotLoggedInException::new);
-
+                                      @AuthorizedUser User user) {
         String decodedPath = URLUtils.decode(path);
 
         Optional<FileDto> file = fileService.statObject(user.getId(), decodedPath);
@@ -105,10 +100,7 @@ public class FileActionController {
     @SneakyThrows
     @PostMapping("/rename")
     public String rename(@ModelAttribute @Valid RenameRequestDto request,
-                         Principal principal) {
-        User user = userService.getUserByUsername(principal.getName())
-                .orElseThrow(() -> new RuntimeException("User with this username does not exist"));
-
+                         @AuthorizedUser User user) {
         String decodedPath = URLUtils.decode(request.getPath());
 
         Optional<FileDto> file = fileService.statObject(user.getId(), decodedPath);
@@ -131,10 +123,7 @@ public class FileActionController {
     @SneakyThrows
     @GetMapping("/delete")
     public String delete(@RequestParam String path,
-                         Principal principal) {
-        User user = userService.getUserByUsername(principal.getName())
-                        .orElseThrow(() -> new RuntimeException("User with this username is not found"));
-
+                         @AuthorizedUser User user) {
         String decodedPath = URLUtils.decode(path);
 
         Optional<FileDto> file = fileService.statObject(user.getId(), decodedPath);

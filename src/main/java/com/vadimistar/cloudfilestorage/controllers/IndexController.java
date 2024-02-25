@@ -1,5 +1,6 @@
 package com.vadimistar.cloudfilestorage.controllers;
 
+import com.vadimistar.cloudfilestorage.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.dto.BreadcrumbElementDto;
 import com.vadimistar.cloudfilestorage.entities.User;
@@ -35,9 +36,7 @@ public class IndexController {
     @GetMapping("/")
     public String indexPage(@RequestParam(required = false, defaultValue = "") String path,
                             Model model,
-                            Principal principal) throws FileServiceException {
-        User user = userService.getUserByUsername(principal.getName())
-                .orElseThrow(UserNotLoggedInException::new);
+                            @AuthorizedUser User user) throws FileServiceException {
         String decodedPath = URLUtils.decode(path);
         if (!fileService.isDirectoryExists(user.getId(), decodedPath)) {
             throw new ResourceNotFoundException();
@@ -59,9 +58,7 @@ public class IndexController {
     @SneakyThrows
     @PostMapping("/create-folder")
     public String createFolder(@RequestParam String path,
-                               Principal principal) {
-        User user = userService.getUserByUsername(principal.getName())
-                .orElseThrow(UserNotLoggedInException::new);
+                               @AuthorizedUser User user) {
         String decodedPath = URLUtils.decode(path);
 
         for (int attempts = 1; attempts <= MAX_NEW_FOLDER_ATTEMPTS; attempts ++) {

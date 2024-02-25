@@ -1,5 +1,6 @@
 package com.vadimistar.cloudfilestorage.controllers;
 
+import com.vadimistar.cloudfilestorage.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.entities.User;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
 import com.vadimistar.cloudfilestorage.exceptions.UserNotLoggedInException;
@@ -30,9 +31,7 @@ public class UploadController {
     @PostMapping("/upload")
     public String upload(@RequestParam(value = "file") MultipartFile[] files,
                          @RequestParam(value = "path") String path,
-                         Principal principal) {
-        User user = userService.getUserByUsername(principal.getName())
-                .orElseThrow(UserNotLoggedInException::new);
+                         @AuthorizedUser User user) {
         if (files.length != 0) {
             String directory = URLUtils.decode(path);
 
