@@ -12,26 +12,28 @@
         </div>
         <div class="row">
             <div class="w-25 py-2 px-2">
-                <form method="post" th:action="@{/upload(path=${param.path})}" enctype="multipart/form-data">
-                    <input class="form-control" type="file" name="file" multiple/>
+                <form method="post" th:action="@{/upload(path=${param.path})}" th:object="${request}" enctype="multipart/form-data">
+                    <input class="form-control" type="file" name="files" multiple/>
                     <div class="form-group mt-2">
                         <button type="submit" class="btn btn-primary w-100">Upload file</button>
                     </div>
                 </form>
             </div>
             <div class="w-25 py-2 px-2">
-                <form method="post" th:action="@{/upload(path=${param.path})}" enctype="multipart/form-data">
-                    <input class="form-control" type="file" name="file" webkitdirectory />
+                <form method="post" th:action="@{/upload}" enctype="multipart/form-data">
+                    <input class="form-control" type="file" name="files" webkitdirectory />
                     <div class="form-group mt-2">
                         <button type="submit" class="btn btn-primary w-100">Upload folder</button>
                     </div>
+                    <input type="hidden" th:value="${param.path}" name="path">
                 </form>
             </div>
             <div class="w-25 py-2 px-2 mt-auto">
-                <form method="post" th:action="@{/create-folder(path=${param.path})}">
+                <form method="post" th:action="@{/create-folder}">
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary w-100">Create folder</button>
                     </div>
+                    <input type="hidden" th:value="${param.path}" name="path">
                 </form>
             </div>
         </div>
@@ -52,7 +54,7 @@
                     <div class="my-2">
                         <div class="bg-light" style="width: 180px; height: 270px;">
                             <div class="text-end">
-                                <a th:href="@{/file-action(path=${file.getPath()})}" class="btn btn-light">●●●</a>
+                                <a class="btn btn-light" th:href="@{/file-action(path=${file.getPath()})}">●●●</a>
                             </div>
                             <div th:if="${file.isDirectory()}">
                                 <a class="d-block" th:href="@{'/?path=' + ${file.getPath()}}">

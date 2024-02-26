@@ -13,23 +13,25 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @AllArgsConstructor
+@RequestMapping("/register")
 public class RegisterController {
 
     private final UserService userService;
 
-    @GetMapping("/register")
+    @GetMapping
     public String registerView(Model model) {
         model.addAttribute("user", RegisterDto.builder().build());
         return "register";
     }
 
-    @PostMapping("/register")
+    @PostMapping
     public String register(@ModelAttribute("user") @Valid RegisterDto registerDto,
                          BindingResult bindingResult,
                          Model model,

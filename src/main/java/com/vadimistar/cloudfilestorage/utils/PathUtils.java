@@ -3,6 +3,8 @@ package com.vadimistar.cloudfilestorage.utils;
 import lombok.experimental.UtilityClass;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @UtilityClass
@@ -27,5 +29,25 @@ public class PathUtils {
             return child;
         }
         return StringUtils.addSuffix(parent, "/") + child;
+    }
+
+    public static String getCurrentDirectoryName(String path) {
+        String[] pathParts = path.split("/");
+        if (pathParts.length == 0) {
+            return path;
+        }
+        return pathParts[pathParts.length - 1];
+    }
+
+    public static List<String> getSubdirectories(String path) {
+        List<String> result = new ArrayList<>();
+        String[] pathParts = StringUtils.removeSuffix(path, "/").split("/");
+        StringBuilder sb = new StringBuilder();
+        for (String part : pathParts) {
+            sb.append(part);
+            sb.append('/');
+            result.add(sb.toString());
+        }
+        return result;
     }
 }

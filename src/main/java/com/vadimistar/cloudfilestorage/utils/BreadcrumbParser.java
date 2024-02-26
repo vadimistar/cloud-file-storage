@@ -15,13 +15,12 @@ public class BreadcrumbParser {
         BreadcrumbElementDto homeDirectory = new BreadcrumbElementDto("/", "/");
         result.add(homeDirectory);
 
-        String[] pathParts = path.split("/");
-
         StringBuilder pathBuilder = new StringBuilder("/?path=");
-        for (int i = 0; i < pathParts.length; i ++) {
-            pathBuilder.append(URLUtils.encode(pathParts[i]));
-            result.add(new BreadcrumbElementDto(pathParts[i], pathBuilder.toString()));
-            pathBuilder.append(URLUtils.encode("/"));
+
+        for (String pathPart : path.split("/")) {
+            pathBuilder.append(pathPart);
+            result.add(new BreadcrumbElementDto(pathPart, pathBuilder.toString()));
+            pathBuilder.append("/");
         }
 
         return result;
