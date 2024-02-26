@@ -4,6 +4,7 @@ import com.vadimistar.cloudfilestorage.config.MinioConfig;
 import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
 import com.vadimistar.cloudfilestorage.services.FileService;
+import com.vadimistar.cloudfilestorage.utils.PathUtils;
 import com.vadimistar.cloudfilestorage.utils.URLUtils;
 import io.minio.*;
 import io.minio.errors.*;
@@ -12,8 +13,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -21,8 +24,7 @@ import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static com.vadimistar.cloudfilestorage.utils.PathUtils.getParentDirectory;
-import static com.vadimistar.cloudfilestorage.utils.PathUtils.getRelativePath;
+import static com.vadimistar.cloudfilestorage.utils.PathUtils.*;
 
 @Service
 @AllArgsConstructor
@@ -35,7 +37,7 @@ public class FileServiceImpl implements FileService {
     private static final long FILE_PART_SIZE = -1;
 
     @Override
-    public void createFolder(long userId, String path) throws FileServiceException {
+    public void createNamedFolder(long userId, String path) throws FileServiceException {
         uploadFile(userId, new ByteArrayInputStream(new byte[] {}), 0, getFolderPath(path));
     }
 
@@ -49,6 +51,27 @@ public class FileServiceImpl implements FileService {
                     .build());
         } catch (Exception e) {
             throw new FileServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void uploadFolder(long userId, MultipartFile[] files, String path) throws FileServiceException, IOException {
+        Set<String> fileDirectories = new HashSet<>();
+        for (MultipartFile file : files) {
+            String filePath = PathUtils.getChildPath(path, file.getOriginalFilename());
+            String parentDirectory = PathUtils.getParentDirectory(file.getOriginalFilename());
+            if (!parentDirectory.isEmpty()) {
+                fileDirectories.add(PathUtils.getChildPath(path, parentDirectory));
+            }
+            uploadFile(userId, file.getInputStream(), file.getSize(), filePath);
+        }
+        Set<String> newDirectories = new HashSet<>();
+        for (String directory : fileDirectories) {
+            newDirectories.addAll(getSubdirectories(directory));
+            newDirectories.add(directory);
+        }
+        for (String directory : newDirectories) {
+            createNamedFolder(userId, directory);
         }
     }
 
@@ -174,12 +197,16 @@ public class FileServiceImpl implements FileService {
                 .build();
         Iterable<Result<Item>> items = minioClient.listObjects(listObjectsArgs);
         List<FileDto> files = new ArrayList<>();
-        for (Result<Item> item : items) {
+        for (Result<Item> itemResult : items) {
             try {
+                Item item = itemResult.get();
+                if (item.objectName().equals(objectPath)) {
+                    continue;
+                }
                 FileDto file = FileDto.builder()
-                        .name(getFileName(item.get().objectName()))
-                        .isDirectory(item.get().isDir())
-                        .path(getFilePath(item.get().objectName()))
+                        .name(getFileName(item.objectName()))
+                        .isDirectory(item.isDir())
+                        .path(getFilePath(item.objectName()))
                         .build();
                 files.add(file);
             } catch (Exception e) {

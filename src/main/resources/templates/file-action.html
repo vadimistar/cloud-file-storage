@@ -21,21 +21,29 @@
                         </div>
                     </div>
                     <div th:if="${param.rename}">
-                        <form th:action="@{/rename}" method="post" th:object="${request}">
-                            <input class="h4 mt-2 text-center" th:value="${name}" name="name" required />
-                            <div class="my-3">
+                        <div class="my-3">
+                            <form th:action="@{/file-action/rename}" th:object="${request}" th:method="post">
+                                <div class="w-100">
+                                    <input class="h4 text-center" th:value="${name}" name="name" required />
+                                </div>
                                 <button class="btn btn-success" type="submit">Apply</button>
-                                <a th:href="@{/file-action(path=${param.path})}" class="btn btn-danger" type="submit">Cancel</a>
-                            </div>
-                            <input type="hidden" th:value="${param.path}" name="path" />
-                        </form>
+                                <input type="hidden" th:value="${param.path}" name="path" />
+                                <a class="btn btn-danger" th:href="@{/file-action(path=${param.path})}">Cancel</a>
+                            </form>
+                        </div>
                     </div>
                     <div th:unless="${param.rename}">
                         <p class="h4 mt-2 text-center" th:text="${name}"></p>
                         <div class="my-3">
                             <a th:href="@{/file-action(path=${param.path},rename=true)}" class="btn btn-primary">Rename</a>
-                            <a th:href="@{/download(path=${param.path})}" class="btn btn-success">Download</a>
-                            <a th:href="@{/delete(path=${param.path})}" class="btn btn-danger">Delete</a>
+                            <form class="d-inline-block" th:action="@{/file-action/download}" th:object="${request}" th:method="get">
+                                <button type="submit" class="btn btn-success">Download</button>
+                                <input type="hidden" th:value="${param.path}" name="path">
+                            </form>
+                            <form class="d-inline-block" th:action="@{/file-action/delete}" th:object="${request}" th:method="post">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                                <input type="hidden" th:value="${param.path}" name="path">
+                            </form>
                         </div>
                     </div>
                 </div>

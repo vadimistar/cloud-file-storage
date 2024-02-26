@@ -18,6 +18,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public RedirectView handleResourceNotFoundException(ResourceNotFoundException e, RedirectAttributes redirectAttributes) {
+        System.out.println(e.getMessage());
         redirectAttributes.addFlashAttribute("error", e.getMessage());
 
         return new RedirectView("/error", true);
