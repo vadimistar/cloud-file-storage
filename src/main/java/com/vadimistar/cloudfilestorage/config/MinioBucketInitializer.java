@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class MinioBucketCreator {
+public class MinioBucketInitializer {
 
     private final MinioConfig minioConfig;
 
@@ -16,7 +16,7 @@ public class MinioBucketCreator {
 
     @PostConstruct
     @SneakyThrows
-    public void createBucketIfNotExists() {
+    public void initBucketIfNotExists() {
         if (!bucketService.isBucketExists(minioConfig.getBucketName())) {
             bucketService.createBucket(minioConfig.getBucketName());
         }
