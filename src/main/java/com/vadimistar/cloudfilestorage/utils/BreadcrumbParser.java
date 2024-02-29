@@ -18,9 +18,9 @@ public class BreadcrumbParser {
         StringBuilder pathBuilder = new StringBuilder("/?path=");
 
         for (String pathPart : path.split("/")) {
-            pathBuilder.append(pathPart);
+            pathBuilder.append(URLUtils.encode(pathPart));
             result.add(new BreadcrumbElementDto(pathPart, pathBuilder.toString()));
-            pathBuilder.append("/");
+            pathBuilder.append(URLUtils.encode("/"));
         }
 
         return result;
