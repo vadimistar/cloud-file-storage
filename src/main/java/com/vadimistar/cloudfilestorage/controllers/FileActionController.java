@@ -86,6 +86,10 @@ public class FileActionController {
         FileDto file = fileService.statObject(user.getId(), path)
                 .orElseThrow(ResourceNotFoundException::new);
 
+        if (file.getName().equals(request.getName())) {
+            return "redirect:/file-action?path=" + URLUtils.encode(request.getPath());
+        }
+
         String newPath;
         if (file.isDirectory()) {
             newPath = fileService.renameDirectory(user.getId(), path, request.getName());
