@@ -3,6 +3,7 @@ package com.vadimistar.cloudfilestorage.services.impl;
 import com.vadimistar.cloudfilestorage.config.MinioConfig;
 import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
+import com.vadimistar.cloudfilestorage.exceptions.UploadFileException;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import com.vadimistar.cloudfilestorage.utils.PathUtils;
 import com.vadimistar.cloudfilestorage.utils.URLUtils;
@@ -58,6 +59,9 @@ public class FileServiceImpl implements FileService {
     public void uploadFolder(long userId, MultipartFile[] files, String path) throws FileServiceException, IOException {
         Set<String> fileDirectories = new HashSet<>();
         for (MultipartFile file : files) {
+            if (file.getSize() == 0) {
+                throw new UploadFileException("File with size = 0 bytes cannot be uploaded");
+            }
             String filePath = PathUtils.getChildPath(path, file.getOriginalFilename());
             String parentDirectory = PathUtils.getParentDirectory(file.getOriginalFilename());
             if (!parentDirectory.isEmpty()) {

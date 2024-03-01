@@ -66,7 +66,6 @@ public class IndexController {
     public String upload(@RequestParam MultipartFile[] files,
                          @RequestParam String path,
                          @AuthorizedUser User user) throws FileServiceException, IOException {
-        // FIXME: 29.02.2024 Implement file minimum size limit
         fileService.uploadFolder(user.getId(), files, URLUtils.decode(path));
         return "redirect:/?path=" + URLUtils.encode(path);
     }

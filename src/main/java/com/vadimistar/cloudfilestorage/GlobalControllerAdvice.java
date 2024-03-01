@@ -32,9 +32,15 @@ public class GlobalControllerAdvice {
         return new RedirectView("/", true);
     }
 
+    @ExceptionHandler(UploadFileException.class)
+    public RedirectView handleUploadFileException(UploadFileException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", e.getMessage());
+        return new RedirectView("/", true);
+    }
+
     @ExceptionHandler(Exception.class)
     public RedirectView handleException(Exception e, RedirectAttributes redirectAttributes) {
-        log.error(e.getMessage());
+        log.error("Exception: " + e.getClass() + " message: " + e.getMessage());
         redirectAttributes.addFlashAttribute("error", "Internal error occurred, please try again later");
         return new RedirectView("/", true);
     }
