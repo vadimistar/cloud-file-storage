@@ -8,7 +8,7 @@
     <header th:insert="~{fragments/header.html :: header}"></header>
     <div class="container">
         <div class="row">
-            <div th:insert="~{fragments/search.html :: search}"></div>
+            <div th:insert="~{fragments/search-bar.html :: search-bar}"></div>
         </div>
         <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
         <div class="row">
@@ -58,16 +58,16 @@
                                 <a class="btn btn-light" th:href="@{/file-action(path=${file.getPath()})}">●●●</a>
                             </div>
                             <div th:if="${file.isDirectory()}">
-                                <a class="d-block" th:href="@{'/?path=' + ${file.getPath()}}">
+                                <a th:href="@{'/?path=' + ${file.getPath()}}">
                                     <div class="text-center my-2">
-                                        <img th:src="@{/assets/folder.png}" alt=""/>
+                                        <img th:src="@{/assets/folder128.png}" alt=""/>
                                     </div>
                                     <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
                                 </a>
                             </div>
                             <div th:unless="${file.isDirectory()}">
                                 <div class="text-center my-2">
-                                    <img th:src="@{/assets/file.png}" alt=""/>
+                                    <img th:src="@{/assets/file128.png}" alt=""/>
                                 </div>
                                 <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
                             </div>
