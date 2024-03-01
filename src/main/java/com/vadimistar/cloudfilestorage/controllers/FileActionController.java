@@ -128,17 +128,19 @@ public class FileActionController {
         ByteArrayResource result = new ByteArrayResource(
                 fileService.downloadDirectory(userId, path)
         );
-        String name = PathUtils.getCurrentDirectoryName(path);
+        String currentDirectoryName = PathUtils.getCurrentDirectoryName(path);
+        String filename = URLUtils.encode(currentDirectoryName);
         return ResponseEntity
                 .ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + name + ".zip\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + ".zip\"")
                 .body(result);
     }
 
-    private ResponseEntity<?> downloadFile(Long userId, String path, String filename) throws FileServiceException {
+    private ResponseEntity<?> downloadFile(Long userId, String path, String name) throws FileServiceException {
         ByteArrayResource byteArrayResource = new ByteArrayResource(
                 fileService.downloadFile(userId, path)
         );
+        String filename = URLUtils.encode(name);
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
