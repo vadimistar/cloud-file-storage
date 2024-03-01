@@ -295,7 +295,7 @@ public class FileServiceImpl implements FileService {
 
                 files.add(FileDto.builder()
                         .name(getFileName(item.objectName()))
-                        .isDirectory(item.isDir())
+                        .isDirectory(item.isDir() || item.size() == 0)
                         .path(getFilePath(item.objectName()))
                         .build());
             }
@@ -345,6 +345,10 @@ public class FileServiceImpl implements FileService {
         } catch (Exception e) {
             throw new FileServiceException(e.getMessage());
         }
+    }
+
+    public List<FileDto> getAllFiles(long userId) throws FileServiceException {
+        return listFiles(userId, "", true);
     }
 
     private void createEmptyObject(String objectName) throws Exception {

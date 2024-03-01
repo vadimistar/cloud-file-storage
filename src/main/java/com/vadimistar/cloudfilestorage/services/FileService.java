@@ -37,6 +37,8 @@ public interface FileService {
 
     boolean isDirectoryExists(long userId, String path) throws FileServiceException;
 
+    List<FileDto> getAllFiles(long userId) throws FileServiceException;
+
     default void createUnnamedFolder(long userId, String path, int maxAttempts) throws FileServiceException {
         for (int attempts = 1; attempts <= maxAttempts; attempts ++) {
             String resultPath = PathUtils.getChildPath(path, "New Folder (%d)".formatted(attempts));

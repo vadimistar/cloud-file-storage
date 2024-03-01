@@ -35,7 +35,7 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(Exception.class)
     public RedirectView handleException(Exception e, RedirectAttributes redirectAttributes) {
         log.error(e.getMessage());
-        redirectAttributes.addFlashAttribute("error", e.getMessage());
+        redirectAttributes.addFlashAttribute("error", "Internal error occurred, please try again later");
         return new RedirectView("/", true);
     }
 }
