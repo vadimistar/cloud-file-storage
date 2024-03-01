@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 @Controller
@@ -58,7 +59,7 @@ public class IndexController {
     public String createFolder(@RequestParam String path,
                                @AuthorizedUser User user) throws FileServiceException {
         fileService.createUnnamedFolder(user.getId(), URLUtils.decode(path), MAX_NEW_FOLDER_ATTEMPTS);
-        return "redirect:/?path=" + path;
+        return "redirect:/?path=" + URLUtils.encode(path);
     }
 
     @PostMapping("/upload")
@@ -67,7 +68,7 @@ public class IndexController {
                          @AuthorizedUser User user) throws FileServiceException, IOException {
         // FIXME: 29.02.2024 Implement file minimum size limit
         fileService.uploadFolder(user.getId(), files, URLUtils.decode(path));
-        return "redirect:/?path=" + path;
+        return "redirect:/?path=" + URLUtils.encode(path);
     }
 
     private static final int MAX_NEW_FOLDER_ATTEMPTS = 256;
