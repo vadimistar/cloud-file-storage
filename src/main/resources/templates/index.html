@@ -42,8 +42,8 @@
             <div class="mx-2 my-2 bg-light">
                 <nav class="mx-2 mt-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item" th:each="breadcrumbElement : ${breadcrumb}">
-                            <a th:href="${breadcrumbElement.getPath()}" th:text="${breadcrumbElement.getName()}"></a>
+                        <li class="breadcrumb-item" th:each="breadcrumbsElement : ${breadcrumbs}">
+                            <a th:href="${breadcrumbsElement.getPath()}" th:text="${breadcrumbsElement.getName()}"></a>
                         </li>
                     </ol>
                 </nav>
@@ -51,25 +51,26 @@
         </div>
         <div class="container">
             <div class="row">
-                <div class="col-auto" th:each="file : ${files}">
+                <div class="col-auto" th:each="entry : ${entries}">
                     <div class="my-2">
                         <div class="bg-light" style="width: 180px; height: 270px;">
                             <div class="text-end">
-                                <a class="btn btn-light" th:href="@{/file-action(path=${file.getPath()})}">●●●</a>
+                                <a class="btn btn-light" th:if="${entry.isFolder()}" th:href="@{/folder-action(path=${entry.getPath()})}">●●●</a>
+                                <a class="btn btn-light" th:unless="${entry.isFolder()}" th:href="@{/file-action(path=${entry.getPath()})}">●●●</a>
                             </div>
-                            <div th:if="${file.isDirectory()}">
-                                <a th:href="@{'/?path=' + ${file.getPath()}}">
+                            <div th:if="${entry.isFolder()}">
+                                <a th:href="@{'/?path=' + ${entry.getPath()}}">
                                     <div class="text-center my-2">
                                         <img th:src="@{/assets/folder128.png}" alt=""/>
                                     </div>
-                                    <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
+                                    <p class="h6 mt-2 text-center" th:text="${entry.getName()}"></p>
                                 </a>
                             </div>
-                            <div th:unless="${file.isDirectory()}">
+                            <div th:unless="${entry.isFolder()}">
                                 <div class="text-center my-2">
                                     <img th:src="@{/assets/file128.png}" alt=""/>
                                 </div>
-                                <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
+                                <p class="h6 mt-2 text-center" th:text="${entry.getName()}"></p>
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 package com.vadimistar.cloudfilestorage.config;
 
-import com.vadimistar.cloudfilestorage.services.BucketService;
+import com.vadimistar.cloudfilestorage.utils.Minio;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -10,15 +10,12 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class MinioBucketInitializer {
 
-    private final MinioConfig minioConfig;
-
-    private final BucketService bucketService;
+    private final Minio minio;
 
     @PostConstruct
-    @SneakyThrows
     public void initBucketIfNotExists() {
-        if (!bucketService.isBucketExists(minioConfig.getBucketName())) {
-            bucketService.createBucket(minioConfig.getBucketName());
+        if (!minio.isBucketExists()) {
+            minio.makeBucket();
         }
     }
 }

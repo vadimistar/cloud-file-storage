@@ -9,7 +9,7 @@ public class FileDto {
 
     private String name;
 
-    private boolean isDirectory;
+    private boolean isFolder;
 
     private String path;
 }

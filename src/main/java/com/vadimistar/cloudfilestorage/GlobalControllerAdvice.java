@@ -21,9 +21,15 @@ public class GlobalControllerAdvice {
     }
 
     @ExceptionHandler(FileActionException.class)
-    public RedirectView handleInvalidDeleteRequestException(FileActionException e, RedirectAttributes redirectAttributes) {
+    public RedirectView handleFileActionException(FileActionException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
         return new RedirectView("/file-action?path=" + URLUtils.encode(e.getPath()), true);
+    }
+
+    @ExceptionHandler(FolderActionException.class)
+    public RedirectView handleFolderActionException(FolderActionException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", e.getMessage());
+        return new RedirectView("/folder-action?path=" + URLUtils.encode(e.getPath()), true);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

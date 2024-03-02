@@ -24,11 +24,11 @@ public class PathUtils {
         return path.isEmpty() || path.equals("/");
     }
 
-    public static String getChildPath(String parent, String child) {
+    public static String join(String parent, String child) {
         if (isHomeDirectory(parent)) {
             return child;
         }
-        return StringUtils.addSuffix(parent, "/") + child;
+        return StringUtils.addSuffix(parent, "/") + StringUtils.removePrefix(child, "/");
     }
 
     public static String getCurrentDirectoryName(String path) {
@@ -49,5 +49,22 @@ public class PathUtils {
             result.add(sb.toString());
         }
         return result;
+    }
+
+    public static String makeDirectoryPath(String path) {
+        return StringUtils.addSuffix(path, "/");
+    }
+
+    public static String getFilename(String path) {
+        String[] pathParts = path.split("/");
+        return StringUtils.removeSuffix(pathParts[pathParts.length - 1], "/");
+    }
+
+    public static String trimIndexDirectory(String path) {
+        String[] pathParts = path.split("/", 2);
+        if (pathParts.length > 1) {
+            return pathParts[1];
+        }
+        return pathParts[0];
     }
 }

@@ -1,25 +1,25 @@
 package com.vadimistar.cloudfilestorage.utils;
 
-import com.vadimistar.cloudfilestorage.dto.BreadcrumbElementDto;
+import com.vadimistar.cloudfilestorage.dto.BreadcrumbsElementDto;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @UtilityClass
-public class BreadcrumbParser {
+public class BreadcrumbsCreator {
 
-    public static List<BreadcrumbElementDto> parseBreadcrumb(String path) {
-        List<BreadcrumbElementDto> result = new ArrayList<>();
+    public static List<BreadcrumbsElementDto> createBreadcrumbs(String path) {
+        List<BreadcrumbsElementDto> result = new ArrayList<>();
 
-        BreadcrumbElementDto homeDirectory = new BreadcrumbElementDto("/", "/");
+        BreadcrumbsElementDto homeDirectory = new BreadcrumbsElementDto("/", "/");
         result.add(homeDirectory);
 
         StringBuilder pathBuilder = new StringBuilder("/?path=");
 
         for (String pathPart : path.split("/")) {
             pathBuilder.append(URLUtils.encode(pathPart));
-            result.add(new BreadcrumbElementDto(pathPart, pathBuilder.toString()));
+            result.add(new BreadcrumbsElementDto(pathPart, pathBuilder.toString()));
             pathBuilder.append(URLUtils.encode("/"));
         }
 
