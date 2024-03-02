@@ -42,7 +42,7 @@ public class FolderServiceImpl extends MinioService implements FolderService {
 
         for (MultipartFile file : files) {
             if (file.getSize() == 0) {
-                throw new UploadFileException("Unable to upload files with size equal to 0");
+                throw new UploadFileException("Unable to upload files with size equal to 0", path);
             }
 
             String filePath = PathUtils.join(path, file.getOriginalFilename());
