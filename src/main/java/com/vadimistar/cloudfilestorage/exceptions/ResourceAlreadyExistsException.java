@@ -1,12 +1,14 @@
 package com.vadimistar.cloudfilestorage.exceptions;
 
+import lombok.Getter;
+
+@Getter
 public class ResourceAlreadyExistsException extends RuntimeException {
 
-    public ResourceAlreadyExistsException(String message) {
-        super(message);
-    }
+    private final String path;
 
-    public ResourceAlreadyExistsException(String message, Throwable cause) {
-        super(message, cause);
+    public ResourceAlreadyExistsException(String message, String path) {
+        super(message);
+        this.path = path;
     }
 }

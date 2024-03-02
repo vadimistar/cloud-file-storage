@@ -38,13 +38,13 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(UploadFileException.class)
     public RedirectView handleUploadFileException(UploadFileException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return new RedirectView("/", true);
+        return new RedirectView("/?path=" + URLUtils.encode(e.getPath()), true);
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public RedirectView handleFolderAlreadyExists(ResourceAlreadyExistsException e, RedirectAttributes redirectAttributes) {
+    public RedirectView handleResourceAlreadyExistsException(ResourceAlreadyExistsException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return new RedirectView("/", true);
+        return new RedirectView("/?path=" + URLUtils.encode(e.getPath()), true);
     }
 
     @ExceptionHandler(Exception.class)
