@@ -1,18 +1,17 @@
 package com.vadimistar.cloudfilestorage.services.impl;
 
 import com.vadimistar.cloudfilestorage.dto.FileDto;
+import com.vadimistar.cloudfilestorage.exceptions.FolderAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.exceptions.UploadFileException;
 import com.vadimistar.cloudfilestorage.services.FileService;
 import com.vadimistar.cloudfilestorage.services.FolderService;
 import com.vadimistar.cloudfilestorage.utils.*;
-import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,15 +20,19 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Service
-@AllArgsConstructor
-public class FolderServiceImpl implements FolderService {
+public class FolderServiceImpl extends MinioService implements FolderService {
 
-    private final Minio minio;
     private final FileService fileService;
+
+    public FolderServiceImpl(Minio minio, FileService fileService) {
+        super(minio);
+        this.fileService = fileService;
+    }
 
     @Override
     public void createFolder(long userId, String path) {
         path = PathUtils.makeDirectoryPath(path);
+        validateResourceNotExists(userId, path);
         fileService.uploadFile(userId, getFolderObjectContent(), FOLDER_OBJECT_SIZE, path);
     }
 
@@ -60,7 +63,16 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public String renameFolder(long userId, String path, String name) {
+        if (PathUtils.getFilename(path).equals(name)) {
+            return path;
+        }
+
         path = PathUtils.makeDirectoryPath(path);
+        String parentDirectory = PathUtils.getParentDirectory(path);
+        String newPath = PathUtils.join(parentDirectory, name);
+
+        validateResourceNotExists(userId, newPath);
+
         String minioPath = MinioUtils.getMinioPath(userId, path);
 
         List<String> files = new ArrayList<>();
@@ -74,8 +86,6 @@ public class FolderServiceImpl implements FolderService {
             }
         });
 
-        String parentDirectory = PathUtils.getParentDirectory(path);
-        String newPath = PathUtils.join(parentDirectory, name);
         renameFilesInFolder(files, path, PathUtils.makeDirectoryPath(newPath));
         renameDirectoriesInFolder(directories, PathUtils.getFilename(path), name);
 
@@ -114,13 +124,6 @@ public class FolderServiceImpl implements FolderService {
         return result.toByteArray();
     }
 
-    @Override
-    public boolean isFolderExists(long userId, String path) {
-        path = PathUtils.makeDirectoryPath(path);
-        String prefix = MinioUtils.getMinioPath(userId, path);
-        return minio.listObjects(prefix, ListObjectsMode.NON_RECURSIVE).findAny().isPresent();
-    }
-
     private InputStream getFolderObjectContent() {
         return new ByteArrayInputStream(new byte[] {});
     }
@@ -136,6 +139,7 @@ public class FolderServiceImpl implements FolderService {
         }
 
         for (String subdirectory : subdirectories) {
+            validateResourceNotExists(userId, subdirectory);
             createFolder(userId, subdirectory);
         }
     }
