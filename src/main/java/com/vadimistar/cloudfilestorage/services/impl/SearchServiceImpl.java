@@ -2,30 +2,22 @@ package com.vadimistar.cloudfilestorage.services.impl;
 
 import com.vadimistar.cloudfilestorage.dto.FileDto;
 import com.vadimistar.cloudfilestorage.exceptions.FileServiceException;
-import com.vadimistar.cloudfilestorage.exceptions.SearchServiceException;
-import com.vadimistar.cloudfilestorage.services.FileService;
+import com.vadimistar.cloudfilestorage.services.FolderService;
 import com.vadimistar.cloudfilestorage.services.SearchService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
 public class SearchServiceImpl implements SearchService {
 
-    private final FileService fileService;
+    private final FolderService folderService;
 
     @Override
-    public List<FileDto> searchFiles(long userId, String query) throws SearchServiceException {
-        try {
-            return fileService.getAllFiles(userId)
-                    .stream()
-                    .filter(file -> file.getName().contains(query))
-                    .toList();
-        } catch (FileServiceException e) {
-            throw new SearchServiceException(e.getMessage());
-        }
+    public Stream<FileDto> searchFiles(long userId, String query) {
+        return folderService.getAllContent(userId)
+                .filter(file -> file.getName().contains(query));
     }
 }

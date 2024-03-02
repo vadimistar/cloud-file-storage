@@ -1,11 +1,10 @@
 package com.vadimistar.cloudfilestorage.services;
 
 import com.vadimistar.cloudfilestorage.dto.FileDto;
-import com.vadimistar.cloudfilestorage.exceptions.SearchServiceException;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 public interface SearchService {
 
-    List<FileDto> searchFiles(long userId, String query) throws SearchServiceException;
+    Stream<FileDto> searchFiles(long userId, String query);
 }
