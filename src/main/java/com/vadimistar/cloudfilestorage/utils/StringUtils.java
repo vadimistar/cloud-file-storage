@@ -6,7 +6,10 @@ import lombok.experimental.UtilityClass;
 public class StringUtils {
 
     public static String removePrefix(String str, String prefix) {
-        return str.replaceFirst(prefix, "");
+        if (str.startsWith(prefix)) {
+            return str.replaceFirst(prefix, "");
+        }
+        return str;
     }
 
     public static String addSuffix(String str, String suffix) {
