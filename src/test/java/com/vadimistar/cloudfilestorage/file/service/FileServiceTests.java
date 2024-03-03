@@ -40,7 +40,7 @@ public class FileServiceTests {
 
     @SneakyThrows
     @Test
-    public void uploadFileWithoutPrefixSlash_savesFileInUserDirectory() {
+    public void uploadFile_withoutPrefixSlash_savesFileInUserDirectory() {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "a/b/c");
         GetObjectResponse getObjectResponse = minio.getObject(USER_ID_DIRECTORY + "a/b/c");
@@ -49,7 +49,7 @@ public class FileServiceTests {
 
     @SneakyThrows
     @Test
-    public void uploadEmptyFileWithPrefixSlash_savesFileInUserDirectory() {
+    public void uploadFile_emptyFileWithPrefixSlash_savesFileInUserDirectory() {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
         GetObjectResponse getObjectResponse = minio.getObject(USER_ID_DIRECTORY + "a/b/c");
@@ -58,7 +58,7 @@ public class FileServiceTests {
 
     @SneakyThrows
     @Test
-    public void renameExistingFileToAnotherName_anotherFileIsCreated_oldFileIsRemoved() {
+    public void renameFile_fileExists_toAnotherName_createsAnotherFile_removesOldFile() {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
         fileService.renameFile(USER_ID, "/a/b/c", "d");
@@ -68,7 +68,7 @@ public class FileServiceTests {
 
     @SneakyThrows
     @Test
-    public void renameExistingFileToAnotherName_returnsValidNewPath() {
+    public void renameFile_fileExists_toAnotherName_returnsValidNewPath() {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
         String newPath = fileService.renameFile(USER_ID, "/a/b/c", "d");
@@ -76,7 +76,7 @@ public class FileServiceTests {
     }
 
     @Test
-    public void renameNonExistingFile_throwsFileNotFoundException() {
+    public void renameFile_fileNotExists_throwsFileNotFoundException() {
         Assertions.assertThrows(
                 FileNotFoundException.class,
                 () -> fileService.renameFile(USER_ID, "abc", "d")
@@ -85,7 +85,7 @@ public class FileServiceTests {
 
     @SneakyThrows
     @Test
-    public void renameExistingFileToSameName_throwsFileAlreadyExistsException() {
+    public void renameFile_fileExists_toSameName_throwsFileAlreadyExistsException() {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
         Assertions.assertThrows(
@@ -96,7 +96,7 @@ public class FileServiceTests {
 
     @SneakyThrows
     @Test
-    public void downloadExistingFile_returnsContentsOfFile() {
+    public void downloadFile_fileExists_returnsContentsOfFile() {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
         byte[] fileContents = fileService.downloadFile(USER_ID, "/a/b/c");
@@ -104,7 +104,7 @@ public class FileServiceTests {
     }
 
     @Test
-    public void downloadNonExistingFile_throwsFileNotFoundException() {
+    public void downloadFile_fileNotExists_throwsFileNotFoundException() {
         Assertions.assertThrows(
                 FileNotFoundException.class,
                 () -> fileService.downloadFile(USER_ID, "/a/b/c")
@@ -113,14 +113,14 @@ public class FileServiceTests {
 
     @SneakyThrows
     @Test
-    public void uploadFile_isFileExistsReturnsTrue() {
+    public void isFileExists_fileExists_returnsTrue() {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
         Assertions.assertTrue(fileService.isFileExists(USER_ID, "/a/b/c"));
     }
 
     @Test
-    public void fileNotExists_isFileExistsReturnsFalse() {
+    public void isFileExists_fileNotExists_returnsFalse() {
         Assertions.assertFalse(fileService.isFileExists(USER_ID, "/a/b/c"));
     }
 

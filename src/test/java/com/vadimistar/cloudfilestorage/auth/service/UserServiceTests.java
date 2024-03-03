@@ -34,7 +34,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void register_ok_createsRecordInDatabase() {
+    public void registerUser_validRegisterDto_createsRecordInDatabase() {
         RegisterDto registerDto = RegisterDto.builder()
                 .username("user")
                 .email("user@mail.com")
@@ -48,7 +48,7 @@ public class UserServiceTests {
 
     @SneakyThrows
     @Test
-    public void register_usernameAlreadyExists_throwsUserAlreadyExistsException() {
+    public void registerUser_usernameAlreadyExists_throwsUserAlreadyExistsException() {
         RegisterDto user1 = RegisterDto.builder()
                 .username("user")
                 .email("user@mail.com")
@@ -68,7 +68,7 @@ public class UserServiceTests {
 
     @SneakyThrows
     @Test
-    public void register_emailAlreadyExists_throwsUserAlreadyExistsException() {
+    public void registerUser_emailAlreadyExists_throwsUserAlreadyExistsException() {
         RegisterDto user1 = RegisterDto.builder()
                 .username("user")
                 .email("user@mail.com")
@@ -87,7 +87,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void register_passwordAndConfirmPasswordAreDifferent_throwsPasswordMismatchException() {
+    public void registerUser_passwordAndConfirmPasswordAreDifferent_throwsPasswordMismatchException() {
         RegisterDto user = RegisterDto.builder()
                 .username("user")
                 .email("user@mail.com")
