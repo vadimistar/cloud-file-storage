@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.services;
+package com.vadimistar.cloudfilestorage.auth.service;
 
 import com.vadimistar.cloudfilestorage.auth.service.UserService;
 import com.vadimistar.cloudfilestorage.auth.dto.RegisterDto;
