@@ -1,7 +1,7 @@
 package com.vadimistar.cloudfilestorage;
 
 import com.vadimistar.cloudfilestorage.exceptions.*;
-import com.vadimistar.cloudfilestorage.utils.URLUtils;
+import com.vadimistar.cloudfilestorage.common.util.URLUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
