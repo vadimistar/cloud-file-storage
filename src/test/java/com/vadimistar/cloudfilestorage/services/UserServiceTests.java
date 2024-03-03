@@ -1,9 +1,10 @@
 package com.vadimistar.cloudfilestorage.services;
 
-import com.vadimistar.cloudfilestorage.dto.RegisterDto;
+import com.vadimistar.cloudfilestorage.auth.service.UserService;
+import com.vadimistar.cloudfilestorage.auth.dto.RegisterDto;
 import com.vadimistar.cloudfilestorage.exceptions.PasswordMismatchException;
 import com.vadimistar.cloudfilestorage.exceptions.UserAlreadyExistsException;
-import com.vadimistar.cloudfilestorage.repositories.UserRepository;
+import com.vadimistar.cloudfilestorage.auth.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
