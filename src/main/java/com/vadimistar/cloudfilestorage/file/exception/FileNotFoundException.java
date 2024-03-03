@@ -1,4 +1,6 @@
-package com.vadimistar.cloudfilestorage.exceptions;
+package com.vadimistar.cloudfilestorage.file.exception;
+
+import com.vadimistar.cloudfilestorage.common.exceptions.ResourceNotFoundException;
 
 public class FileNotFoundException extends ResourceNotFoundException {
 
@@ -7,6 +9,6 @@ public class FileNotFoundException extends ResourceNotFoundException {
     }
 
     public FileNotFoundException() {
-        super("File is not found");
+        this("File is not found");
     }
 }

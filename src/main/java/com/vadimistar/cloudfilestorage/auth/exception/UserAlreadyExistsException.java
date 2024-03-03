@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.exceptions;
+package com.vadimistar.cloudfilestorage.auth.exception;
 
 public class UserAlreadyExistsException extends Exception {
 

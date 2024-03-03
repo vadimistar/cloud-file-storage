@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.exceptions;
+package com.vadimistar.cloudfilestorage.common.exceptions;
 
 public class UserNotLoggedInException extends RuntimeException {
 
@@ -7,6 +7,6 @@ public class UserNotLoggedInException extends RuntimeException {
     }
 
     public UserNotLoggedInException() {
-        super("You are not logged in, please login again");
+        this("You are not logged in, please login again");
     }
 }

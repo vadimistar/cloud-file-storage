@@ -2,8 +2,8 @@ package com.vadimistar.cloudfilestorage.auth.service;
 
 import com.vadimistar.cloudfilestorage.auth.dto.RegisterDto;
 import com.vadimistar.cloudfilestorage.auth.entity.User;
-import com.vadimistar.cloudfilestorage.exceptions.PasswordMismatchException;
-import com.vadimistar.cloudfilestorage.exceptions.UserAlreadyExistsException;
+import com.vadimistar.cloudfilestorage.auth.exception.PasswordMismatchException;
+import com.vadimistar.cloudfilestorage.auth.exception.UserAlreadyExistsException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Optional;

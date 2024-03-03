@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.exceptions;
+package com.vadimistar.cloudfilestorage.auth.exception;
 
 public class PasswordMismatchException extends Exception {
 

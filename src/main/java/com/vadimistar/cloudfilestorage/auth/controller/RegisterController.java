@@ -1,8 +1,8 @@
 package com.vadimistar.cloudfilestorage.auth.controller;
 
 import com.vadimistar.cloudfilestorage.auth.dto.RegisterDto;
-import com.vadimistar.cloudfilestorage.exceptions.PasswordMismatchException;
-import com.vadimistar.cloudfilestorage.exceptions.UserAlreadyExistsException;
+import com.vadimistar.cloudfilestorage.auth.exception.PasswordMismatchException;
+import com.vadimistar.cloudfilestorage.auth.exception.UserAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.auth.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
