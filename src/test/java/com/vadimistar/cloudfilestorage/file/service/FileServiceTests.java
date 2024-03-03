@@ -124,6 +124,15 @@ public class FileServiceTests {
         Assertions.assertFalse(fileService.isFileExists(USER_ID, "/a/b/c"));
     }
 
+    private static final long USER_ID = 1;
+    private static final String USER_ID_DIRECTORY = "user-%d-files/".formatted(USER_ID);
+
+    private static ByteArrayResource getMockFile() {
+        return new ByteArrayResource(MOCK_FILE_CONTENTS);
+    }
+
+    private static final byte[] MOCK_FILE_CONTENTS = "Mock file content".getBytes(StandardCharsets.UTF_8);
+
     @Container
     private static final MinIOContainer minioContainer = new MinIOContainer("minio/minio:latest");
 
@@ -137,14 +146,4 @@ public class FileServiceTests {
 
     private static final String MINIO_BUCKET_NAME = "user-files-test";
 
-    private static final long USER_ID = 1;
-    private static final String USER_ID_DIRECTORY = "user-%d-files/".formatted(USER_ID);
-    private static final long USER_ID_2 = 2;
-    private static final String USER_ID_2_DIRECTORY = "user-%d-files/".formatted(USER_ID_2);
-
-    private static ByteArrayResource getMockFile() {
-        return new ByteArrayResource(MOCK_FILE_CONTENT);
-    }
-
-    private static final byte[] MOCK_FILE_CONTENT = "Mock file content".getBytes(StandardCharsets.UTF_8);
 }
