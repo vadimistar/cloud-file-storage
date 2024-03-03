@@ -23,9 +23,7 @@ public class SearchController {
     public String search(@RequestParam String query,
                          @AuthorizedUser User user,
                          Model model) {
-        List<FoundFileDto> foundFiles = searchService.searchFiles(user.getId(), query)
-                .map(FoundFileDtoMapper::makeFoundFileDto)
-                .toList();
+        List<FoundFileDto> foundFiles = searchService.searchFiles(user.getId(), query).toList();
         model.addAttribute("files", foundFiles);
 
         return "search";
