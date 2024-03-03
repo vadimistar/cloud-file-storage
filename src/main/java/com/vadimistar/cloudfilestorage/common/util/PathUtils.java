@@ -11,7 +11,7 @@ import java.util.Objects;
 public class PathUtils {
 
     public static String getRelativePath(String path, String directory) {
-        return StringUtils.removePrefix(path, directory);
+        return StringUtils.removePrefix(StringUtils.removePrefix(path, directory), "/");
     }
 
     public static String getParentDirectory(String path) {

@@ -1,5 +1,6 @@
 package com.vadimistar.cloudfilestorage.folder.service.impl;
 
+import com.vadimistar.cloudfilestorage.common.exceptions.FolderAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.common.exceptions.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.mapper.FileDtoMapper;
 import com.vadimistar.cloudfilestorage.adapters.minio.ListObjectsMode;
@@ -69,8 +70,10 @@ public class FolderServiceImpl extends MinioService implements FolderService {
 
     @Override
     public String renameFolder(long userId, String path, String name) {
+        validateFolderExists(userId, path);
+
         if (PathUtils.getFilename(path).equals(name)) {
-            return path;
+            throw new FolderAlreadyExistsException("Folder already exists: " + path, PathUtils.getParentDirectory(path));
         }
 
         path = PathUtils.makeDirectoryPath(path);
@@ -100,6 +103,7 @@ public class FolderServiceImpl extends MinioService implements FolderService {
 
     @Override
     public void deleteFolder(long userId, String path) {
+        validateFolderExists(userId, path);
         path = PathUtils.makeDirectoryPath(path);
         minio.listObjects(MinioUtils.getMinioPath(userId, path), ListObjectsMode.RECURSIVE)
                 .forEach(item -> minio.removeObject(item.objectName()));
@@ -107,6 +111,7 @@ public class FolderServiceImpl extends MinioService implements FolderService {
 
     @Override
     public Stream<FileDto> getFolderContent(long userId, String path) {
+        validateFolderExists(userId, path);
         return listFiles(userId, path, ListObjectsMode.NON_RECURSIVE);
     }
 
@@ -117,6 +122,7 @@ public class FolderServiceImpl extends MinioService implements FolderService {
 
     @Override
     public byte[] downloadFolder(long userId, String path) {
+        validateFolderExists(userId, path);
         ByteArrayOutputStream result = new ByteArrayOutputStream();
 
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(result)) {
