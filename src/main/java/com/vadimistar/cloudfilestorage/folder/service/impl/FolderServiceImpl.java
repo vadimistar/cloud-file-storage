@@ -1,5 +1,6 @@
 package com.vadimistar.cloudfilestorage.folder.service.impl;
 
+import com.vadimistar.cloudfilestorage.common.exceptions.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.mapper.FileDtoMapper;
 import com.vadimistar.cloudfilestorage.adapters.minio.ListObjectsMode;
 import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
@@ -7,6 +8,7 @@ import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.exceptions.UploadFileException;
 import com.vadimistar.cloudfilestorage.adapters.minio.Minio;
+import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
 import com.vadimistar.cloudfilestorage.common.service.MinioService;
@@ -198,4 +200,9 @@ public class FolderServiceImpl extends MinioService implements FolderService {
         minio.putObject(object, getFolderObjectContent(), FOLDER_OBJECT_SIZE);
     }
 
+    private void validateFolderExists(long userId, String path) {
+        if (!isFolderExists(userId, path)) {
+            throw new FolderNotFoundException("Folder is not found: " + path);
+        }
+    }
 }
