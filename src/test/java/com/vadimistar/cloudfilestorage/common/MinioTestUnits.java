@@ -8,7 +8,7 @@ import org.testcontainers.containers.MinIOContainer;
 public class MinioTestUnits {
 
     public static MinIOContainer createMinIOContainer() {
-        return new MinIOContainer("minio/minio:latest");
+        return new MinIOContainer("minio/minio:RELEASE.2024-02-26T09-33-48Z.fips");
     }
 
     public static void addMinioProperties(DynamicPropertyRegistry registry, MinIOContainer minIOContainer) {
