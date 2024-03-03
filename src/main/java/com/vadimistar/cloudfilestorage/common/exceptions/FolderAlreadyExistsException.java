@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.exceptions;
+package com.vadimistar.cloudfilestorage.common.exceptions;
 
 public class FolderAlreadyExistsException extends ResourceAlreadyExistsException {
 

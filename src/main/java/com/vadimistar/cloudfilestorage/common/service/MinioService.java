@@ -1,7 +1,7 @@
 package com.vadimistar.cloudfilestorage.common.service;
 
-import com.vadimistar.cloudfilestorage.exceptions.FileAlreadyExistsException;
-import com.vadimistar.cloudfilestorage.exceptions.FolderAlreadyExistsException;
+import com.vadimistar.cloudfilestorage.common.exceptions.FileAlreadyExistsException;
+import com.vadimistar.cloudfilestorage.common.exceptions.FolderAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.adapters.minio.ListObjectsMode;
 import com.vadimistar.cloudfilestorage.adapters.minio.Minio;
 import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
