@@ -63,10 +63,6 @@ public class FileActionController {
         }
 
         String path = URLUtils.decode(request.getPath());
-        if (!fileService.isFileExists(user.getId(), path)) {
-            throw new FileNotFoundException();
-        }
-
         ByteArrayResource byteArrayResource = new ByteArrayResource(
                 fileService.downloadFile(user.getId(), path)
         );
@@ -88,10 +84,6 @@ public class FileActionController {
         }
 
         String path = URLUtils.decode(request.getPath());
-        if (!fileService.isFileExists(user.getId(), path)) {
-            throw new FileNotFoundException();
-        }
-
         if (PathUtils.getFilename(path).equals(request.getName())) {
             return "redirect:/file-action?path=" + URLUtils.encode(request.getPath());
         }
@@ -111,10 +103,6 @@ public class FileActionController {
         }
 
         String path = URLUtils.decode(request.getPath());
-        if (!fileService.isFileExists(user.getId(), path)) {
-            throw new FileNotFoundException();
-        }
-
         fileService.deleteFile(user.getId(), path);
 
         String parentDirectory = PathUtils.getParentDirectory(path);

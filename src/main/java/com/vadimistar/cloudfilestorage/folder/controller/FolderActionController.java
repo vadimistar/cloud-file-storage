@@ -45,10 +45,6 @@ public class FolderActionController {
         }
 
         String path = URLUtils.decode(request.getPath());
-        if (!folderService.isFolderExists(user.getId(), path)) {
-            throw new FolderNotFoundException();
-        }
-
         model.addAttribute("name", PathUtils.getFilename(path));
 
         return "folder-action";
@@ -65,10 +61,6 @@ public class FolderActionController {
         }
 
         String path = URLUtils.decode(request.getPath());
-        if (!folderService.isFolderExists(user.getId(), path)) {
-            throw new FolderNotFoundException();
-        }
-
         ByteArrayResource result = new ByteArrayResource(
                 folderService.downloadFolder(user.getId(), path)
         );
@@ -91,10 +83,6 @@ public class FolderActionController {
         }
 
         String path = URLUtils.decode(request.getPath());
-        if (!folderService.isFolderExists(user.getId(), path)) {
-            throw new FolderNotFoundException();
-        }
-
         if (PathUtils.getFilename(path).equals(request.getName())) {
             return "redirect:/folder-action?path=" + URLUtils.encode(request.getPath());
         }
@@ -114,10 +102,6 @@ public class FolderActionController {
         }
 
         String path = URLUtils.decode(request.getPath());
-        if (!folderService.isFolderExists(user.getId(), path)) {
-            throw new FolderNotFoundException();
-        }
-
         folderService.deleteFolder(user.getId(), path);
 
         String parentDirectory = PathUtils.getParentDirectory(path);
