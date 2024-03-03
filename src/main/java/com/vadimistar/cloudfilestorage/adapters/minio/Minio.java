@@ -4,12 +4,15 @@ import com.vadimistar.cloudfilestorage.adapters.minio.exceptions.MinioException;
 import com.vadimistar.cloudfilestorage.adapters.minio.config.MinioConfig;
 import com.vadimistar.cloudfilestorage.common.util.StreamUtils;
 import io.minio.*;
-import io.minio.errors.ErrorResponseException;
+import io.minio.errors.*;
+import io.minio.messages.DeleteError;
+import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -115,6 +118,36 @@ public class Minio {
             ));
         } catch (ErrorResponseException e) {
             return Optional.empty();
+        } catch (Exception e) {
+            throw new MinioException(e.getMessage());
+        }
+    }
+
+    public void removeObjects(String prefix) {
+        Iterator<DeleteObject> objects = listObjects(prefix, ListObjectsMode.RECURSIVE)
+                .map(item -> new DeleteObject(item.objectName()))
+                .iterator();
+        minioClient.removeObjects(RemoveObjectsArgs.builder()
+                .bucket(minioConfig.getBucketName())
+                .objects(() -> objects)
+                .build()
+        ).forEach(Minio::handleRemoveObjectResult);
+    }
+
+    public void removeBucket() {
+        try {
+            minioClient.removeBucket(RemoveBucketArgs.builder()
+                    .bucket(minioConfig.getBucketName())
+                    .build());
+        } catch (Exception e) {
+            throw new MinioException(e.getMessage());
+        }
+    }
+
+    private static void handleRemoveObjectResult(Result<DeleteError> result) {
+        try {
+            DeleteError deleteError = result.get();
+            throw new MinioException(deleteError.message());
         } catch (Exception e) {
             throw new MinioException(e.getMessage());
         }
