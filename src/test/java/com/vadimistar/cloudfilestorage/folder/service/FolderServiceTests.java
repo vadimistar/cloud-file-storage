@@ -2,6 +2,7 @@ package com.vadimistar.cloudfilestorage.folder.service;
 
 import com.vadimistar.cloudfilestorage.adapters.minio.ListObjectsMode;
 import com.vadimistar.cloudfilestorage.adapters.minio.Minio;
+import com.vadimistar.cloudfilestorage.common.MinioTestUnits;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.exceptions.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.exceptions.ResourceAlreadyExistsException;
@@ -229,16 +230,11 @@ public class FolderServiceTests {
     }
 
     @Container
-    private static final MinIOContainer minioContainer = new MinIOContainer("minio/minio:latest");
+    private static final MinIOContainer minioContainer = MinioTestUnits.createMinIOContainer();
 
     @DynamicPropertySource
     public static void minioProperties(DynamicPropertyRegistry registry) {
-        registry.add("minio.endpoint", minioContainer::getS3URL);
-        registry.add("minio.access-key", minioContainer::getUserName);
-        registry.add("minio.secret-key", minioContainer::getPassword);
-        registry.add("minio.bucket-name", () -> MINIO_BUCKET_NAME);
+        MinioTestUnits.addMinioProperties(registry, minioContainer);
     }
-
-    private static final String MINIO_BUCKET_NAME = "user-files-test";
 
 }
