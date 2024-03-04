@@ -84,10 +84,6 @@ public class FileActionController {
         }
 
         String path = URLUtils.decode(request.getPath());
-        if (PathUtils.getFilename(path).equals(request.getName())) {
-            return "redirect:/file-action?path=" + URLUtils.encode(request.getPath());
-        }
-
         String newPath = fileService.renameFile(user.getId(), path, request.getName());
         return "redirect:/file-action?path=" + URLUtils.encode(newPath);
     }
