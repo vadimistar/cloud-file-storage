@@ -75,7 +75,7 @@ public class FolderServiceImpl extends MinioService implements FolderService {
         validateFolderExists(userId, path);
 
         if (PathUtils.getFilename(path).equals(name)) {
-            throw new FolderAlreadyExistsException("Folder already exists: " + path, PathUtils.getParentDirectory(path));
+            return path;
         }
 
         path = PathUtils.makeDirectoryPath(path);

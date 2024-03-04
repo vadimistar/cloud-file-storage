@@ -28,6 +28,9 @@ public class FileServiceImpl extends MinioService implements FileService {
     public String renameFile(long userId, String path, String name){
         validateFileExists(userId, path);
         String newPath = PathUtils.join(PathUtils.getParentDirectory(path), name);
+        if (newPath.equals(path)) {
+            return path;
+        }
         validateResourceNotExists(userId, newPath);
         minio.copyObject(MinioUtils.getMinioPath(userId, path), MinioUtils.getMinioPath(userId, newPath));
         deleteFile(userId, path);
