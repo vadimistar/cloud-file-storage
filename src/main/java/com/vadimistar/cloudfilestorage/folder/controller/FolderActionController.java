@@ -83,10 +83,6 @@ public class FolderActionController {
         }
 
         String path = URLUtils.decode(request.getPath());
-        if (PathUtils.getFilename(path).equals(request.getName())) {
-            return "redirect:/folder-action?path=" + URLUtils.encode(request.getPath());
-        }
-
         String newPath = folderService.renameFolder(user.getId(), path, request.getName());
         return "redirect:/folder-action?path=" + URLUtils.encode(newPath);
     }
