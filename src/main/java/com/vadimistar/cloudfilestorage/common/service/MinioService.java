@@ -16,7 +16,8 @@ public class MinioService {
     protected final Minio minio;
 
     public boolean isFileExists(long userId, String path) {
-        return minio.statObject(MinioUtils.getMinioPath(userId, path)).isPresent();
+        String object = MinioUtils.getMinioPath(userId, path);
+        return minio.statObject(object).isPresent();
     }
 
     public boolean isFolderExists(long userId, String path) {
