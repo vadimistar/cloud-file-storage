@@ -1,6 +1,7 @@
 package com.vadimistar.cloudfilestorage;
 
 import com.vadimistar.cloudfilestorage.common.exceptions.*;
+import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -44,7 +45,8 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     public RedirectView handleResourceAlreadyExistsException(ResourceAlreadyExistsException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return new RedirectView("/?path=" + URLUtils.encode(e.getPath()), true);
+        String parentDirectory = PathUtils.getParentDirectory(e.getPath());
+        return new RedirectView("/?path=" + URLUtils.encode(parentDirectory), true);
     }
 
     @ExceptionHandler(Exception.class)

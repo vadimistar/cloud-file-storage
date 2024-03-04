@@ -28,10 +28,10 @@ public class MinioService {
 
     public void validateResourceNotExists(long userId, String path) {
         if (isFileExists(userId, path)) {
-            throw new FileAlreadyExistsException("File already exists: " + path, PathUtils.getParentDirectory(path));
+            throw new FileAlreadyExistsException("File already exists: " + path, path);
         }
         if (isFolderExists(userId, path)) {
-            throw new FolderAlreadyExistsException("Folder already exists: " + path, PathUtils.getParentDirectory(path));
+            throw new FolderAlreadyExistsException("Folder already exists: " + path, path);
         }
     }
 }
