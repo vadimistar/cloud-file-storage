@@ -7,7 +7,7 @@
 <div th:fragment="search-bar">
     <form class="mx-5 my-auto d-inline" th:action="@{/search}" th:method="get">
         <div class="input-group">
-            <input type="text" class="form-control" name="query" placeholder="Search file or folder">
+            <input type="text" class="form-control" name="query" placeholder="Search file or folder" th:value="${param.query}">
             <span class="input-group-append">
                 <button class="btn btn-primary" type="submit">Search</button>
             </span>
