@@ -9,7 +9,7 @@ import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.exceptions.UploadFileException;
 import com.vadimistar.cloudfilestorage.adapters.minio.Minio;
-import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
+import com.vadimistar.cloudfilestorage.common.util.StringUtils;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
 import com.vadimistar.cloudfilestorage.common.service.MinioService;
@@ -52,20 +52,22 @@ public class FolderServiceImpl extends MinioService implements FolderService {
                 throw new UploadFileException("Unable to upload files with size equal to 0", path);
             }
 
-            String filePath = PathUtils.join(path, file.getOriginalFilename());
             String parentDirectory = PathUtils.getParentDirectory(file.getOriginalFilename());
             if (!parentDirectory.isEmpty()) {
                 fileDirectories.add(PathUtils.join(path, parentDirectory));
             }
+        }
 
+        createSubdirectories(userId, fileDirectories);
+
+        for (MultipartFile file : files) {
+            String filePath = PathUtils.join(path, file.getOriginalFilename());
             try {
                 fileService.uploadFile(userId, file.getInputStream(), file.getSize(), filePath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-
-        createSubdirectories(userId, fileDirectories);
     }
 
     @Override
@@ -143,7 +145,11 @@ public class FolderServiceImpl extends MinioService implements FolderService {
     private static final long FOLDER_OBJECT_SIZE = 0;
 
     private void createSubdirectories(long userId, Iterable<String> fileDirectories) {
-        Set<String> subdirectories = new HashSet<>();
+        SortedSet<String> subdirectories = new TreeSet<>((dir1, dir2) -> {
+            long depth1 = StringUtils.count(dir1, '/');
+            long depth2 = StringUtils.count(dir2, '/');
+            return Long.compare(depth1, depth2);
+        });
 
         for (String directory : fileDirectories) {
             subdirectories.addAll(PathUtils.getSubdirectories(directory));
@@ -151,7 +157,6 @@ public class FolderServiceImpl extends MinioService implements FolderService {
         }
 
         for (String subdirectory : subdirectories) {
-            validateResourceNotExists(userId, subdirectory);
             createFolder(userId, subdirectory);
         }
     }

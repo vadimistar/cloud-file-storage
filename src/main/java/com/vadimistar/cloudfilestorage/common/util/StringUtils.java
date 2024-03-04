@@ -26,4 +26,8 @@ public class StringUtils {
         }
         return str;
     }
+
+    public static long count(String s, char c) {
+        return s.chars().filter(ch -> ch == c).count();
+    }
 }
