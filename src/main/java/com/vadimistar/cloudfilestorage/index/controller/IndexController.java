@@ -1,7 +1,11 @@
 package com.vadimistar.cloudfilestorage.index.controller;
 
+import com.vadimistar.cloudfilestorage.ApplicationConfig;
 import com.vadimistar.cloudfilestorage.common.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
+import com.vadimistar.cloudfilestorage.common.dto.PaginationItemDto;
+import com.vadimistar.cloudfilestorage.common.exceptions.InvalidPageException;
+import com.vadimistar.cloudfilestorage.common.util.PageUtils;
 import com.vadimistar.cloudfilestorage.index.dto.BreadcrumbsElementDto;
 import com.vadimistar.cloudfilestorage.auth.entity.User;
 import com.vadimistar.cloudfilestorage.common.exceptions.FileServiceException;
@@ -10,6 +14,7 @@ import com.vadimistar.cloudfilestorage.folder.service.FolderService;
 import com.vadimistar.cloudfilestorage.index.util.BreadcrumbsCreator;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,17 +25,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Controller
 @AllArgsConstructor
 public class IndexController {
 
     private final FolderService folderService;
+    private final ApplicationConfig applicationConfig;
 
     @GetMapping("/")
     public String indexPage(@RequestParam(required = false, defaultValue = "") String path,
+                            @RequestParam(required = false, defaultValue = "1") int page,
                             Model model,
-                            @AuthorizedUser User user) throws FileServiceException {
+                            @AuthorizedUser User user,
+                            HttpServletRequest httpServletRequest) throws FileServiceException {
         path = URLUtils.decode(path);
         if (!folderService.isFolderExists(user.getId(), path)) {
             if (PathUtils.isHomeDirectory(path)) {
@@ -43,10 +52,22 @@ public class IndexController {
         List<BreadcrumbsElementDto> breadcrumbs = BreadcrumbsCreator.createBreadcrumbs(path);
         model.addAttribute("breadcrumbs", breadcrumbs);
 
-        List<FileDto> entries = folderService.getFolderContent(user.getId(), path)
+        List<FileDto> folderContent = folderService.getFolderContent(user.getId(), path).toList();
+
+        List<FileDto> entries = PageUtils
+                .getPage(folderContent.stream(), page, applicationConfig.getIndexPageSize())
                 .peek(entry -> entry.setPath(URLUtils.encode(entry.getPath())))
                 .toList();
         model.addAttribute("entries", entries);
+
+        int totalPages = PageUtils.countPages(
+                applicationConfig.getIndexPageSize(),
+                folderContent.size()
+        );
+        List<PaginationItemDto> pagination = PageUtils.createPagination(
+                page, totalPages, httpServletRequest.getRequestURI() + "?" + httpServletRequest.getQueryString()
+        );
+        model.addAttribute("pagination", pagination);
 
         return "index";
     }

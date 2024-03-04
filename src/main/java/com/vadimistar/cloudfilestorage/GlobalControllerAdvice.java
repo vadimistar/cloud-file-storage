@@ -49,6 +49,18 @@ public class GlobalControllerAdvice {
         return new RedirectView("/?path=" + URLUtils.encode(parentDirectory), true);
     }
 
+    @ExceptionHandler(InvalidIndexPageException.class)
+    public RedirectView handleInvalidIndexPageException(Exception e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", e.getMessage());
+        return new RedirectView("/", true);
+    }
+
+    @ExceptionHandler(InvalidSearchPageException.class)
+    public RedirectView handleInvalidSearchPageException(Exception e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", e.getMessage());
+        return new RedirectView("/search", true);
+    }
+
     @ExceptionHandler(Exception.class)
     public RedirectView handleException(Exception e, RedirectAttributes redirectAttributes) {
         log.error("Exception: " + e.getClass() + " message: " + e.getMessage());
