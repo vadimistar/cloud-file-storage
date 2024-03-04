@@ -86,12 +86,12 @@ public class FileServiceTests {
 
     @SneakyThrows
     @Test
-    public void renameFile_fileExists_toSameName_throwsFileAlreadyExistsException() {
+    public void renameFile_fileExists_toSameName_returnsOldPath() {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
-        Assertions.assertThrows(
-                FileAlreadyExistsException.class,
-                () -> fileService.renameFile(USER_ID, "/a/b/c", "c")
+        Assertions.assertEquals(
+                "/a/b/c",
+                fileService.renameFile(USER_ID, "/a/b/c", "c")
         );
     }
 

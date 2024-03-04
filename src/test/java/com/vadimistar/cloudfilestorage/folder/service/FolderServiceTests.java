@@ -126,6 +126,15 @@ public class FolderServiceTests {
     }
 
     @Test
+    public void renameFolder_toSameName_returnsOldPath() {
+        folderService.createFolder(USER_ID, "a");
+        Assertions.assertEquals(
+                "a",
+                folderService.renameFolder(USER_ID, "a", "a")
+        );
+    }
+
+    @Test
     public void deleteFolder_folderExists_noContentAtStorage() {
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "a");
         folderService.deleteFolder(USER_ID, "a");
