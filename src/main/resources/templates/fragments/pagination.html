@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div th:fragment="pagination">
+    <nav aria-label="Pagination">
+        <ul class="pagination">
+            <li th:each="pageItem : ${pagination}"
+                th:class="${'page-item ' + pageItem.getState().getStyleClass()}"
+            >
+                <a class="page-link" th:href="${pageItem.getHref()}" th:text="${pageItem.getText()}"></a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>

@@ -45,6 +45,7 @@ public class FolderServiceImpl extends MinioService implements FolderService {
 
     @Override
     public void uploadFolder(long userId, MultipartFile[] files, String path) {
+        path = PathUtils.makeDirectoryPath(path);
         Set<String> fileDirectories = new HashSet<>();
 
         for (MultipartFile file : files) {
@@ -54,6 +55,7 @@ public class FolderServiceImpl extends MinioService implements FolderService {
 
             String parentDirectory = PathUtils.getParentDirectory(file.getOriginalFilename());
             if (!parentDirectory.isEmpty()) {
+                parentDirectory = PathUtils.makeDirectoryPath(parentDirectory);
                 fileDirectories.add(PathUtils.join(path, parentDirectory));
             }
         }
