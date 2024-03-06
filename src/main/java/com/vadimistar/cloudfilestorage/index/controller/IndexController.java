@@ -81,7 +81,7 @@ public class IndexController {
     @PostMapping("/upload")
     public String upload(@RequestParam MultipartFile[] files,
                          @RequestParam String path,
-                         @AuthorizedUser User user) throws FileServiceException, IOException {
+                         @AuthorizedUser User user) throws FileServiceException {
         folderService.uploadFolder(user.getId(), files, URLUtils.decode(path));
         return "redirect:/?path=" + URLUtils.encode(path);
     }
