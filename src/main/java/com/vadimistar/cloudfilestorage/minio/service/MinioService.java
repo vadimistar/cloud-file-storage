@@ -9,7 +9,7 @@ import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public abstract class MinioService {
+public class MinioService {
 
     protected final MinioRepository minioRepository;
 
