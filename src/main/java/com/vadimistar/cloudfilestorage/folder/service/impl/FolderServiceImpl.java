@@ -1,14 +1,13 @@
 package com.vadimistar.cloudfilestorage.folder.service.impl;
 
-import com.vadimistar.cloudfilestorage.common.exceptions.FolderAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.common.exceptions.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.mapper.FileDtoMapper;
-import com.vadimistar.cloudfilestorage.adapters.minio.ListObjectsMode;
+import com.vadimistar.cloudfilestorage.common.repository.ListObjectsMode;
+import com.vadimistar.cloudfilestorage.common.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.exceptions.UploadFileException;
-import com.vadimistar.cloudfilestorage.adapters.minio.Minio;
 import com.vadimistar.cloudfilestorage.common.util.StringUtils;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
@@ -31,8 +30,8 @@ public class FolderServiceImpl extends MinioService implements FolderService {
 
     private final FileService fileService;
 
-    public FolderServiceImpl(Minio minio, FileService fileService) {
-        super(minio);
+    public FolderServiceImpl(MinioRepository minioRepository, FileService fileService) {
+        super(minioRepository);
         this.fileService = fileService;
     }
 
@@ -91,11 +90,11 @@ public class FolderServiceImpl extends MinioService implements FolderService {
         List<String> files = new ArrayList<>();
         List<String> directories = new ArrayList<>();
 
-        minio.listObjects(minioPath, ListObjectsMode.RECURSIVE).forEach(item -> {
+        minioRepository.listObjects(minioPath, ListObjectsMode.RECURSIVE).forEach(item -> {
             if (MinioUtils.isDirectory(item)) {
-                directories.add(item.objectName());
+                directories.add(item.getName());
             } else {
-                files.add(item.objectName());
+                files.add(item.getName());
             }
         });
 
@@ -109,8 +108,8 @@ public class FolderServiceImpl extends MinioService implements FolderService {
     public void deleteFolder(long userId, String path) {
         validateFolderExists(userId, path);
         path = PathUtils.makeDirectoryPath(path);
-        minio.listObjects(MinioUtils.getMinioPath(userId, path), ListObjectsMode.RECURSIVE)
-                .forEach(item -> minio.removeObject(item.objectName()));
+        minioRepository.listObjects(MinioUtils.getMinioPath(userId, path), ListObjectsMode.RECURSIVE)
+                .forEach(item -> minioRepository.removeObject(item.getName()));
     }
 
     @Override
@@ -165,11 +164,11 @@ public class FolderServiceImpl extends MinioService implements FolderService {
 
     private void renameFilesInFolder(List<String> files, String oldPath, String newPath) {
         files.forEach(file -> {
-            minio.copyObject(
+            minioRepository.copyObject(
                     file,
                     file.replaceFirst(oldPath, newPath)
             );
-            minio.removeObject(file);
+            minioRepository.removeObject(file);
         });
     }
 
@@ -178,15 +177,15 @@ public class FolderServiceImpl extends MinioService implements FolderService {
             createFolder(directory.replaceFirst(
                     Pattern.quote(oldName), Matcher.quoteReplacement(newName)
             ));
-            minio.removeObject(directory);
+            minioRepository.removeObject(directory);
         });
     }
 
     private Stream<FileDto> listFiles(long userId, String path, ListObjectsMode mode) {
         path = PathUtils.makeDirectoryPath(path);
         String prefix = MinioUtils.getMinioPath(userId, path);
-        return minio.listObjects(prefix, mode)
-                .filter(item -> !item.objectName().equals(prefix))
+        return minioRepository.listObjects(prefix, mode)
+                .filter(item -> !item.getName().equals(prefix))
                 .map(FileDtoMapper::makeFileDto);
     }
 
@@ -210,7 +209,7 @@ public class FolderServiceImpl extends MinioService implements FolderService {
     }
 
     private void createFolder(String object) {
-        minio.putObject(object, getFolderObjectContent(), FOLDER_OBJECT_SIZE);
+        minioRepository.putObject(object, getFolderObjectContent(), FOLDER_OBJECT_SIZE);
     }
 
     private void validateFolderExists(long userId, String path) {

@@ -1,7 +1,9 @@
-package com.vadimistar.cloudfilestorage.adapters.minio;
+package com.vadimistar.cloudfilestorage.common.repository;
 
-import com.vadimistar.cloudfilestorage.adapters.minio.exceptions.MinioException;
-import com.vadimistar.cloudfilestorage.adapters.minio.config.MinioConfig;
+import com.vadimistar.cloudfilestorage.common.dto.ListObjectsResponseDto;
+import com.vadimistar.cloudfilestorage.common.exceptions.MinioException;
+import com.vadimistar.cloudfilestorage.common.config.MinioConfig;
+import com.vadimistar.cloudfilestorage.common.mapper.ListObjectsResponseDtoMapper;
 import com.vadimistar.cloudfilestorage.common.util.StreamUtils;
 import io.minio.*;
 import io.minio.errors.*;
@@ -18,12 +20,12 @@ import java.util.stream.Stream;
 
 @Component
 @AllArgsConstructor
-public class Minio {
+public class MinioRepositoryImpl implements MinioRepository {
 
     private final MinioClient minioClient;
     private final MinioConfig minioConfig;
 
-    public Stream<Item> listObjects(String prefix, ListObjectsMode mode) {
+    public Stream<ListObjectsResponseDto> listObjects(String prefix, ListObjectsMode mode) {
         Iterable<Result<Item>> items = minioClient.listObjects(ListObjectsArgs.builder()
                 .bucket(minioConfig.getBucketName())
                 .prefix(prefix)
@@ -35,7 +37,7 @@ public class Minio {
             } catch (Exception e) {
                 throw new MinioException(e.getMessage());
             }
-        });
+        }).map(ListObjectsResponseDtoMapper::makeListObjectsResponseDto);
     }
 
     public void copyObject(String from, String to) {
@@ -109,15 +111,17 @@ public class Minio {
         }
     }
 
-    public Optional<StatObjectResponse> statObject(String object) {
+    @Override
+    public boolean isObjectExists(String object) {
         try {
-            return Optional.of(minioClient.statObject(StatObjectArgs.builder()
+            minioClient.statObject(StatObjectArgs.builder()
                     .bucket(minioConfig.getBucketName())
                     .object(object)
                     .build()
-            ));
+            );
+            return true;
         } catch (ErrorResponseException e) {
-            return Optional.empty();
+            return false;
         } catch (Exception e) {
             throw new MinioException(e.getMessage());
         }
@@ -125,13 +129,13 @@ public class Minio {
 
     public void removeObjects(String prefix) {
         Iterator<DeleteObject> objects = listObjects(prefix, ListObjectsMode.RECURSIVE)
-                .map(item -> new DeleteObject(item.objectName()))
+                .map(item -> new DeleteObject(item.getName()))
                 .iterator();
         minioClient.removeObjects(RemoveObjectsArgs.builder()
                 .bucket(minioConfig.getBucketName())
                 .objects(() -> objects)
                 .build()
-        ).forEach(Minio::handleRemoveObjectResult);
+        ).forEach(MinioRepositoryImpl::handleRemoveObjectResult);
     }
 
     public void removeBucket() {

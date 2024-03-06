@@ -1,10 +1,8 @@
 package com.vadimistar.cloudfilestorage.file.service;
 
-import com.vadimistar.cloudfilestorage.adapters.minio.Minio;
+import com.vadimistar.cloudfilestorage.common.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.common.MinioTestUnits;
-import com.vadimistar.cloudfilestorage.common.exceptions.FileAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
-import io.minio.GetObjectResponse;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +16,7 @@ import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 @SpringBootTest
@@ -28,15 +27,15 @@ public class FileServiceTests {
     private FileService fileService;
 
     @Autowired
-    private Minio minio;
+    private MinioRepository minioRepository;
 
     @BeforeEach
     public void beforeEach() {
-        if (minio.isBucketExists()) {
-            minio.removeObjects("");
-            minio.removeBucket();
+        if (minioRepository.isBucketExists()) {
+            minioRepository.removeObjects("");
+            minioRepository.removeBucket();
         }
-        minio.makeBucket();
+        minioRepository.makeBucket();
     }
 
     @SneakyThrows
@@ -44,8 +43,8 @@ public class FileServiceTests {
     public void uploadFile_withoutPrefixSlash_savesFileInUserDirectory() {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "a/b/c");
-        GetObjectResponse getObjectResponse = minio.getObject(USER_ID_DIRECTORY + "a/b/c");
-        Assertions.assertArrayEquals(mockFile.getByteArray(), getObjectResponse.readAllBytes());
+        InputStream inputStream = minioRepository.getObject(USER_ID_DIRECTORY + "a/b/c");
+        Assertions.assertArrayEquals(mockFile.getByteArray(), inputStream.readAllBytes());
     }
 
     @SneakyThrows
@@ -53,8 +52,8 @@ public class FileServiceTests {
     public void uploadFile_emptyFileWithPrefixSlash_savesFileInUserDirectory() {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
-        GetObjectResponse getObjectResponse = minio.getObject(USER_ID_DIRECTORY + "a/b/c");
-        Assertions.assertArrayEquals(mockFile.getByteArray(), getObjectResponse.readAllBytes());
+        InputStream inputStream = minioRepository.getObject(USER_ID_DIRECTORY + "a/b/c");
+        Assertions.assertArrayEquals(mockFile.getByteArray(), inputStream.readAllBytes());
     }
 
     @SneakyThrows
@@ -63,8 +62,8 @@ public class FileServiceTests {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
         fileService.renameFile(USER_ID, "/a/b/c", "d");
-        Assertions.assertTrue(minio.statObject(USER_ID_DIRECTORY + "a/b/d").isPresent());
-        Assertions.assertFalse(minio.statObject(USER_ID_DIRECTORY + "/a/b/c").isPresent());
+        Assertions.assertTrue(minioRepository.isObjectExists(USER_ID_DIRECTORY + "a/b/d"));
+        Assertions.assertFalse(minioRepository.isObjectExists(USER_ID_DIRECTORY + "/a/b/c"));
     }
 
     @SneakyThrows

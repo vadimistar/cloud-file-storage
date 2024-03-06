@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.adapters.minio.exceptions;
+package com.vadimistar.cloudfilestorage.common.exceptions;
 
 public class MinioException extends RuntimeException {
 
