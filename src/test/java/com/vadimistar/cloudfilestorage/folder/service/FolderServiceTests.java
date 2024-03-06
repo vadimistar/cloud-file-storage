@@ -1,36 +1,29 @@
 package com.vadimistar.cloudfilestorage.folder.service;
 
-import com.vadimistar.cloudfilestorage.adapters.minio.ListObjectsMode;
-import com.vadimistar.cloudfilestorage.adapters.minio.Minio;
+import com.vadimistar.cloudfilestorage.common.repository.ListObjectsMode;
 import com.vadimistar.cloudfilestorage.common.MinioTestUnits;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.exceptions.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.exceptions.ResourceAlreadyExistsException;
+import com.vadimistar.cloudfilestorage.common.repository.MinioRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @SpringBootTest
@@ -41,22 +34,22 @@ public class FolderServiceTests {
     private FolderService folderService;
 
     @Autowired
-    private Minio minio;
+    private MinioRepository minioRepository;
 
     @BeforeEach
     public void beforeEach() {
-        if (minio.isBucketExists()) {
-            minio.removeObjects("");
-            minio.removeBucket();
+        if (minioRepository.isBucketExists()) {
+            minioRepository.removeObjects("");
+            minioRepository.removeBucket();
         }
-        minio.makeBucket();
+        minioRepository.makeBucket();
     }
 
     @SneakyThrows
     @Test
     public void createFolder_resourceAtThisPathNotExists_createsEmptyObject() {
         folderService.createFolder(USER_ID, "a/b/c");
-        Assertions.assertEquals(0, minio.getObject(USER_ID_DIRECTORY + "a/b/c/").readAllBytes().length);
+        Assertions.assertEquals(0, minioRepository.getObject(USER_ID_DIRECTORY + "a/b/c/").readAllBytes().length);
     }
 
     @Test
@@ -71,14 +64,14 @@ public class FolderServiceTests {
     @Test
     public void uploadFolder_noFilesSpecified_doesNothing() {
         folderService.uploadFolder(USER_ID, new MultipartFile[]{}, "a/b/c");
-        Assertions.assertEquals(0, minio.listObjects("", ListObjectsMode.RECURSIVE).count());
+        Assertions.assertEquals(0, minioRepository.listObjects("", ListObjectsMode.RECURSIVE).count());
     }
 
     @Test
     public void uploadFolder_intoExistingPath_savesFilesRelativelyAtPath() {
         folderService.createFolder(USER_ID, "a/b");
         folderService.uploadFolder(USER_ID, new MultipartFile[]{getMockFile()}, "a/b");
-        Assertions.assertTrue(minio.statObject(USER_ID_DIRECTORY + "a/b/" + MOCK_FILE_NAME).isPresent());
+        Assertions.assertTrue(minioRepository.isObjectExists(USER_ID_DIRECTORY + "a/b/" + MOCK_FILE_NAME));
     }
 
     @Test
@@ -102,8 +95,8 @@ public class FolderServiceTests {
     public void renameFolder_nonEmptyFolder_folderExists_copiesContents_deletesOldContents() {
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "a");
         folderService.renameFolder(USER_ID, "a", "b");
-        Assertions.assertTrue(minio.statObject(USER_ID_DIRECTORY + "b/" + MOCK_FILE_NAME).isPresent());
-        Assertions.assertFalse(minio.statObject(USER_ID_DIRECTORY + "a/" + MOCK_FILE_NAME).isPresent());
+        Assertions.assertTrue(minioRepository.isObjectExists(USER_ID_DIRECTORY + "b/" + MOCK_FILE_NAME));
+        Assertions.assertFalse(minioRepository.isObjectExists(USER_ID_DIRECTORY + "a/" + MOCK_FILE_NAME));
         Assertions.assertFalse(folderService.isFolderExists(USER_ID, "a"));
     }
 
@@ -138,7 +131,7 @@ public class FolderServiceTests {
     public void deleteFolder_folderExists_noContentAtStorage() {
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "a");
         folderService.deleteFolder(USER_ID, "a");
-        Assertions.assertEquals(0, minio.listObjects("", ListObjectsMode.RECURSIVE).count());
+        Assertions.assertEquals(0, minioRepository.listObjects("", ListObjectsMode.RECURSIVE).count());
     }
 
     @Test

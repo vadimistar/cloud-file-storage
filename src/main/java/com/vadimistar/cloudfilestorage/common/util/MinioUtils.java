@@ -1,5 +1,6 @@
 package com.vadimistar.cloudfilestorage.common.util;
 
+import com.vadimistar.cloudfilestorage.common.dto.ListObjectsResponseDto;
 import io.minio.messages.Item;
 import lombok.experimental.UtilityClass;
 
@@ -14,8 +15,8 @@ public class MinioUtils {
         return PathUtils.trimIndexDirectory(minioPath);
     }
 
-    public static boolean isDirectory(Item item) {
-        return item.isDir() || item.size() == 0;
+    public static boolean isDirectory(ListObjectsResponseDto listObjectsResponseDto) {
+        return listObjectsResponseDto.isDirectory() || listObjectsResponseDto.getSize() == 0;
     }
 
     private static final String PATH_FOR_USER = "user-%d-files/";

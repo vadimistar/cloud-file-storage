@@ -1,6 +1,6 @@
-package com.vadimistar.cloudfilestorage.adapters.minio.config;
+package com.vadimistar.cloudfilestorage.common.config;
 
-import com.vadimistar.cloudfilestorage.adapters.minio.Minio;
+import com.vadimistar.cloudfilestorage.common.repository.MinioRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class MinioBucketInitializer {
 
-    private final Minio minio;
+    private final MinioRepository minioRepository;
 
     @PostConstruct
     public void initBucketIfNotExists() {
-        if (!minio.isBucketExists()) {
-            minio.makeBucket();
+        if (!minioRepository.isBucketExists()) {
+            minioRepository.makeBucket();
         }
     }
 }
