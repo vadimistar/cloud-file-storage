@@ -1,6 +1,6 @@
-package com.vadimistar.cloudfilestorage.common.repository;
+package com.vadimistar.cloudfilestorage.minio.repository;
 
-import com.vadimistar.cloudfilestorage.common.dto.ListObjectsResponseDto;
+import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
 
 import java.io.InputStream;
 import java.util.stream.Stream;

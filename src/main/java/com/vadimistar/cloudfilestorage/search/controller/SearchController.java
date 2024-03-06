@@ -2,12 +2,11 @@ package com.vadimistar.cloudfilestorage.search.controller;
 
 import com.vadimistar.cloudfilestorage.ApplicationConfig;
 import com.vadimistar.cloudfilestorage.common.AuthorizedUser;
-import com.vadimistar.cloudfilestorage.common.dto.PaginationItemDto;
-import com.vadimistar.cloudfilestorage.common.util.PageUtils;
+import com.vadimistar.cloudfilestorage.page.dto.PaginationItemDto;
+import com.vadimistar.cloudfilestorage.page.service.PageService;
 import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
 import com.vadimistar.cloudfilestorage.auth.entity.User;
 import com.vadimistar.cloudfilestorage.search.service.SearchService;
-import com.vadimistar.cloudfilestorage.search.mapper.FoundFileDtoMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @Controller
 @AllArgsConstructor
@@ -24,6 +22,7 @@ public class SearchController {
 
     private final SearchService searchService;
     private final ApplicationConfig applicationConfig;
+    private final PageService pageService;
 
     @GetMapping("/search")
     public String search(@RequestParam String query,
@@ -33,16 +32,16 @@ public class SearchController {
                          HttpServletRequest httpServletRequest) {
         List<FoundFileDto> foundFiles = searchService.searchFiles(user.getId(), query).toList();
 
-        List<FoundFileDto> modelFiles = PageUtils
+        List<FoundFileDto> modelFiles = pageService
                 .getPage(foundFiles.stream(), page, applicationConfig.getSearchPageSize())
                 .toList();
         model.addAttribute("files", modelFiles);
 
-        int totalPages = PageUtils.countPages(
+        int totalPages = pageService.countPages(
                 applicationConfig.getSearchPageSize(),
                 foundFiles.size()
         );
-        List<PaginationItemDto> pagination = PageUtils.createPagination(
+        List<PaginationItemDto> pagination = pageService.createPagination(
                 page, totalPages, httpServletRequest.getRequestURI() + "?" + httpServletRequest.getQueryString()
         );
         model.addAttribute("pagination", pagination);

@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.common.dto;
+package com.vadimistar.cloudfilestorage.minio.dto;
 
 import lombok.Builder;
 import lombok.Data;

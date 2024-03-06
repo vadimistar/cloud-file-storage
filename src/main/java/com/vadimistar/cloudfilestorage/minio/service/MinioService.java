@@ -1,17 +1,15 @@
-package com.vadimistar.cloudfilestorage.common.service;
+package com.vadimistar.cloudfilestorage.minio.service;
 
 import com.vadimistar.cloudfilestorage.common.exceptions.FileAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.common.exceptions.FolderAlreadyExistsException;
-import com.vadimistar.cloudfilestorage.common.repository.ListObjectsMode;
-import com.vadimistar.cloudfilestorage.common.repository.MinioRepository;
-import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
+import com.vadimistar.cloudfilestorage.minio.repository.ListObjectsMode;
+import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
+import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 
-@Service
 @AllArgsConstructor
-public class MinioService {
+public abstract class MinioService {
 
     protected final MinioRepository minioRepository;
 

@@ -1,12 +1,11 @@
 package com.vadimistar.cloudfilestorage.file.service.impl;
 
-import com.vadimistar.cloudfilestorage.common.repository.MinioRepository;
+import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
-import com.vadimistar.cloudfilestorage.common.service.MinioService;
-import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
+import com.vadimistar.cloudfilestorage.minio.service.MinioService;
+import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
-import io.minio.*;
 import org.springframework.stereotype.Service;
 
 import java.io.*;

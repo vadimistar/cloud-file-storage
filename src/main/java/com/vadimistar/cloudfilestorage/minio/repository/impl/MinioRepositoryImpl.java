@@ -1,10 +1,12 @@
-package com.vadimistar.cloudfilestorage.common.repository;
+package com.vadimistar.cloudfilestorage.minio.repository.impl;
 
-import com.vadimistar.cloudfilestorage.common.dto.ListObjectsResponseDto;
+import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
 import com.vadimistar.cloudfilestorage.common.exceptions.MinioException;
-import com.vadimistar.cloudfilestorage.common.config.MinioConfig;
-import com.vadimistar.cloudfilestorage.common.mapper.ListObjectsResponseDtoMapper;
+import com.vadimistar.cloudfilestorage.minio.config.MinioConfig;
+import com.vadimistar.cloudfilestorage.minio.mapper.ListObjectsResponseDtoMapper;
 import com.vadimistar.cloudfilestorage.common.util.StreamUtils;
+import com.vadimistar.cloudfilestorage.minio.repository.ListObjectsMode;
+import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.messages.DeleteError;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @Component

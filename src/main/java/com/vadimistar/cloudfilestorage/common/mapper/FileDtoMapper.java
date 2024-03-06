@@ -1,10 +1,9 @@
 package com.vadimistar.cloudfilestorage.common.mapper;
 
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
-import com.vadimistar.cloudfilestorage.common.dto.ListObjectsResponseDto;
-import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
+import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
+import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
-import io.minio.messages.Item;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

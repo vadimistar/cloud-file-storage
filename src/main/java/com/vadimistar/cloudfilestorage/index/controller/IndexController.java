@@ -3,9 +3,8 @@ package com.vadimistar.cloudfilestorage.index.controller;
 import com.vadimistar.cloudfilestorage.ApplicationConfig;
 import com.vadimistar.cloudfilestorage.common.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
-import com.vadimistar.cloudfilestorage.common.dto.PaginationItemDto;
-import com.vadimistar.cloudfilestorage.common.exceptions.InvalidPageException;
-import com.vadimistar.cloudfilestorage.common.util.PageUtils;
+import com.vadimistar.cloudfilestorage.page.dto.PaginationItemDto;
+import com.vadimistar.cloudfilestorage.page.service.PageService;
 import com.vadimistar.cloudfilestorage.index.dto.BreadcrumbsElementDto;
 import com.vadimistar.cloudfilestorage.auth.entity.User;
 import com.vadimistar.cloudfilestorage.common.exceptions.FileServiceException;
@@ -25,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Controller
 @AllArgsConstructor
@@ -33,6 +31,7 @@ public class IndexController {
 
     private final FolderService folderService;
     private final ApplicationConfig applicationConfig;
+    private final PageService pageService;
 
     @GetMapping("/")
     public String indexPage(@RequestParam(required = false, defaultValue = "") String path,
@@ -54,17 +53,17 @@ public class IndexController {
 
         List<FileDto> folderContent = folderService.getFolderContent(user.getId(), path).toList();
 
-        List<FileDto> entries = PageUtils
+        List<FileDto> entries = pageService
                 .getPage(folderContent.stream(), page, applicationConfig.getIndexPageSize())
                 .peek(entry -> entry.setPath(URLUtils.encode(entry.getPath())))
                 .toList();
         model.addAttribute("entries", entries);
 
-        int totalPages = PageUtils.countPages(
+        int totalPages = pageService.countPages(
                 applicationConfig.getIndexPageSize(),
                 folderContent.size()
         );
-        List<PaginationItemDto> pagination = PageUtils.createPagination(
+        List<PaginationItemDto> pagination = pageService.createPagination(
                 page, totalPages, httpServletRequest.getRequestURI() + "?" + httpServletRequest.getQueryString()
         );
         model.addAttribute("pagination", pagination);
