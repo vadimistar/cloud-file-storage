@@ -26,6 +26,7 @@ public class MinioRepositoryImpl implements MinioRepository {
     private final MinioClient minioClient;
     private final MinioConfig minioConfig;
 
+    @Override
     public Stream<ListObjectsResponseDto> listObjects(String prefix, ListObjectsMode mode) {
         Iterable<Result<Item>> items = minioClient.listObjects(ListObjectsArgs.builder()
                 .bucket(minioConfig.getBucketName())
@@ -41,6 +42,7 @@ public class MinioRepositoryImpl implements MinioRepository {
         }).map(ListObjectsResponseDtoMapper::makeListObjectsResponseDto);
     }
 
+    @Override
     public void copyObject(String from, String to) {
         try {
             minioClient.copyObject(CopyObjectArgs.builder()
@@ -58,6 +60,7 @@ public class MinioRepositoryImpl implements MinioRepository {
         }
     }
 
+    @Override
     public void removeObject(String object) {
         try {
             minioClient.removeObject(RemoveObjectArgs.builder()
@@ -69,6 +72,7 @@ public class MinioRepositoryImpl implements MinioRepository {
         }
     }
 
+    @Override
     public void putObject(String object, InputStream stream, long objectSize) {
         try {
             minioClient.putObject(PutObjectArgs.builder()
@@ -81,6 +85,7 @@ public class MinioRepositoryImpl implements MinioRepository {
         }
     }
 
+    @Override
     public GetObjectResponse getObject(String object) {
         try {
             return minioClient.getObject(GetObjectArgs.builder()
@@ -92,6 +97,7 @@ public class MinioRepositoryImpl implements MinioRepository {
         }
     }
 
+    @Override
     public void makeBucket() {
         try {
             minioClient.makeBucket(MakeBucketArgs.builder()
@@ -102,6 +108,7 @@ public class MinioRepositoryImpl implements MinioRepository {
         }
     }
 
+    @Override
     public boolean isBucketExists() {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder()
@@ -128,6 +135,7 @@ public class MinioRepositoryImpl implements MinioRepository {
         }
     }
 
+    @Override
     public void removeObjects(String prefix) {
         Iterator<DeleteObject> objects = listObjects(prefix, ListObjectsMode.RECURSIVE)
                 .map(item -> new DeleteObject(item.getName()))
@@ -139,6 +147,7 @@ public class MinioRepositoryImpl implements MinioRepository {
         ).forEach(MinioRepositoryImpl::handleRemoveObjectResult);
     }
 
+    @Override
     public void removeBucket() {
         try {
             minioClient.removeBucket(RemoveBucketArgs.builder()
