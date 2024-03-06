@@ -1,6 +1,6 @@
 package com.vadimistar.cloudfilestorage.file.service;
 
-import com.vadimistar.cloudfilestorage.common.repository.MinioRepository;
+import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.common.MinioTestUnits;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
 import lombok.SneakyThrows;

@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.common.util;
+package com.vadimistar.cloudfilestorage.page.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

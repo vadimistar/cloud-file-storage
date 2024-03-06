@@ -1,38 +1,41 @@
-package com.vadimistar.cloudfilestorage.common.util;
+package com.vadimistar.cloudfilestorage.page.service.impl;
 
-import com.vadimistar.cloudfilestorage.common.dto.PaginationItemDto;
 import com.vadimistar.cloudfilestorage.common.exceptions.InvalidPageException;
+import com.vadimistar.cloudfilestorage.page.dto.PaginationItemDto;
+import com.vadimistar.cloudfilestorage.page.dto.PaginationItemState;
+import com.vadimistar.cloudfilestorage.page.service.PageService;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
-import org.springframework.security.core.parameters.P;
-import org.springframework.web.util.UriBuilder;
+import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-@UtilityClass
-public class PageUtils {
+@Service
+@AllArgsConstructor
+public class PageServiceImpl implements PageService {
 
-    // Page number starts from 1: first page is 1, second page is 2, etc.
-    public static <T> Stream<T> getPage(Stream<T> stream, int pageNumber, int pageSize) {
-        long pageIndex = pageNumber - 1;
-        if (pageIndex < 0) {
-            throw new InvalidPageException("Invalid page number: " + pageNumber);
+    @Override
+    public <T> Stream<T> getPage(Stream<T> stream, int index, int pageSize) {
+        if (index < 0) {
+            throw new InvalidPageException("Invalid page index: " + index);
         }
-        return stream.skip(pageIndex * pageSize).limit(pageSize);
+        return stream.skip((long) index * pageSize).limit(pageSize);
     }
 
-    public static int countPages(int pageSize, int totalItems) {
-        return (totalItems / pageSize) + ((totalItems % pageSize == 0) ? 0 : 1);
+    @Override
+    public int countPages(int pageSize, int totalItems) {
+        return (totalItems / pageSize) + (totalItems % pageSize != 0 ? 1 : 0);
     }
 
-    public static List<PaginationItemDto> createPagination(int page, int totalPages, String uri) {
+    @Override
+    public List<PaginationItemDto> createPagination(int index, int totalPages, String uri) {
         List<PaginationItemDto> result = new ArrayList<>();
 
-        if (page > 1) {
+        int page = index + 1;
+        if (index > 1) {
             int previousPage = page - 1;
             result.add(new PaginationItemDto(
                     getUriForPage(uri, previousPage), "Previous", PaginationItemState.INACTIVE
@@ -70,7 +73,7 @@ public class PageUtils {
 
     @SneakyThrows
     private static String getUriForPage(String uri, int page) {
-       return UriComponentsBuilder.fromUriString(uri)
+        return UriComponentsBuilder.fromUriString(uri)
                 .replaceQueryParam("page", page)
                 .build(false)
                 .toUriString();

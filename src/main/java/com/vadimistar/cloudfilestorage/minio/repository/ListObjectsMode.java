@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.common.repository;
+package com.vadimistar.cloudfilestorage.minio.repository;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

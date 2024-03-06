@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.common.config;
+package com.vadimistar.cloudfilestorage.minio.config;
 
 import io.minio.MinioClient;
 import lombok.Getter;

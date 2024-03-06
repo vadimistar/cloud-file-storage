@@ -1,6 +1,5 @@
-package com.vadimistar.cloudfilestorage.common.dto;
+package com.vadimistar.cloudfilestorage.page.dto;
 
-import com.vadimistar.cloudfilestorage.common.util.PaginationItemState;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

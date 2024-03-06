@@ -1,11 +1,11 @@
 package com.vadimistar.cloudfilestorage.folder.service;
 
-import com.vadimistar.cloudfilestorage.common.repository.ListObjectsMode;
+import com.vadimistar.cloudfilestorage.minio.repository.ListObjectsMode;
 import com.vadimistar.cloudfilestorage.common.MinioTestUnits;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.exceptions.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.exceptions.ResourceAlreadyExistsException;
-import com.vadimistar.cloudfilestorage.common.repository.MinioRepository;
+import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

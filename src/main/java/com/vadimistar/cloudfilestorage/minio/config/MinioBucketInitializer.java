@@ -1,6 +1,6 @@
-package com.vadimistar.cloudfilestorage.common.config;
+package com.vadimistar.cloudfilestorage.minio.config;
 
-import com.vadimistar.cloudfilestorage.common.repository.MinioRepository;
+import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
