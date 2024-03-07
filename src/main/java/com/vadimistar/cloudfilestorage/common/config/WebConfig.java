@@ -1,6 +1,6 @@
-package com.vadimistar.cloudfilestorage;
+package com.vadimistar.cloudfilestorage.common.config;
 
-import com.vadimistar.cloudfilestorage.common.UserArgumentHandlerResolver;
+import com.vadimistar.cloudfilestorage.common.util.UserArgumentHandlerResolver;
 import com.vadimistar.cloudfilestorage.auth.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;

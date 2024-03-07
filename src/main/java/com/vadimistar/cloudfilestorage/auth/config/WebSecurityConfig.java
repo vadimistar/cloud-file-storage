@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage;
+package com.vadimistar.cloudfilestorage.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
