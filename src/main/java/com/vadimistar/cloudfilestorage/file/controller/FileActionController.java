@@ -42,7 +42,6 @@ public class FileActionController {
         }
 
         String path = URLUtils.decode(request.getPath());
-        assert (path.equals(request.getPath()));
         if (!fileService.isFileExists(user.getId(), path)) {
             throw new FileNotFoundException();
         }
