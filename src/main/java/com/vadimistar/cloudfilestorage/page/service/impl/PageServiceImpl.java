@@ -17,11 +17,13 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class PageServiceImpl implements PageService {
 
+
     @Override
-    public <T> Stream<T> getPage(Stream<T> stream, int index, int pageSize) {
-        if (index < 0) {
-            throw new InvalidPageException("Invalid page index: " + index);
+    public <T> Stream<T> getPage(Stream<T> stream, int page, int pageSize) {
+        if (page < 1) {
+            throw new InvalidPageException("Invalid page: " + page);
         }
+        int index = page - 1;
         return stream.skip((long) index * pageSize).limit(pageSize);
     }
 
@@ -31,11 +33,10 @@ public class PageServiceImpl implements PageService {
     }
 
     @Override
-    public List<PaginationItemDto> createPagination(int index, int totalPages, String uri) {
+    public List<PaginationItemDto> createPagination(int page, int totalPages, String uri) {
         List<PaginationItemDto> result = new ArrayList<>();
 
-        int page = index + 1;
-        if (index > 1) {
+        if (page > FIRST_PAGE) {
             int previousPage = page - 1;
             result.add(new PaginationItemDto(
                     getUriForPage(uri, previousPage), "Previous", PaginationItemState.INACTIVE
@@ -78,4 +79,6 @@ public class PageServiceImpl implements PageService {
                 .build(false)
                 .toUriString();
     }
+
+    private static final int FIRST_PAGE = 1;
 }

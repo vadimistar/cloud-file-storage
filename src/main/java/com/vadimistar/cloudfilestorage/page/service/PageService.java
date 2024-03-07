@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 public interface PageService {
 
-    <T> Stream<T> getPage(Stream<T> stream, int index, int pageSize);
+    <T> Stream<T> getPage(Stream<T> stream, int page, int pageSize);
     int countPages(int pageSize, int totalItems);
-    List<PaginationItemDto> createPagination(int pageIndex, int totalPages, String uri);
+    List<PaginationItemDto> createPagination(int page, int totalPages, String uri);
 }
