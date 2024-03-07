@@ -29,8 +29,4 @@ public class User {
 
     @NotBlank
     private String password;
-
-    @NotNull
-    @Builder.Default
-    private Boolean isVerified = false;
 }
