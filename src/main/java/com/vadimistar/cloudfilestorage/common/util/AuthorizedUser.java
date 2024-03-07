@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.common;
+package com.vadimistar.cloudfilestorage.common.util;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,7 +1,7 @@
 package com.vadimistar.cloudfilestorage.search.controller;
 
-import com.vadimistar.cloudfilestorage.ApplicationConfig;
-import com.vadimistar.cloudfilestorage.common.AuthorizedUser;
+import com.vadimistar.cloudfilestorage.common.config.ApplicationConfig;
+import com.vadimistar.cloudfilestorage.common.util.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.page.dto.PaginationItemDto;
 import com.vadimistar.cloudfilestorage.page.service.PageService;
 import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;

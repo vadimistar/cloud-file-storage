@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.common;
+package com.vadimistar.cloudfilestorage.common.util;
 
 import com.vadimistar.cloudfilestorage.common.exceptions.UserNotLoggedInException;
 import com.vadimistar.cloudfilestorage.auth.service.UserService;

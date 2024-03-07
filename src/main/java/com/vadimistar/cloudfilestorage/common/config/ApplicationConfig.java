@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage;
+package com.vadimistar.cloudfilestorage.common.config;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

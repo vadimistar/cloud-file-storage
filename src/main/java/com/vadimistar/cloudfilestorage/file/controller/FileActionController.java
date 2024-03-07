@@ -1,6 +1,6 @@
 package com.vadimistar.cloudfilestorage.file.controller;
 
-import com.vadimistar.cloudfilestorage.common.AuthorizedUser;
+import com.vadimistar.cloudfilestorage.common.util.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.auth.entity.User;
 import com.vadimistar.cloudfilestorage.common.exceptions.FileActionException;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
