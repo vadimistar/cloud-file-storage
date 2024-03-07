@@ -1,16 +1,17 @@
-package com.vadimistar.cloudfilestorage.index.util;
+package com.vadimistar.cloudfilestorage.index.breadcrumbs.service.impl;
 
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
-import com.vadimistar.cloudfilestorage.index.dto.BreadcrumbsElementDto;
-import lombok.experimental.UtilityClass;
+import com.vadimistar.cloudfilestorage.index.breadcrumbs.dto.BreadcrumbsElementDto;
+import com.vadimistar.cloudfilestorage.index.breadcrumbs.service.BreadcrumbsService;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@UtilityClass
-public class BreadcrumbsCreator {
+@Service
+public class BreadcrumbsServiceImpl implements BreadcrumbsService {
 
-    public static List<BreadcrumbsElementDto> createBreadcrumbs(String path) {
+    public List<BreadcrumbsElementDto> createBreadcrumbs(String path) {
         List<BreadcrumbsElementDto> result = new ArrayList<>();
 
         BreadcrumbsElementDto homeDirectory = new BreadcrumbsElementDto("/", "/");

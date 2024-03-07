@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.index.dto;
+package com.vadimistar.cloudfilestorage.index.breadcrumbs.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -3,14 +3,14 @@ package com.vadimistar.cloudfilestorage.index.controller;
 import com.vadimistar.cloudfilestorage.ApplicationConfig;
 import com.vadimistar.cloudfilestorage.common.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
+import com.vadimistar.cloudfilestorage.index.breadcrumbs.service.BreadcrumbsService;
 import com.vadimistar.cloudfilestorage.page.dto.PaginationItemDto;
 import com.vadimistar.cloudfilestorage.page.service.PageService;
-import com.vadimistar.cloudfilestorage.index.dto.BreadcrumbsElementDto;
+import com.vadimistar.cloudfilestorage.index.breadcrumbs.dto.BreadcrumbsElementDto;
 import com.vadimistar.cloudfilestorage.auth.entity.User;
 import com.vadimistar.cloudfilestorage.common.exceptions.FileServiceException;
 import com.vadimistar.cloudfilestorage.common.exceptions.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
-import com.vadimistar.cloudfilestorage.index.util.BreadcrumbsCreator;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -32,6 +31,7 @@ public class IndexController {
     private final FolderService folderService;
     private final ApplicationConfig applicationConfig;
     private final PageService pageService;
+    private final BreadcrumbsService breadcrumbsService;
 
     @GetMapping("/")
     public String indexPage(@RequestParam(required = false, defaultValue = "") String path,
@@ -48,7 +48,7 @@ public class IndexController {
             }
         }
 
-        List<BreadcrumbsElementDto> breadcrumbs = BreadcrumbsCreator.createBreadcrumbs(path);
+        List<BreadcrumbsElementDto> breadcrumbs = breadcrumbsService.createBreadcrumbs(path);
         model.addAttribute("breadcrumbs", breadcrumbs);
 
         List<FileDto> folderContent = folderService.getFolderContent(user.getId(), path).toList();
