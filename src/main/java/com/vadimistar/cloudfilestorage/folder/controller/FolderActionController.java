@@ -1,5 +1,6 @@
 package com.vadimistar.cloudfilestorage.folder.controller;
 
+import com.vadimistar.cloudfilestorage.common.exceptions.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.util.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.auth.entity.User;
 import com.vadimistar.cloudfilestorage.common.exceptions.FileServiceException;
@@ -44,6 +45,10 @@ public class FolderActionController {
         }
 
         String path = URLUtils.decode(request.getPath());
+        if (!folderService.isFolderExists(user.getId(), path)) {
+            throw new FolderNotFoundException();
+        }
+
         model.addAttribute("name", PathUtils.getFilename(path));
 
         return "folder-action";
