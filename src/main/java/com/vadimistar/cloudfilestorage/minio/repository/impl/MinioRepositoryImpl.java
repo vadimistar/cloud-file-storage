@@ -5,7 +5,6 @@ import com.vadimistar.cloudfilestorage.minio.exception.MinioException;
 import com.vadimistar.cloudfilestorage.minio.config.MinioConfig;
 import com.vadimistar.cloudfilestorage.minio.mapper.ListObjectsResponseDtoMapper;
 import com.vadimistar.cloudfilestorage.common.util.StreamUtils;
-import com.vadimistar.cloudfilestorage.minio.repository.ListObjectsMode;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import io.minio.*;
 import io.minio.errors.*;
@@ -27,11 +26,11 @@ public class MinioRepositoryImpl implements MinioRepository {
     private final MinioConfig minioConfig;
 
     @Override
-    public Stream<ListObjectsResponseDto> listObjects(String prefix, ListObjectsMode mode) {
+    public Stream<ListObjectsResponseDto> listObjects(String prefix, boolean recursive) {
         Iterable<Result<Item>> items = minioClient.listObjects(ListObjectsArgs.builder()
                 .bucket(minioConfig.getBucketName())
                 .prefix(prefix)
-                .recursive(mode.isRecursive())
+                .recursive(recursive)
                 .build());
         return StreamUtils.asStream(items).map(itemResult -> {
             try {
@@ -137,7 +136,7 @@ public class MinioRepositoryImpl implements MinioRepository {
 
     @Override
     public void removeObjects(String prefix) {
-        Iterator<DeleteObject> objects = listObjects(prefix, ListObjectsMode.RECURSIVE)
+        Iterator<DeleteObject> objects = listObjects(prefix, true)
                 .map(item -> new DeleteObject(item.getName()))
                 .iterator();
         minioClient.removeObjects(RemoveObjectsArgs.builder()

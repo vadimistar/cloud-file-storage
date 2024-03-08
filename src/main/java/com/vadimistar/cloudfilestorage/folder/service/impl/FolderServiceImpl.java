@@ -2,7 +2,6 @@ package com.vadimistar.cloudfilestorage.folder.service.impl;
 
 import com.vadimistar.cloudfilestorage.common.exception.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.mapper.FileDtoMapper;
-import com.vadimistar.cloudfilestorage.minio.repository.ListObjectsMode;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
 import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
@@ -10,7 +9,6 @@ import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.exception.UploadFileException;
 import com.vadimistar.cloudfilestorage.common.util.StringUtils;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.core.io.ByteArrayResource;
@@ -111,12 +109,12 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public Stream<FileDto> getFolderContent(long userId, String path) {
         validateFolderExists(userId, path);
-        return listFiles(userId, path, ListObjectsMode.NON_RECURSIVE);
+        return listFiles(userId, path, false);
     }
 
     @Override
     public Stream<FileDto> getAllContent(long userId) {
-        return listFiles(userId, "/", ListObjectsMode.RECURSIVE);
+        return listFiles(userId, "/", true);
     }
 
     @Override
@@ -125,7 +123,7 @@ public class FolderServiceImpl implements FolderService {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
 
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(result)) {
-            listFiles(userId, path, ListObjectsMode.RECURSIVE)
+            listFiles(userId, path, true)
                     .filter(file -> !file.isFolder())
                     .forEach(file -> downloadFile(file, userId, path, zipOutputStream));
         } catch (IOException e) {
@@ -182,10 +180,10 @@ public class FolderServiceImpl implements FolderService {
         });
     }
 
-    private Stream<FileDto> listFiles(long userId, String path, ListObjectsMode mode) {
+    private Stream<FileDto> listFiles(long userId, String path, boolean recursive) {
         path = PathUtils.makeDirectoryPath(path);
         String prefix = MinioUtils.getMinioPath(userId, path);
-        return minioService.listObjects(prefix, mode.isRecursive())
+        return minioService.listObjects(prefix, recursive)
                 .filter(item -> !item.getName().equals(prefix))
                 .map(FileDtoMapper::makeFileDto);
     }

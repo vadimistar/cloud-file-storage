@@ -1,6 +1,5 @@
 package com.vadimistar.cloudfilestorage.folder.service;
 
-import com.vadimistar.cloudfilestorage.minio.repository.ListObjectsMode;
 import com.vadimistar.cloudfilestorage.common.TestUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.exception.FolderNotFoundException;
@@ -64,7 +63,7 @@ public class FolderServiceTests {
     @Test
     public void uploadFolder_noFilesSpecified_doesNothing() {
         folderService.uploadFolder(USER_ID, new MultipartFile[]{}, "a/b/c");
-        Assertions.assertEquals(0, minioRepository.listObjects("", ListObjectsMode.RECURSIVE).count());
+        Assertions.assertEquals(0, minioRepository.listObjects("", true).count());
     }
 
     @Test
@@ -131,7 +130,7 @@ public class FolderServiceTests {
     public void deleteFolder_folderExists_noContentAtStorage() {
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "a");
         folderService.deleteFolder(USER_ID, "a");
-        Assertions.assertEquals(0, minioRepository.listObjects("", ListObjectsMode.RECURSIVE).count());
+        Assertions.assertEquals(0, minioRepository.listObjects("", true).count());
     }
 
     @Test
