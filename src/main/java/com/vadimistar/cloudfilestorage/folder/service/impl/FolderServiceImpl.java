@@ -1,13 +1,13 @@
 package com.vadimistar.cloudfilestorage.folder.service.impl;
 
-import com.vadimistar.cloudfilestorage.common.exceptions.FolderNotFoundException;
+import com.vadimistar.cloudfilestorage.common.exception.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.mapper.FileDtoMapper;
 import com.vadimistar.cloudfilestorage.minio.repository.ListObjectsMode;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
-import com.vadimistar.cloudfilestorage.common.exceptions.UploadFileException;
+import com.vadimistar.cloudfilestorage.common.exception.UploadFileException;
 import com.vadimistar.cloudfilestorage.common.util.StringUtils;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;

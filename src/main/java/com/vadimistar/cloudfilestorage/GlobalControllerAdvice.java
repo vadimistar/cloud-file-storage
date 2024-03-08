@@ -1,6 +1,6 @@
 package com.vadimistar.cloudfilestorage;
 
-import com.vadimistar.cloudfilestorage.common.exceptions.*;
+import com.vadimistar.cloudfilestorage.common.exception.*;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
 import lombok.extern.log4j.Log4j2;

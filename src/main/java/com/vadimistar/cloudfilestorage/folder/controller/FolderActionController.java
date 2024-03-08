@@ -1,10 +1,9 @@
 package com.vadimistar.cloudfilestorage.folder.controller;
 
-import com.vadimistar.cloudfilestorage.common.exceptions.FolderNotFoundException;
+import com.vadimistar.cloudfilestorage.common.exception.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.util.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.auth.entity.User;
-import com.vadimistar.cloudfilestorage.common.exceptions.FileServiceException;
-import com.vadimistar.cloudfilestorage.common.exceptions.FolderActionException;
+import com.vadimistar.cloudfilestorage.common.exception.FolderActionException;
 import com.vadimistar.cloudfilestorage.folder.dto.DeleteFolderRequestDto;
 import com.vadimistar.cloudfilestorage.folder.dto.DownloadFolderRequestDto;
 import com.vadimistar.cloudfilestorage.folder.dto.FolderActionRequestDto;
@@ -37,7 +36,7 @@ public class FolderActionController {
     public String folderAction(@ModelAttribute @Valid FolderActionRequestDto request,
                              BindingResult bindingResult,
                              @AuthorizedUser User user,
-                             Model model) throws FileServiceException {
+                             Model model) {
         if (bindingResult.hasErrors()) {
             throw new FolderActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
@@ -57,7 +56,7 @@ public class FolderActionController {
     @GetMapping("/download")
     public ResponseEntity<?> download(@ModelAttribute @Valid DownloadFolderRequestDto request,
                                       BindingResult bindingResult,
-                                      @AuthorizedUser User user) throws FileServiceException {
+                                      @AuthorizedUser User user) {
         if (bindingResult.hasErrors()) {
             throw new FolderActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
@@ -79,7 +78,7 @@ public class FolderActionController {
     @PostMapping("/rename")
     public String rename(@ModelAttribute @Valid RenameFolderRequestDto request,
                          BindingResult bindingResult,
-                         @AuthorizedUser User user) throws FileServiceException {
+                         @AuthorizedUser User user) {
         if (bindingResult.hasErrors()) {
             throw new FolderActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
@@ -94,7 +93,7 @@ public class FolderActionController {
     @PostMapping("/delete")
     public String delete(@ModelAttribute @Valid DeleteFolderRequestDto request,
                          BindingResult bindingResult,
-                         @AuthorizedUser User user) throws FileServiceException {
+                         @AuthorizedUser User user) {
         if (bindingResult.hasErrors()) {
             throw new FolderActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
