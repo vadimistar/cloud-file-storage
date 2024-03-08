@@ -61,6 +61,7 @@ public class FolderServiceImpl implements FolderService {
         for (MultipartFile file : files) {
             String filePath = PathUtils.join(path, file.getOriginalFilename());
             try {
+                MinioUtils.validateResourceNotExists(minioService, userId, filePath);
                 minioService.putObject(MinioUtils.getMinioPath(userId, filePath), file.getInputStream(), file.getSize());
             } catch (IOException e) {
                 throw new RuntimeException(e);
