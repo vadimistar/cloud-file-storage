@@ -1,10 +1,10 @@
 package com.vadimistar.cloudfilestorage.auth.service;
 
-import com.vadimistar.cloudfilestorage.auth.service.UserService;
 import com.vadimistar.cloudfilestorage.auth.dto.RegisterDto;
 import com.vadimistar.cloudfilestorage.auth.exception.PasswordMismatchException;
 import com.vadimistar.cloudfilestorage.auth.exception.UserAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.auth.repository.UserRepository;
+import com.vadimistar.cloudfilestorage.common.TestUtils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -98,13 +99,18 @@ public class UserServiceTests {
     }
 
     @Container
-    private static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0");
+    private static final MySQLContainer<?> mysql = TestUtils.createMySqlContainer();
 
     @DynamicPropertySource
     public static void mysqlProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", mysql::getJdbcUrl);
-        registry.add("spring.datasource.username", mysql::getUsername);
-        registry.add("spring.datasource.password", mysql::getPassword);
-        registry.add("spring.datasource.driver-class-name", mysql::getDriverClassName);
+        TestUtils.addMySqlProperties(registry, mysql);
+    }
+
+    @Container
+    private static final MinIOContainer minio = TestUtils.createMinIOContainer();
+
+    @DynamicPropertySource
+    public static void minioProperties(DynamicPropertyRegistry registry) {
+        TestUtils.addMinioProperties(registry, minio);
     }
 }

@@ -1,7 +1,7 @@
 package com.vadimistar.cloudfilestorage.folder.service;
 
 import com.vadimistar.cloudfilestorage.minio.repository.ListObjectsMode;
-import com.vadimistar.cloudfilestorage.common.MinioTestUnits;
+import com.vadimistar.cloudfilestorage.common.TestUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.exception.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.exception.ResourceAlreadyExistsException;
@@ -232,11 +232,11 @@ public class FolderServiceTests {
     }
 
     @Container
-    private static final MinIOContainer minioContainer = MinioTestUnits.createMinIOContainer();
+    private static final MinIOContainer minioContainer = TestUtils.createMinIOContainer();
 
     @DynamicPropertySource
     public static void minioProperties(DynamicPropertyRegistry registry) {
-        MinioTestUnits.addMinioProperties(registry, minioContainer);
+        TestUtils.addMinioProperties(registry, minioContainer);
     }
 
 }
