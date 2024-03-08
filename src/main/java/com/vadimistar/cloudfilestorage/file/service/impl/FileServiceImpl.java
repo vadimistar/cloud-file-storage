@@ -1,26 +1,25 @@
 package com.vadimistar.cloudfilestorage.file.service.impl;
 
-import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
-import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
+import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 
 @Service
-public class FileServiceImpl extends MinioService implements FileService {
+@AllArgsConstructor
+public class FileServiceImpl implements FileService {
 
-    public FileServiceImpl(MinioRepository minioRepository) {
-        super(minioRepository);
-    }
+    private final MinioService minioService;
 
     @Override
     public void uploadFile(long userId, InputStream inputStream, long objectSize, String path){
-        validateResourceNotExists(userId, path);
-        minioRepository.putObject(MinioUtils.getMinioPath(userId, path), inputStream, objectSize);
+        MinioUtils.validateResourceNotExists(minioService, userId, path);
+        minioService.putObject(MinioUtils.getMinioPath(userId, path), inputStream, objectSize);
     }
 
     @Override
@@ -30,8 +29,11 @@ public class FileServiceImpl extends MinioService implements FileService {
         if (newPath.equals(path)) {
             return path;
         }
-        validateResourceNotExists(userId, newPath);
-        minioRepository.copyObject(MinioUtils.getMinioPath(userId, path), MinioUtils.getMinioPath(userId, newPath));
+        MinioUtils.validateResourceNotExists(minioService, userId, newPath);
+        minioService.copyObject(
+                MinioUtils.getMinioPath(userId, path),
+                MinioUtils.getMinioPath(userId, newPath)
+        );
         deleteFile(userId, path);
         return newPath;
     }
@@ -39,17 +41,22 @@ public class FileServiceImpl extends MinioService implements FileService {
     @Override
     public void deleteFile(long userId, String path) {
         validateFileExists(userId, path);
-        minioRepository.removeObject(MinioUtils.getMinioPath(userId, path));
+        minioService.removeObject(MinioUtils.getMinioPath(userId, path));
     }
 
     @Override
     public byte[] downloadFile(long userId, String path){
         validateFileExists(userId, path);
-        try (InputStream inputStream = minioRepository.getObject(MinioUtils.getMinioPath(userId, path))) {
+        try (InputStream inputStream = minioService.getObject(MinioUtils.getMinioPath(userId, path))) {
             return inputStream.readAllBytes();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean isFileExists(long userId, String path) {
+        return minioService.isFileExists(MinioUtils.getMinioPath(userId, path));
     }
 
     private void validateFileExists(long userId, String path) {

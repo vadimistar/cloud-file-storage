@@ -3,15 +3,16 @@ package com.vadimistar.cloudfilestorage.folder.service.impl;
 import com.vadimistar.cloudfilestorage.common.exception.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.mapper.FileDtoMapper;
 import com.vadimistar.cloudfilestorage.minio.repository.ListObjectsMode;
-import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
+import com.vadimistar.cloudfilestorage.minio.service.MinioService;
 import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.exception.UploadFileException;
 import com.vadimistar.cloudfilestorage.common.util.StringUtils;
-import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
-import com.vadimistar.cloudfilestorage.minio.service.MinioService;
+import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
@@ -26,20 +27,16 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Service
-public class FolderServiceImpl extends MinioService implements FolderService {
+@AllArgsConstructor
+public class FolderServiceImpl implements FolderService {
 
-    private final FileService fileService;
-
-    public FolderServiceImpl(MinioRepository minioRepository, FileService fileService) {
-        super(minioRepository);
-        this.fileService = fileService;
-    }
+    private final MinioService minioService;
 
     @Override
     public void createFolder(long userId, String path) {
         path = PathUtils.makeDirectoryPath(path);
-        validateResourceNotExists(userId, path);
-        fileService.uploadFile(userId, getFolderObjectContent(), FOLDER_OBJECT_SIZE, path);
+        MinioUtils.validateResourceNotExists(minioService, userId, path);
+        minioService.putObject(MinioUtils.getMinioPath(userId, path), getFolderObjectContent(), FOLDER_OBJECT_SIZE);
     }
 
     @Override
@@ -64,7 +61,7 @@ public class FolderServiceImpl extends MinioService implements FolderService {
         for (MultipartFile file : files) {
             String filePath = PathUtils.join(path, file.getOriginalFilename());
             try {
-                fileService.uploadFile(userId, file.getInputStream(), file.getSize(), filePath);
+                minioService.putObject(MinioUtils.getMinioPath(userId, filePath), file.getInputStream(), file.getSize());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -83,15 +80,13 @@ public class FolderServiceImpl extends MinioService implements FolderService {
         String parentDirectory = PathUtils.getParentDirectory(path);
         String newPath = PathUtils.join(parentDirectory, name);
 
-        validateResourceNotExists(userId, newPath);
-
-        String minioPath = MinioUtils.getMinioPath(userId, path);
+        MinioUtils.validateResourceNotExists(minioService, userId, newPath);
 
         List<String> files = new ArrayList<>();
         List<String> directories = new ArrayList<>();
 
-        minioRepository.listObjects(minioPath, ListObjectsMode.RECURSIVE).forEach(item -> {
-            if (MinioUtils.isDirectory(item)) {
+        minioService.listObjects(MinioUtils.getMinioPath(userId, path), true).forEach(item -> {
+            if (item.isDirectory()) {
                 directories.add(item.getName());
             } else {
                 files.add(item.getName());
@@ -108,8 +103,8 @@ public class FolderServiceImpl extends MinioService implements FolderService {
     public void deleteFolder(long userId, String path) {
         validateFolderExists(userId, path);
         path = PathUtils.makeDirectoryPath(path);
-        minioRepository.listObjects(MinioUtils.getMinioPath(userId, path), ListObjectsMode.RECURSIVE)
-                .forEach(item -> minioRepository.removeObject(item.getName()));
+        minioService.listObjects(MinioUtils.getMinioPath(userId, path), true)
+                .forEach(item -> minioService.removeObject(item.getName()));
     }
 
     @Override
@@ -139,6 +134,11 @@ public class FolderServiceImpl extends MinioService implements FolderService {
         return result.toByteArray();
     }
 
+    @Override
+    public boolean isFolderExists(long userId, String path) {
+        return minioService.isFolderExists(MinioUtils.getMinioPath(userId, path));
+    }
+
     private InputStream getFolderObjectContent() {
         return new ByteArrayInputStream(new byte[] {});
     }
@@ -164,11 +164,11 @@ public class FolderServiceImpl extends MinioService implements FolderService {
 
     private void renameFilesInFolder(List<String> files, String oldPath, String newPath) {
         files.forEach(file -> {
-            minioRepository.copyObject(
+            minioService.copyObject(
                     file,
                     file.replaceFirst(oldPath, newPath)
             );
-            minioRepository.removeObject(file);
+            minioService.removeObject(file);
         });
     }
 
@@ -177,23 +177,26 @@ public class FolderServiceImpl extends MinioService implements FolderService {
             createFolder(directory.replaceFirst(
                     Pattern.quote(oldName), Matcher.quoteReplacement(newName)
             ));
-            minioRepository.removeObject(directory);
+            minioService.removeObject(directory);
         });
     }
 
     private Stream<FileDto> listFiles(long userId, String path, ListObjectsMode mode) {
         path = PathUtils.makeDirectoryPath(path);
         String prefix = MinioUtils.getMinioPath(userId, path);
-        return minioRepository.listObjects(prefix, mode)
+        return minioService.listObjects(prefix, mode.isRecursive())
                 .filter(item -> !item.getName().equals(prefix))
                 .map(FileDtoMapper::makeFileDto);
     }
 
+    @SneakyThrows
     private void downloadFile(FileDto file, long userId, String path, ZipOutputStream zipOutputStream) {
         String relativePath = PathUtils.getRelativePath(file.getPath(), path);
 
         ByteArrayResource byteArrayResource = new ByteArrayResource(
-                fileService.downloadFile(userId, file.getPath())
+                minioService
+                        .getObject(MinioUtils.getMinioPath(userId, file.getPath()))
+                        .readAllBytes()
         );
 
         ZipEntry zipEntry = new ZipEntry(relativePath);
@@ -209,7 +212,7 @@ public class FolderServiceImpl extends MinioService implements FolderService {
     }
 
     private void createFolder(String object) {
-        minioRepository.putObject(object, getFolderObjectContent(), FOLDER_OBJECT_SIZE);
+        minioService.putObject(object, getFolderObjectContent(), FOLDER_OBJECT_SIZE);
     }
 
     private void validateFolderExists(long userId, String path) {

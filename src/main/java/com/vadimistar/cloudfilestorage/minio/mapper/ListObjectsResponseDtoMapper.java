@@ -11,7 +11,7 @@ public class ListObjectsResponseDtoMapper {
         return ListObjectsResponseDto.builder()
                 .name(item.objectName())
                 .size(item.size())
-                .isDirectory(item.isDir())
+                .isDirectory(item.isDir() || item.size() == 0)
                 .build();
     }
 }
