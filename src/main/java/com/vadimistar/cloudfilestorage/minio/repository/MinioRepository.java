@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.stream.Stream;
 
 public interface MinioRepository {
-    Stream<ListObjectsResponseDto> listObjects(String prefix, ListObjectsMode mode);
+    Stream<ListObjectsResponseDto> listObjects(String prefix, boolean recursive);
     void copyObject(String from, String to);
     void removeObject(String object);
     void removeObjects(String prefix);

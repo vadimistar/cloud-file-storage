@@ -1,16 +1,13 @@
 package com.vadimistar.cloudfilestorage.minio.service.impl;
 
 import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
-import com.vadimistar.cloudfilestorage.minio.repository.ListObjectsMode;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
-import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -27,7 +24,7 @@ public class MinioServiceImpl implements MinioService {
     @Override
     public boolean isFolderExists(String object) {
         object = PathUtils.makeDirectoryPath(object);
-        return minioRepository.listObjects(object, ListObjectsMode.NON_RECURSIVE).findAny().isPresent();
+        return minioRepository.listObjects(object, false).findAny().isPresent();
     }
 
     @Override
@@ -52,6 +49,6 @@ public class MinioServiceImpl implements MinioService {
 
     @Override
     public Stream<ListObjectsResponseDto> listObjects(String prefix, boolean recursive) {
-        return minioRepository.listObjects(prefix, recursive ? ListObjectsMode.RECURSIVE : ListObjectsMode.NON_RECURSIVE);
+        return minioRepository.listObjects(prefix, recursive);
     }
 }
