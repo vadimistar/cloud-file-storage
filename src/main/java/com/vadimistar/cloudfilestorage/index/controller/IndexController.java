@@ -8,8 +8,7 @@ import com.vadimistar.cloudfilestorage.page.dto.PaginationItemDto;
 import com.vadimistar.cloudfilestorage.page.service.PageService;
 import com.vadimistar.cloudfilestorage.index.breadcrumbs.dto.BreadcrumbsElementDto;
 import com.vadimistar.cloudfilestorage.auth.entity.User;
-import com.vadimistar.cloudfilestorage.common.exceptions.FileServiceException;
-import com.vadimistar.cloudfilestorage.common.exceptions.FolderNotFoundException;
+import com.vadimistar.cloudfilestorage.common.exception.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
@@ -38,7 +37,7 @@ public class IndexController {
                             @RequestParam(required = false, defaultValue = "1") int page,
                             Model model,
                             @AuthorizedUser User user,
-                            HttpServletRequest httpServletRequest) throws FileServiceException {
+                            HttpServletRequest httpServletRequest) {
         path = URLUtils.decode(path);
         if (!folderService.isFolderExists(user.getId(), path)) {
             if (PathUtils.isHomeDirectory(path)) {
@@ -73,7 +72,7 @@ public class IndexController {
 
     @PostMapping("/create-folder")
     public String createFolder(@RequestParam String path,
-                               @AuthorizedUser User user) throws FileServiceException {
+                               @AuthorizedUser User user) {
         folderService.createUnnamedFolder(user.getId(), URLUtils.decode(path), MAX_NEW_FOLDER_ATTEMPTS);
         return "redirect:/?path=" + URLUtils.encode(path);
     }
@@ -81,7 +80,7 @@ public class IndexController {
     @PostMapping("/upload")
     public String upload(@RequestParam MultipartFile[] files,
                          @RequestParam String path,
-                         @AuthorizedUser User user) throws FileServiceException {
+                         @AuthorizedUser User user) {
         folderService.uploadFolder(user.getId(), files, URLUtils.decode(path));
         return "redirect:/?path=" + URLUtils.encode(path);
     }

@@ -1,6 +1,6 @@
 package com.vadimistar.cloudfilestorage.page.service.impl;
 
-import com.vadimistar.cloudfilestorage.common.exceptions.InvalidPageException;
+import com.vadimistar.cloudfilestorage.common.exception.InvalidPageException;
 import com.vadimistar.cloudfilestorage.page.dto.PaginationItemDto;
 import com.vadimistar.cloudfilestorage.page.dto.PaginationItemState;
 import com.vadimistar.cloudfilestorage.page.service.PageService;

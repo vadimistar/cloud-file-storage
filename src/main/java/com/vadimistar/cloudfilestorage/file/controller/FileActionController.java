@@ -2,9 +2,8 @@ package com.vadimistar.cloudfilestorage.file.controller;
 
 import com.vadimistar.cloudfilestorage.common.util.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.auth.entity.User;
-import com.vadimistar.cloudfilestorage.common.exceptions.FileActionException;
+import com.vadimistar.cloudfilestorage.common.exception.FileActionException;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
-import com.vadimistar.cloudfilestorage.common.exceptions.FileServiceException;
 import com.vadimistar.cloudfilestorage.file.dto.DeleteFileRequestDto;
 import com.vadimistar.cloudfilestorage.file.dto.DownloadFileRequestDto;
 import com.vadimistar.cloudfilestorage.file.dto.FileActionRequestDto;
@@ -34,7 +33,7 @@ public class FileActionController {
     public String fileAction(@ModelAttribute @Valid FileActionRequestDto request,
                              BindingResult bindingResult,
                              @AuthorizedUser User user,
-                             Model model) throws FileServiceException {
+                             Model model) {
         if (bindingResult.hasErrors()) {
             throw new FileActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
@@ -54,7 +53,7 @@ public class FileActionController {
     @GetMapping("/download")
     public ResponseEntity<?> download(@ModelAttribute @Valid DownloadFileRequestDto request,
                                       BindingResult bindingResult,
-                                      @AuthorizedUser User user) throws FileServiceException {
+                                      @AuthorizedUser User user) {
         if (bindingResult.hasErrors()) {
             throw new FileActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
@@ -75,7 +74,7 @@ public class FileActionController {
     @PostMapping("/rename")
     public String rename(@ModelAttribute @Valid RenameFileRequestDto request,
                          BindingResult bindingResult,
-                         @AuthorizedUser User user) throws FileServiceException {
+                         @AuthorizedUser User user) {
         if (bindingResult.hasErrors()) {
             throw new FileActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
@@ -90,7 +89,7 @@ public class FileActionController {
     @PostMapping("/delete")
     public String delete(@ModelAttribute @Valid DeleteFileRequestDto request,
                          BindingResult bindingResult,
-                         @AuthorizedUser User user) throws FileServiceException {
+                         @AuthorizedUser User user) {
         if (bindingResult.hasErrors()) {
             throw new FileActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()

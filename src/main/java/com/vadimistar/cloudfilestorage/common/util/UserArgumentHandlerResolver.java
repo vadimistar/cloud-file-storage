@@ -1,6 +1,6 @@
 package com.vadimistar.cloudfilestorage.common.util;
 
-import com.vadimistar.cloudfilestorage.common.exceptions.UserNotLoggedInException;
+import com.vadimistar.cloudfilestorage.common.exception.UserNotLoggedInException;
 import com.vadimistar.cloudfilestorage.auth.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.MethodParameter;
