@@ -1,7 +1,7 @@
 package com.vadimistar.cloudfilestorage.search.service;
 
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
-import com.vadimistar.cloudfilestorage.common.MinioTestUnits;
+import com.vadimistar.cloudfilestorage.common.TestUtils;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
 import lombok.SneakyThrows;
@@ -67,11 +67,11 @@ public class SearchServiceTests {
     }
 
     @Container
-    private static final MinIOContainer minioContainer = MinioTestUnits.createMinIOContainer();
+    private static final MinIOContainer minioContainer = TestUtils.createMinIOContainer();
 
     @DynamicPropertySource
     public static void minioProperties(DynamicPropertyRegistry registry) {
-        MinioTestUnits.addMinioProperties(registry, minioContainer);
+        TestUtils.addMinioProperties(registry, minioContainer);
     }
 
 }

@@ -1,7 +1,7 @@
 package com.vadimistar.cloudfilestorage.file.service;
 
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
-import com.vadimistar.cloudfilestorage.common.MinioTestUnits;
+import com.vadimistar.cloudfilestorage.common.TestUtils;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
@@ -134,11 +134,11 @@ public class FileServiceTests {
     private static final byte[] MOCK_FILE_CONTENTS = "Mock file content".getBytes(StandardCharsets.UTF_8);
 
     @Container
-    private static final MinIOContainer minioContainer = MinioTestUnits.createMinIOContainer();
+    private static final MinIOContainer minioContainer = TestUtils.createMinIOContainer();
 
     @DynamicPropertySource
     public static void minioProperties(DynamicPropertyRegistry registry) {
-        MinioTestUnits.addMinioProperties(registry, minioContainer);
+        TestUtils.addMinioProperties(registry, minioContainer);
     }
 
 }
