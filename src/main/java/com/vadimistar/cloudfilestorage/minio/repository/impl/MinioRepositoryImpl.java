@@ -12,13 +12,13 @@ import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-@Component
+@Repository
 @AllArgsConstructor
 public class MinioRepositoryImpl implements MinioRepository {
 
