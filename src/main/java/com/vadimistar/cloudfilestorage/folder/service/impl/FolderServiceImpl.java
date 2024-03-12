@@ -38,7 +38,7 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public void uploadFolder(long userId, MultipartFile[] files, String path) {
+    public synchronized void uploadFolder(long userId, MultipartFile[] files, String path) {
         path = PathUtils.makeDirectoryPath(path);
         Set<String> fileDirectories = new HashSet<>();
 
@@ -68,7 +68,7 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public String renameFolder(long userId, String path, String name) {
+    public synchronized String renameFolder(long userId, String path, String name) {
         validateFolderExists(userId, path);
 
         if (PathUtils.getFilename(path).equals(name)) {
