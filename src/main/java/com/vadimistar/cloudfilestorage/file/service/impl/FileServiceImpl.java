@@ -17,13 +17,13 @@ public class FileServiceImpl implements FileService {
     private final MinioService minioService;
 
     @Override
-    public void uploadFile(long userId, InputStream inputStream, long objectSize, String path){
+    public synchronized void uploadFile(long userId, InputStream inputStream, long objectSize, String path){
         MinioUtils.validateResourceNotExists(minioService, userId, path);
         minioService.putObject(MinioUtils.getMinioPath(userId, path), inputStream, objectSize);
     }
 
     @Override
-    public String renameFile(long userId, String path, String name){
+    public synchronized String renameFile(long userId, String path, String name){
         validateFileExists(userId, path);
         String newPath = PathUtils.join(PathUtils.getParentDirectory(path), name);
         if (newPath.equals(path)) {
