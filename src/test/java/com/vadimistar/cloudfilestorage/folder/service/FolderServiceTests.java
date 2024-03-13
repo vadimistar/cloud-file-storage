@@ -5,6 +5,7 @@ import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.exception.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.common.exception.ResourceAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
+import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +73,8 @@ public class FolderServiceTests {
     public void uploadFolder_intoExistingPath_savesFilesRelativelyAtPath() {
         folderService.createFolder(USER_ID, "a/b");
         folderService.uploadFolder(USER_ID, new MultipartFile[]{getMockFile()}, "a/b");
-        Assertions.assertTrue(minioRepository.isObjectExists(USER_ID_DIRECTORY + "a/b/" + MOCK_FILE_NAME));
+        String minioPath = MinioUtils.getMinioPath(USER_ID, "a/b/" + MOCK_FILE_NAME);
+        Assertions.assertTrue(minioRepository.isObjectExists(minioPath));
     }
 
     @Test
@@ -96,8 +98,11 @@ public class FolderServiceTests {
     public void renameFolder_nonEmptyFolder_folderExists_copiesContents_deletesOldContents() {
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "a");
         folderService.renameFolder(USER_ID, "a", "b");
-        Assertions.assertTrue(minioRepository.isObjectExists(USER_ID_DIRECTORY + "b/" + MOCK_FILE_NAME));
-        Assertions.assertFalse(minioRepository.isObjectExists(USER_ID_DIRECTORY + "a/" + MOCK_FILE_NAME));
+
+        String objectInB = MinioUtils.getMinioPath(USER_ID, "b/" + MOCK_FILE_NAME);
+        String objectInA = MinioUtils.getMinioPath(USER_ID, "a/" + MOCK_FILE_NAME);
+        Assertions.assertTrue(minioRepository.isObjectExists(objectInB));
+        Assertions.assertFalse(minioRepository.isObjectExists(objectInA));
         Assertions.assertFalse(folderService.isFolderExists(USER_ID, "a"));
     }
 

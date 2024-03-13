@@ -67,4 +67,22 @@ public class PathUtils {
         }
         return pathParts[0];
     }
+
+    public static String uriEncodePath(String path) {
+        String[] pathParts = path.split("/");
+        for (int i = 0; i < pathParts.length; i ++) {
+            pathParts[i] = URLUtils.encode(pathParts[i]);
+        }
+        boolean endsWithSlash = path.endsWith("/");
+        return String.join("/", pathParts) + (endsWithSlash ? '/' : "");
+    }
+
+    public static String uriDecodePath(String path) {
+        String[] pathParts = path.split("/");
+        for (int i = 0; i < pathParts.length; i ++) {
+            pathParts[i] = URLUtils.decode(pathParts[i]);
+        }
+        boolean endsWithSlash = path.endsWith("/");
+        return String.join("/", pathParts) + (endsWithSlash ? '/' : "");
+    }
 }
