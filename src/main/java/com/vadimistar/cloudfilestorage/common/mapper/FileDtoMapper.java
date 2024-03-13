@@ -11,7 +11,7 @@ public class FileDtoMapper {
 
     public static FileDto makeFileDto(ListObjectsResponseDto listObjectsResponseDto) {
         return FileDto.builder()
-                .name(PathUtils.getFilename(listObjectsResponseDto.getName()))
+                .name(MinioUtils.getNormalFilename(listObjectsResponseDto.getName()))
                 .isFolder(MinioUtils.isDirectory(listObjectsResponseDto))
                 .path(MinioUtils.getNormalPath(listObjectsResponseDto.getName()))
                 .build();

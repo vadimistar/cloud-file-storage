@@ -17,6 +17,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,7 +72,8 @@ public class FolderServiceImpl implements FolderService {
     public synchronized String renameFolder(long userId, String path, String name) {
         validateFolderExists(userId, path);
 
-        if (PathUtils.getFilename(path).equals(name)) {
+        String minioFilename = MinioUtils.getMinioFilename(name);
+        if (MinioUtils.getMinioFilename(path).equals(minioFilename)) {
             return path;
         }
 
@@ -84,7 +86,9 @@ public class FolderServiceImpl implements FolderService {
         List<String> files = new ArrayList<>();
         List<String> directories = new ArrayList<>();
 
-        minioService.listObjects(MinioUtils.getMinioPath(userId, path), true).forEach(item -> {
+        String minioPath = MinioUtils.getMinioPath(userId, path);
+
+        minioService.listObjects(minioPath, true).forEach(item -> {
             if (item.isDirectory()) {
                 directories.add(item.getName());
             } else {
@@ -92,8 +96,11 @@ public class FolderServiceImpl implements FolderService {
             }
         });
 
-        renameFilesInFolder(files, path, PathUtils.makeDirectoryPath(newPath));
-        renameDirectoriesInFolder(directories, PathUtils.getFilename(path), name);
+        newPath = PathUtils.makeDirectoryPath(newPath);
+        String minioNewPath = MinioUtils.getMinioPath(userId, newPath);
+
+        renameFilesInFolder(files, minioPath, minioNewPath);
+        renameDirectoriesInFolder(directories, minioPath, minioNewPath);
 
         return newPath;
     }
@@ -123,6 +130,7 @@ public class FolderServiceImpl implements FolderService {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
 
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(result)) {
+            // FIXME: When folder contains only other folders inside, an empty zip is produced.
             listFiles(userId, path, true)
                     .filter(file -> !file.isFolder())
                     .forEach(file -> downloadFile(file, userId, path, zipOutputStream));
@@ -165,7 +173,7 @@ public class FolderServiceImpl implements FolderService {
         files.forEach(file -> {
             minioService.copyObject(
                     file,
-                    file.replaceFirst(oldPath, newPath)
+                    file.replaceFirst(Pattern.quote(oldPath), Matcher.quoteReplacement(newPath))
             );
             minioService.removeObject(file);
         });
@@ -188,22 +196,22 @@ public class FolderServiceImpl implements FolderService {
                 .map(FileDtoMapper::makeFileDto);
     }
 
-    @SneakyThrows
     private void downloadFile(FileDto file, long userId, String path, ZipOutputStream zipOutputStream) {
         String relativePath = PathUtils.getRelativePath(file.getPath(), path);
 
-        ByteArrayResource byteArrayResource = new ByteArrayResource(
-                minioService
-                        .getObject(MinioUtils.getMinioPath(userId, file.getPath()))
-                        .readAllBytes()
-        );
-
-        ZipEntry zipEntry = new ZipEntry(relativePath);
-        zipEntry.setSize(byteArrayResource.contentLength());
-        zipEntry.setTime(System.currentTimeMillis());
         try {
+            ByteArrayResource byteArrayResource = new ByteArrayResource(
+                    minioService
+                            .getObject(MinioUtils.getMinioPath(userId, file.getPath()))
+                            .readAllBytes()
+            );
+
+            ZipEntry zipEntry = new ZipEntry(relativePath);
+            zipEntry.setSize(byteArrayResource.contentLength());
+            zipEntry.setTime(System.currentTimeMillis());
+
             zipOutputStream.putNextEntry(zipEntry);
-            StreamUtils.copy(byteArrayResource.getInputStream(), zipOutputStream);
+            zipOutputStream.write(byteArrayResource.toString().getBytes(StandardCharsets.UTF_8));
             zipOutputStream.closeEntry();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
