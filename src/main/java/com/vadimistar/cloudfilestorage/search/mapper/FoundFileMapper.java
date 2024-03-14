@@ -6,7 +6,7 @@ import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class FoundFileDtoMapper {
+public class FoundFileMapper {
 
     public static FoundFileDto makeFoundFileDto(FileDto fileDto) {
         return FoundFileDto.builder()
