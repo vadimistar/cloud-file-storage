@@ -5,7 +5,7 @@ import io.minio.messages.Item;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class ListObjectsResponseDtoMapper {
+public class ListObjectsResponseMapper {
 
     public static ListObjectsResponseDto makeListObjectsResponseDto(Item item) {
         return ListObjectsResponseDto.builder()

@@ -3,7 +3,7 @@ package com.vadimistar.cloudfilestorage.minio.repository.impl;
 import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
 import com.vadimistar.cloudfilestorage.minio.exception.MinioException;
 import com.vadimistar.cloudfilestorage.minio.config.MinioConfig;
-import com.vadimistar.cloudfilestorage.minio.mapper.ListObjectsResponseDtoMapper;
+import com.vadimistar.cloudfilestorage.minio.mapper.ListObjectsResponseMapper;
 import com.vadimistar.cloudfilestorage.common.util.StreamUtils;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import io.minio.*;
@@ -38,7 +38,7 @@ public class MinioRepositoryImpl implements MinioRepository {
             } catch (Exception e) {
                 throw new MinioException(e.getMessage());
             }
-        }).map(ListObjectsResponseDtoMapper::makeListObjectsResponseDto);
+        }).map(ListObjectsResponseMapper::makeListObjectsResponseDto);
     }
 
     @Override

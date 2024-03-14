@@ -1,7 +1,7 @@
 package com.vadimistar.cloudfilestorage.folder.service.impl;
 
 import com.vadimistar.cloudfilestorage.common.exception.FolderNotFoundException;
-import com.vadimistar.cloudfilestorage.common.mapper.FileDtoMapper;
+import com.vadimistar.cloudfilestorage.common.mapper.FileMapper;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
 import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
 import com.vadimistar.cloudfilestorage.common.util.PathUtils;
@@ -10,10 +10,8 @@ import com.vadimistar.cloudfilestorage.common.exception.UploadFileException;
 import com.vadimistar.cloudfilestorage.common.util.StringUtils;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -193,7 +191,7 @@ public class FolderServiceImpl implements FolderService {
         String prefix = MinioUtils.getMinioPath(userId, path);
         return minioService.listObjects(prefix, recursive)
                 .filter(item -> !item.getName().equals(prefix))
-                .map(FileDtoMapper::makeFileDto);
+                .map(FileMapper::makeFileDto);
     }
 
     private void downloadFile(FileDto file, long userId, String path, ZipOutputStream zipOutputStream) {
