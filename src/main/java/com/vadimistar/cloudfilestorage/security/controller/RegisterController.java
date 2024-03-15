@@ -46,6 +46,4 @@ public class RegisterController {
         }
         return "redirect:/login?registered";
     }
-
-    private static final String ROOT_DIRECTORY = "/";
 }
