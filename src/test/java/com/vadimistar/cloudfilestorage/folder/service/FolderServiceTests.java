@@ -195,7 +195,6 @@ public class FolderServiceTests {
             zip.getNextEntry();
 
             ByteArrayOutputStream decompressedFileContents = new ByteArrayOutputStream();
-            decompressedFileContents.write(zip.readAllBytes());
             zip.transferTo(decompressedFileContents);
             Assertions.assertArrayEquals(MOCK_FILE_CONTENTS, decompressedFileContents.toByteArray());
 

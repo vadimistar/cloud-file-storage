@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -219,7 +218,7 @@ public class FolderServiceImpl implements FolderService {
             zipEntry.setTime(System.currentTimeMillis());
 
             zipOutputStream.putNextEntry(zipEntry);
-            zipOutputStream.write(byteArrayResource.toString().getBytes(StandardCharsets.UTF_8));
+            zipOutputStream.write(byteArrayResource.getByteArray());
             zipOutputStream.closeEntry();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
