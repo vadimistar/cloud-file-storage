@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
 
-    UserDto registerUser(RegisterUserRequestDto request) throws RegisterUserException;
+    UserDto registerUser(RegisterUserRequestDto request);
     Optional<UserDto> getUserByUsername(String username);
 }
