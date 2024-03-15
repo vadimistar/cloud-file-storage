@@ -7,10 +7,10 @@
 <div th:fragment="pagination">
     <nav aria-label="Pagination">
         <ul class="pagination">
-            <li th:each="pageItem : ${pagination}"
-                th:class="${'page-item ' + pageItem.getState().getStyleClass()}"
+            <li th:each="button : ${pageButtons}"
+                th:class="${'page-item ' + button.getState().getStyleClass()}"
             >
-                <a class="page-link" th:href="${pageItem.getHref()}" th:text="${pageItem.getText()}"></a>
+                <a class="page-link" th:href="${button.getUri()}" th:text="${button.getText()}"></a>
             </li>
         </ul>
     </nav>

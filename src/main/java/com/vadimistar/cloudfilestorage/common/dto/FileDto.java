@@ -8,8 +8,6 @@ import lombok.Data;
 public class FileDto {
 
     private String name;
-
     private boolean isFolder;
-
     private String path;
 }

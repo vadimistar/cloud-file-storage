@@ -13,15 +13,16 @@
         <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
         <div class="row">
             <div class="w-25 py-2 px-2">
-                <form method="post" th:action="@{/upload(path=${param.path})}" th:object="${request}" enctype="multipart/form-data">
+                <form method="post" th:action="@{/folder/upload}" enctype="multipart/form-data" th:object="${request}">
                     <input class="form-control" type="file" name="files" multiple/>
                     <div class="form-group mt-2">
                         <button type="submit" class="btn btn-primary w-100">Upload file</button>
                     </div>
+                    <input type="hidden" th:value="${param.path}" name="path" />
                 </form>
             </div>
             <div class="w-25 py-2 px-2">
-                <form method="post" th:action="@{/upload}" enctype="multipart/form-data">
+                <form method="post" th:action="@{/folder/upload}" enctype="multipart/form-data" th:object="${request}">
                     <input class="form-control" type="file" name="files" webkitdirectory />
                     <div class="form-group mt-2">
                         <button type="submit" class="btn btn-primary w-100">Upload folder</button>
@@ -30,7 +31,7 @@
                 </form>
             </div>
             <div class="w-25 py-2 px-2 mt-auto">
-                <form method="post" th:action="@{/create-folder}">
+                <form method="post" th:action="@{/folder/create}">
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary w-100">Create folder</button>
                     </div>
@@ -54,26 +55,26 @@
         </div>
         <div class="container">
             <div class="row">
-                <div class="col-auto" th:each="entry : ${entries}">
+                <div class="col-auto" th:each="file : ${files}">
                     <div class="my-2">
                         <div class="bg-light" style="width: 180px; height: 270px;">
                             <div class="text-end">
-                                <a class="btn btn-light" th:if="${entry.isFolder()}" th:href="@{/folder-action(path=${entry.getPath()})}">●●●</a>
-                                <a class="btn btn-light" th:unless="${entry.isFolder()}" th:href="@{/file-action(path=${entry.getPath()})}">●●●</a>
+                                <a class="btn btn-light" th:if="${file.isFolder()}" th:href="@{/folder(path=${file.getPath()})}">●●●</a>
+                                <a class="btn btn-light" th:unless="${file.isFolder()}" th:href="@{/file(path=${file.getPath()})}">●●●</a>
                             </div>
-                            <div th:if="${entry.isFolder()}">
-                                <a th:href="@{'/?path=' + ${entry.getPath()}}">
+                            <div th:if="${file.isFolder()}">
+                                <a th:href="@{'/?path=' + ${file.getPath()}}">
                                     <div class="text-center my-2">
                                         <img th:src="@{/assets/folder128.png}" alt=""/>
                                     </div>
-                                    <p class="h6 mt-2 text-center" th:text="${entry.getName()}"></p>
+                                    <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
                                 </a>
                             </div>
-                            <div th:unless="${entry.isFolder()}">
+                            <div th:unless="${file.isFolder()}">
                                 <div class="text-center my-2">
                                     <img th:src="@{/assets/file128.png}" alt=""/>
                                 </div>
-                                <p class="h6 mt-2 text-center" th:text="${entry.getName()}"></p>
+                                <p class="h6 mt-2 text-center" th:text="${file.getName()}"></p>
                             </div>
                         </div>
                     </div>

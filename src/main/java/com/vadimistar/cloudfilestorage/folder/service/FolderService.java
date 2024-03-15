@@ -1,7 +1,7 @@
 package com.vadimistar.cloudfilestorage.folder.service;
 
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
-import com.vadimistar.cloudfilestorage.common.util.PathUtils;
+import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.stream.Stream;

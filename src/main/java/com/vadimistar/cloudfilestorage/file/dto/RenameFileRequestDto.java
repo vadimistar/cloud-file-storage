@@ -1,6 +1,6 @@
 package com.vadimistar.cloudfilestorage.file.dto;
 
-import com.vadimistar.cloudfilestorage.common.validation.NotContainsSlash;
+import com.vadimistar.cloudfilestorage.validation.NotContainsSlash;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 

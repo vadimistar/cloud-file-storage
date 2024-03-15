@@ -1,12 +1,14 @@
 package com.vadimistar.cloudfilestorage.search.controller;
 
-import com.vadimistar.cloudfilestorage.common.config.ApplicationConfig;
-import com.vadimistar.cloudfilestorage.common.util.AuthorizedUser;
-import com.vadimistar.cloudfilestorage.page.dto.PaginationItemDto;
-import com.vadimistar.cloudfilestorage.page.service.PageService;
-import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
-import com.vadimistar.cloudfilestorage.auth.entity.User;
+import com.vadimistar.cloudfilestorage.config.ApplicationConfig;
 import com.vadimistar.cloudfilestorage.search.service.SearchService;
+import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
+import com.vadimistar.cloudfilestorage.search.exception.InvalidSearchPageException;
+import com.vadimistar.cloudfilestorage.security.dto.UserDto;
+import com.vadimistar.cloudfilestorage.common.exception.InvalidPageException;
+import com.vadimistar.cloudfilestorage.argument_resolver.AuthorizedUser;
+import com.vadimistar.cloudfilestorage.common.util.page.PageButtonDto;
+import com.vadimistar.cloudfilestorage.common.util.page.PageUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -21,30 +23,27 @@ import java.util.List;
 public class SearchController {
 
     private final SearchService searchService;
-    private final ApplicationConfig applicationConfig;
-    private final PageService pageService;
+    private final ApplicationConfig appConfig;
 
     @GetMapping("/search")
     public String search(@RequestParam String query,
                          @RequestParam(required = false, defaultValue = "1") int page,
-                         @AuthorizedUser User user,
+                         @AuthorizedUser UserDto user,
                          Model model,
-                         HttpServletRequest httpServletRequest) {
+                         HttpServletRequest request) {
         List<FoundFileDto> foundFiles = searchService.searchFiles(user.getId(), query).toList();
 
-        List<FoundFileDto> modelFiles = pageService
-                .getPage(foundFiles.stream(), page, applicationConfig.getSearchPageSize())
-                .toList();
-        model.addAttribute("files", modelFiles);
+        try {
+            List<FoundFileDto> pageFiles = PageUtils.getPage(foundFiles, appConfig.getSearchPageSize(), page);
+            model.addAttribute("files", pageFiles);
+        } catch (InvalidPageException e) {
+            throw new InvalidSearchPageException(e.getMessage());
+        }
 
-        int totalPages = pageService.countPages(
-                applicationConfig.getSearchPageSize(),
-                foundFiles.size()
+        List<PageButtonDto> pageButtons = PageUtils.createPageButtons(
+                foundFiles.size(), appConfig.getSearchPageSize(), page, request
         );
-        List<PaginationItemDto> pagination = pageService.createPagination(
-                page, totalPages, httpServletRequest.getRequestURI() + "?" + httpServletRequest.getQueryString()
-        );
-        model.addAttribute("pagination", pagination);
+        model.addAttribute("pageButtons", pageButtons);
 
         return "search";
     }
