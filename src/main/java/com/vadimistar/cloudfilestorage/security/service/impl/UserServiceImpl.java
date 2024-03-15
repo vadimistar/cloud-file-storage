@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto registerUser(RegisterUserRequestDto request) throws RegisterUserException {
+    public UserDto registerUser(RegisterUserRequestDto request) {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new RegisterUserException("Passwords don't match");
         }
