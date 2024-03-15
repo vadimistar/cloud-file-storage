@@ -3,7 +3,7 @@ package com.vadimistar.cloudfilestorage.minio.service.impl;
 import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
-import com.vadimistar.cloudfilestorage.common.util.PathUtils;
+import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

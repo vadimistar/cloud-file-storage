@@ -1,0 +1,14 @@
+package com.vadimistar.cloudfilestorage.security.service;
+
+import com.vadimistar.cloudfilestorage.security.dto.RegisterUserRequestDto;
+import com.vadimistar.cloudfilestorage.security.dto.UserDto;
+import com.vadimistar.cloudfilestorage.security.exception.RegisterUserException;
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+import java.util.Optional;
+
+public interface UserService extends UserDetailsService {
+
+    UserDto registerUser(RegisterUserRequestDto request) throws RegisterUserException;
+    Optional<UserDto> getUserByUsername(String username);
+}

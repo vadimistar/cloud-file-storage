@@ -2,10 +2,10 @@ package com.vadimistar.cloudfilestorage.folder.service;
 
 import com.vadimistar.cloudfilestorage.common.TestUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
-import com.vadimistar.cloudfilestorage.common.exception.FolderNotFoundException;
-import com.vadimistar.cloudfilestorage.common.exception.ResourceAlreadyExistsException;
+import com.vadimistar.cloudfilestorage.folder.exception.FolderNotFoundException;
+import com.vadimistar.cloudfilestorage.minio.exception.ResourceAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
-import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
+import com.vadimistar.cloudfilestorage.minio.util.MinioUtils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -195,6 +195,7 @@ public class FolderServiceTests {
             zip.getNextEntry();
 
             ByteArrayOutputStream decompressedFileContents = new ByteArrayOutputStream();
+            decompressedFileContents.write(zip.readAllBytes());
             zip.transferTo(decompressedFileContents);
             Assertions.assertArrayEquals(MOCK_FILE_CONTENTS, decompressedFileContents.toByteArray());
 

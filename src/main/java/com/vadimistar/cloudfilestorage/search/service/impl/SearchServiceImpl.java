@@ -14,11 +14,12 @@ import java.util.stream.Stream;
 public class SearchServiceImpl implements SearchService {
 
     private final FolderService folderService;
+    private final FoundFileMapper foundFileMapper;
 
     @Override
     public Stream<FoundFileDto> searchFiles(long userId, String query) {
         return folderService.getAllContent(userId)
                 .filter(file -> file.getName().contains(query))
-                .map(FoundFileMapper::makeFoundFileDto);
+                .map(foundFileMapper::makeFoundFileDto);
     }
 }

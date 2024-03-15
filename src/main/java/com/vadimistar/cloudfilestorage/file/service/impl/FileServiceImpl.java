@@ -3,8 +3,8 @@ package com.vadimistar.cloudfilestorage.file.service.impl;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
-import com.vadimistar.cloudfilestorage.common.util.PathUtils;
-import com.vadimistar.cloudfilestorage.minio.utils.MinioUtils;
+import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
+import com.vadimistar.cloudfilestorage.minio.util.MinioUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
