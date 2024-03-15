@@ -82,7 +82,6 @@ public class FolderController {
                 folderService.downloadFolder(user.getId(), decodedPath)
         );
         String currentDirectoryName = PathUtils.getCurrentDirectoryName(decodedPath);
-        // TODO: try not to url encode
         String filename = URLUtils.encode(currentDirectoryName);
         return ResponseEntity
                 .ok()

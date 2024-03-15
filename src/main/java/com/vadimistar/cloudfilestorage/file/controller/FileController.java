@@ -60,7 +60,6 @@ public class FileController {
         ByteArrayResource byteArrayResource = new ByteArrayResource(
                 fileService.downloadFile(user.getId(), decodedPath)
         );
-        // FIXME: Try not to URL encode
         String filename = URLUtils.encode(PathUtils.getFilename(decodedPath));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
