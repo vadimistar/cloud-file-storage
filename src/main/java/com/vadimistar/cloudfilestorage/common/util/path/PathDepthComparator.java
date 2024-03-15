@@ -10,8 +10,12 @@ public class PathDepthComparator implements Comparator<String> {
 
     @Override
     public int compare(String s1, String s2) {
-        long depth1 = StringUtils.count(s1, '/');
-        long depth2 = StringUtils.count(s2, '/');
+        long depth1 = getDepth(s1);
+        long depth2 = getDepth(s2);
         return Long.compare(depth1, depth2);
+    }
+
+    private static long getDepth(String path) {
+        return StringUtils.count(path, '/');
     }
 }
