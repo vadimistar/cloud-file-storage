@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.validation;
+package com.vadimistar.cloudfilestorage.common.validation;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.context.support.DefaultMessageSourceResolvable;

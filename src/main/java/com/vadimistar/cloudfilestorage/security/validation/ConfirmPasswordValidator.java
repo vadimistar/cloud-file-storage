@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.validation;
+package com.vadimistar.cloudfilestorage.security.validation;
 
 import com.vadimistar.cloudfilestorage.security.dto.RegisterUserRequestDto;
 import jakarta.validation.ConstraintValidator;

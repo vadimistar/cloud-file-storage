@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.validation;
+package com.vadimistar.cloudfilestorage.folder.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
