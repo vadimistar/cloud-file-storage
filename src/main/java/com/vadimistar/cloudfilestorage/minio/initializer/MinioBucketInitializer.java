@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.minio.component;
+package com.vadimistar.cloudfilestorage.minio.initializer;
 
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import jakarta.annotation.PostConstruct;
