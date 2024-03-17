@@ -7,9 +7,7 @@ import lombok.Data;
 @Builder
 public class ListObjectsResponseDto {
 
-    private final String name;
-
-    private final long size;
-
-    private final boolean isDirectory;
+    private String name;
+    private long size;
+    private boolean isDirectory;
 }

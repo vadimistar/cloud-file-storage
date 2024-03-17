@@ -8,8 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class UploadFolderRequestDto {
 
     @NotNull(message = "No files provided")
-    private final MultipartFile[] files;
+    private MultipartFile[] files;
 
     @NotNull(message = "Path is not provided")
-    private final String path;
+    private String path;
 }

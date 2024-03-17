@@ -37,7 +37,7 @@ public class MinioRepositoryImpl implements MinioRepository {
             try {
                 return itemResult.get();
             } catch (Exception e) {
-                throw new com.vadimistar.cloudfilestorage.minio.exception.MinioException(e.getMessage());
+                throw new MinioException(e.getMessage());
             }
         }).map(listObjectsResponseMapper::makeListObjectsResponseDto);
     }
@@ -56,7 +56,7 @@ public class MinioRepositoryImpl implements MinioRepository {
                     )
                     .build());
         } catch (Exception e) {
-            throw new com.vadimistar.cloudfilestorage.minio.exception.MinioException(e.getMessage());
+            throw new MinioException(e.getMessage());
         }
     }
 
@@ -68,7 +68,7 @@ public class MinioRepositoryImpl implements MinioRepository {
                     .object(object)
                     .build());
         } catch (Exception e) {
-            throw new com.vadimistar.cloudfilestorage.minio.exception.MinioException(e.getMessage());
+            throw new MinioException(e.getMessage());
         }
     }
 
@@ -81,7 +81,7 @@ public class MinioRepositoryImpl implements MinioRepository {
                     .stream(stream, objectSize, FILE_PART_SIZE)
                     .build());
         } catch (Exception e) {
-            throw new com.vadimistar.cloudfilestorage.minio.exception.MinioException(e.getMessage());
+            throw new MinioException(e.getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ public class MinioRepositoryImpl implements MinioRepository {
                     .object(object)
                     .build());
         } catch (Exception e) {
-            throw new com.vadimistar.cloudfilestorage.minio.exception.MinioException(e.getMessage());
+            throw new MinioException(e.getMessage());
         }
     }
 
@@ -104,7 +104,7 @@ public class MinioRepositoryImpl implements MinioRepository {
                     .bucket(minioConfig.getBucketName())
                     .build());
         } catch (Exception e) {
-            throw new com.vadimistar.cloudfilestorage.minio.exception.MinioException(e.getMessage());
+            throw new MinioException(e.getMessage());
         }
     }
 
@@ -115,7 +115,7 @@ public class MinioRepositoryImpl implements MinioRepository {
                     .bucket(minioConfig.getBucketName())
                     .build());
         } catch (Exception e) {
-            throw new com.vadimistar.cloudfilestorage.minio.exception.MinioException(e.getMessage());
+            throw new MinioException(e.getMessage());
         }
     }
 
@@ -125,13 +125,12 @@ public class MinioRepositoryImpl implements MinioRepository {
             minioClient.statObject(StatObjectArgs.builder()
                     .bucket(minioConfig.getBucketName())
                     .object(object)
-                    .build()
-            );
+                    .build());
             return true;
         } catch (ErrorResponseException e) {
             return false;
         } catch (Exception e) {
-            throw new com.vadimistar.cloudfilestorage.minio.exception.MinioException(e.getMessage());
+            throw new MinioException(e.getMessage());
         }
     }
 
@@ -154,14 +153,14 @@ public class MinioRepositoryImpl implements MinioRepository {
                     .bucket(minioConfig.getBucketName())
                     .build());
         } catch (Exception e) {
-            throw new com.vadimistar.cloudfilestorage.minio.exception.MinioException(e.getMessage());
+            throw new MinioException(e.getMessage());
         }
     }
 
     private static void handleRemoveObjectResult(Result<DeleteError> result) {
         try {
             DeleteError deleteError = result.get();
-            throw new com.vadimistar.cloudfilestorage.minio.exception.MinioException(deleteError.message());
+            throw new MinioException(deleteError.message());
         } catch (Exception e) {
             throw new MinioException(e.getMessage());
         }

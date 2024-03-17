@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.stream.Stream;
 
 public interface MinioService {
+
     boolean isFileExists(String object);
     boolean isFolderExists(String object);
     void putObject(String object, InputStream inputStream, long size);
