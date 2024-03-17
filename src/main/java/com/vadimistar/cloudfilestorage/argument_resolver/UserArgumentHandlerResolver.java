@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -26,8 +27,8 @@ public class UserArgumentHandlerResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        var principal = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+        User principal = (User) authentication.getPrincipal();
         return userService.getUserByUsername(principal.getUsername())
-                .orElseThrow(UserNotLoggedInException::new);
+                .orElseThrow(() -> new UserNotLoggedInException("You are not logged in, please log in again"));
     }
 }
