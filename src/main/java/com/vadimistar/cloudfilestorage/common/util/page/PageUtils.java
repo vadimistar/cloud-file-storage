@@ -20,7 +20,7 @@ public class PageUtils {
         return allContent.stream().skip((long) index * pageSize).limit(pageSize).toList();
     }
 
-    public List<PageButtonDto> createPageButtons(
+    public static List<PageButtonDto> createPageButtons(
             int allContentSize, int pageSize, int currentPage, HttpServletRequest request) {
         String uri = getUriWithQuery(request);
         int totalPages = getTotalPages(allContentSize, pageSize);
