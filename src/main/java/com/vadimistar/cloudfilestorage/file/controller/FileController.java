@@ -11,7 +11,7 @@ import com.vadimistar.cloudfilestorage.security.dto.UserDto;
 import com.vadimistar.cloudfilestorage.argument_resolver.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
-import com.vadimistar.cloudfilestorage.validation.ValidationUtils;
+import com.vadimistar.cloudfilestorage.common.validation.ValidationUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -41,7 +41,7 @@ public class FileController {
         }
         String decodedPath = URLUtils.decode(request.getPath());
         if (!fileService.isFileExists(user.getId(), decodedPath)) {
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("File is not found: " + decodedPath);
         }
         model.addAttribute("name", PathUtils.getFilename(decodedPath));
         return "file";
