@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.validation;
+package com.vadimistar.cloudfilestorage.security.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
