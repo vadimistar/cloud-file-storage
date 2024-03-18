@@ -94,10 +94,8 @@ public class FolderServiceImpl implements FolderService {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
 
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(result)) {
-            // FIXME: When folder contains only other folders inside, an empty zip is produced.
-            listFiles(userId, path, true)
-                    .filter(file -> !file.isFolder())
-                    .forEach(file -> downloadFile(file, userId, path, zipOutputStream));
+            List<FileDto> filesToDownload = getFilesToDownload(userId, path);
+            filesToDownload.forEach(file -> downloadFile(file, userId, path, zipOutputStream));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -201,6 +199,17 @@ public class FolderServiceImpl implements FolderService {
         return minioService.listObjects(prefix, recursive)
                 .filter(item -> !item.getName().equals(prefix))
                 .map(fileMapper::makeFileDto);
+    }
+
+    private List<FileDto> getFilesToDownload(long userId, String path) {
+        List<FileDto> notFolderFiles = listFiles(userId, path, true)
+                .filter(file -> !file.isFolder())
+                .toList();
+        if (notFolderFiles.isEmpty()) {
+            return listFiles(userId, path, true).toList();
+        } else {
+            return notFolderFiles;
+        }
     }
 
     private void downloadFile(FileDto file, long userId, String path, ZipOutputStream zipOutputStream) {
