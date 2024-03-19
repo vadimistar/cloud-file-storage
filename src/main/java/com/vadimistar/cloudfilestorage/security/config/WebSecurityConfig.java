@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -24,6 +25,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.GET, "/register", "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/register", "/login").permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/public/**")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
