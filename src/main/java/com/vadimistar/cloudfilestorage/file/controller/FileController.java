@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @AllArgsConstructor
@@ -39,11 +40,10 @@ public class FileController {
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        String decodedPath = URLUtils.decode(request.getPath());
-        if (!fileService.isFileExists(user.getId(), decodedPath)) {
-            throw new FileNotFoundException("File is not found: " + decodedPath);
+        if (!fileService.isFileExists(user.getId(), request.getPath())) {
+            throw new FileNotFoundException("File is not found: " + request.getPath());
         }
-        model.addAttribute("name", PathUtils.getFilename(decodedPath));
+        model.addAttribute("name", PathUtils.getFilename(request.getPath()));
         return "file";
     }
 
@@ -56,11 +56,10 @@ public class FileController {
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        String decodedPath = URLUtils.decode(request.getPath());
         ByteArrayResource byteArrayResource = new ByteArrayResource(
-                fileService.downloadFile(user.getId(), decodedPath)
+                fileService.downloadFile(user.getId(), request.getPath())
         );
-        String filename = URLUtils.encode(PathUtils.getFilename(decodedPath));
+        String filename = URLUtils.encode(PathUtils.getFilename(request.getPath()));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                 .body(byteArrayResource);
@@ -69,29 +68,31 @@ public class FileController {
     @PostMapping("/rename")
     public String rename(@ModelAttribute @Valid RenameFileRequestDto request,
                          BindingResult bindingResult,
-                         @AuthorizedUser UserDto user) {
+                         @AuthorizedUser UserDto user,
+                         RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             throw new FileActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        String decodedPath = URLUtils.decode(request.getPath());
-        String newPath = fileService.renameFile(user.getId(), decodedPath, request.getName());
-        return "redirect:/file?path=" + URLUtils.encode(newPath);
+        String newPath = fileService.renameFile(user.getId(), request.getPath(), request.getName());
+        redirectAttributes.addAttribute("path", newPath);
+        return "redirect:/file";
     }
 
     @PostMapping("/delete")
     public String delete(@ModelAttribute @Valid DeleteFileRequestDto request,
                          BindingResult bindingResult,
-                         @AuthorizedUser UserDto user) {
+                         @AuthorizedUser UserDto user,
+                         RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             throw new FileActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        String decodedPath = URLUtils.decode(request.getPath());
-        fileService.deleteFile(user.getId(), decodedPath);
+        fileService.deleteFile(user.getId(), request.getPath());
         String parentDirectory = PathUtils.getParentDirectory(request.getPath());
-        return "redirect:/?path=" + URLUtils.encode(parentDirectory);
+        redirectAttributes.addAttribute("path", parentDirectory);
+        return "redirect:/";
     }
 }

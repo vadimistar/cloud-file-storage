@@ -63,7 +63,7 @@
                                 <a class="btn btn-light" th:unless="${file.isFolder()}" th:href="@{/file(path=${file.getPath()})}">●●●</a>
                             </div>
                             <div th:if="${file.isFolder()}">
-                                <a th:href="@{'/?path=' + ${file.getPath()}}">
+                                <a th:href="@{/(path=${file.getPath()})}">
                                     <div class="text-center my-2">
                                         <img th:src="@{/assets/folder128.png}" alt=""/>
                                     </div>

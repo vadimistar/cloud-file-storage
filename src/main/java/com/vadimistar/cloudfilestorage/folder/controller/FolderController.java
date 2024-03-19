@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @AllArgsConstructor
@@ -37,35 +38,36 @@ public class FolderController {
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        String decodedPath = URLUtils.decode(request.getPath());
-        if (!folderService.isFolderExists(user.getId(), decodedPath)) {
-            throw new FolderNotFoundException("Folder is not found: " + decodedPath);
+        if (!folderService.isFolderExists(user.getId(), request.getPath())) {
+            throw new FolderNotFoundException("Folder is not found: " + request.getPath());
         }
-        model.addAttribute("name", PathUtils.getFilename(decodedPath));
+        model.addAttribute("name", PathUtils.getFilename(request.getPath()));
         return "folder";
     }
 
     @PostMapping("/create")
     public String createFolder(@RequestParam(required = false, defaultValue = "") String path,
-                               @AuthorizedUser UserDto user) {
-        String decodedPath = URLUtils.decode(path);
-        folderService.createUnnamedFolder(user.getId(), decodedPath, MAX_NEW_FOLDER_ATTEMPTS);
-        return "redirect:/?path=" + path;
+                               @AuthorizedUser UserDto user,
+                               RedirectAttributes redirectAttributes) {
+        folderService.createUnnamedFolder(user.getId(), path, MAX_NEW_FOLDER_ATTEMPTS);
+        redirectAttributes.addAttribute("path", path);
+        return "redirect:/";
     }
 
     @PostMapping("/upload")
     public String upload(@ModelAttribute @Valid UploadFolderRequestDto request,
                          BindingResult bindingResult,
-                         @AuthorizedUser UserDto user) {
+                         @AuthorizedUser UserDto user,
+                         RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             throw new UploadFolderException(
                     ValidationUtils.getMessage(bindingResult),
                     request.getPath()
             );
         }
-        String decodedPath = URLUtils.decode(request.getPath());
-        folderService.uploadFolder(user.getId(), request.getFiles(), decodedPath);
-        return "redirect:/?path=" + request.getPath();
+        folderService.uploadFolder(user.getId(), request.getFiles(), request.getPath());
+        redirectAttributes.addAttribute("path", request.getPath());
+        return "redirect:/";
     }
 
     @GetMapping("/download")
@@ -77,11 +79,10 @@ public class FolderController {
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        String decodedPath = URLUtils.decode(request.getPath());
         ByteArrayResource result = new ByteArrayResource(
-                folderService.downloadFolder(user.getId(), decodedPath)
+                folderService.downloadFolder(user.getId(), request.getPath())
         );
-        String currentDirectoryName = PathUtils.getCurrentDirectoryName(decodedPath);
+        String currentDirectoryName = PathUtils.getCurrentDirectoryName(request.getPath());
         String filename = URLUtils.encode(currentDirectoryName);
         return ResponseEntity
                 .ok()
@@ -92,30 +93,32 @@ public class FolderController {
     @PostMapping("/rename")
     public String rename(@ModelAttribute @Valid RenameFolderRequestDto request,
                          BindingResult bindingResult,
-                         @AuthorizedUser UserDto user) {
+                         @AuthorizedUser UserDto user,
+                         RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             throw new FolderActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        String decodedPath = URLUtils.decode(request.getPath());
-        String newPath = folderService.renameFolder(user.getId(), decodedPath, request.getName());
-        return "redirect:/folder?path=" + URLUtils.encode(newPath);
+        String newPath = folderService.renameFolder(user.getId(), request.getPath(), request.getName());
+        redirectAttributes.addAttribute("path", newPath);
+        return "redirect:/folder";
     }
 
     @PostMapping("/delete")
     public String delete(@ModelAttribute @Valid DeleteFolderRequestDto request,
                          BindingResult bindingResult,
-                         @AuthorizedUser UserDto user) {
+                         @AuthorizedUser UserDto user,
+                         RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             throw new FolderActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        String decodedPath = URLUtils.decode(request.getPath());
-        folderService.deleteFolder(user.getId(), decodedPath);
-        String parentDirectory = PathUtils.getParentDirectory(decodedPath);
-        return "redirect:/?path=" + URLUtils.encode(parentDirectory);
+        folderService.deleteFolder(user.getId(), request.getPath());
+        String parentDirectory = PathUtils.getParentDirectory(request.getPath());
+        redirectAttributes.addAttribute("path", parentDirectory);
+        return "redirect:/";
     }
 
     private static final int MAX_NEW_FOLDER_ATTEMPTS = 256;

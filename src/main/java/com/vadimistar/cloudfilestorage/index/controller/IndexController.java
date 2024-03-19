@@ -1,6 +1,5 @@
 package com.vadimistar.cloudfilestorage.index.controller;
 
-import com.vadimistar.cloudfilestorage.common.util.URLUtils;
 import com.vadimistar.cloudfilestorage.config.ApplicationConfig;
 import com.vadimistar.cloudfilestorage.argument_resolver.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.index.exception.InvalidIndexPageException;
@@ -36,7 +35,6 @@ public class IndexController {
                             Model model,
                             @AuthorizedUser UserDto user,
                             HttpServletRequest request) {
-        path = URLUtils.decode(path);
         if (PathUtils.isHomeDirectory(path)) {
             createHomeDirectoryIfNotExists(user.getId());
         }
@@ -48,9 +46,7 @@ public class IndexController {
         List<BreadcrumbsElementDto> breadcrumbs = BreadcrumbsUtils.createBreadcrumbs(path);
         model.addAttribute("breadcrumbs", breadcrumbs);
 
-        List<FileDto> folderContent = folderService.getFolderContent(user.getId(), path)
-                .peek(file -> file.setPath(URLUtils.encode(file.getPath())))
-                .toList();
+        List<FileDto> folderContent = folderService.getFolderContent(user.getId(), path).toList();
         try {
             List<FileDto> pageFiles = PageUtils.getPage(folderContent, appConfig.getIndexPageSize(), page);
             model.addAttribute("files", pageFiles);
