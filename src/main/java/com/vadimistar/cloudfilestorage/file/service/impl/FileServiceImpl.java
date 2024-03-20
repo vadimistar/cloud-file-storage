@@ -73,9 +73,6 @@ public class FileServiceImpl implements FileService {
     }
 
     private static void validateFilePath(String path) {
-        if (path.isBlank()) {
-            throw new InvalidFilePathException("File path is empty");
-        }
         if (path.endsWith("/")) {
             throw new InvalidFilePathException("File path is invalid, it ends with '/': " + path);
         }

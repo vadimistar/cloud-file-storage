@@ -84,16 +84,6 @@ public class FileServiceTests {
 
     @SneakyThrows
     @Test
-    public void uploadFile_emptyPath_throwsInvalidFilePathException() {
-        ByteArrayResource mockFile = getMockFile();
-        Assertions.assertThrows(
-                InvalidFilePathException.class,
-                () -> fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "")
-        );
-    }
-
-    @SneakyThrows
-    @Test
     public void renameFile_fileExists_toAnotherName_createsAnotherFile_removesOldFile() {
         ByteArrayResource mockFile = getMockFile();
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
