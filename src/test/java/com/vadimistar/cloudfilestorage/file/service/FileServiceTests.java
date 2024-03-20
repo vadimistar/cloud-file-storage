@@ -1,5 +1,7 @@
 package com.vadimistar.cloudfilestorage.file.service;
 
+import com.vadimistar.cloudfilestorage.file.exception.InvalidFilePathException;
+import com.vadimistar.cloudfilestorage.folder.service.FolderService;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.common.TestUtils;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
@@ -17,6 +19,7 @@ import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -27,6 +30,9 @@ public class FileServiceTests {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private FolderService folderService;
 
     @Autowired
     private MinioRepository minioRepository;
@@ -56,6 +62,34 @@ public class FileServiceTests {
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
         InputStream inputStream = minioRepository.getObject(USER_ID_DIRECTORY + "a/b/c");
         Assertions.assertArrayEquals(mockFile.getByteArray(), inputStream.readAllBytes());
+    }
+
+    @SneakyThrows
+    @Test
+    public void uploadFile_emptyFile_isFile_notFolder() {
+        fileService.uploadFile(USER_ID, new ByteArrayInputStream(new byte[] {}), 0, "a");
+        Assertions.assertTrue(fileService.isFileExists(USER_ID, "a"));
+        Assertions.assertFalse(folderService.isFolderExists(USER_ID, "a"));
+    }
+
+    @SneakyThrows
+    @Test
+    public void uploadFile_pathEndsWithSlash_throwsInvalidFilePathException() {
+        ByteArrayResource mockFile = getMockFile();
+        Assertions.assertThrows(
+                InvalidFilePathException.class,
+                () -> fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "a/")
+        );
+    }
+
+    @SneakyThrows
+    @Test
+    public void uploadFile_emptyPath_throwsInvalidFilePathException() {
+        ByteArrayResource mockFile = getMockFile();
+        Assertions.assertThrows(
+                InvalidFilePathException.class,
+                () -> fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "")
+        );
     }
 
     @SneakyThrows
@@ -93,6 +127,17 @@ public class FileServiceTests {
         Assertions.assertEquals(
                 "/a/b/c",
                 fileService.renameFile(USER_ID, "/a/b/c", "c")
+        );
+    }
+
+    @SneakyThrows
+    @Test
+    public void renameFile_toPathEndsWithSlash_throwsInvalidFilePathException() {
+        ByteArrayResource mockFile = getMockFile();
+        fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "/a/b/c");
+        Assertions.assertThrows(
+                InvalidFilePathException.class,
+                () -> fileService.renameFile(USER_ID, "/a/b/c", "c/")
         );
     }
 

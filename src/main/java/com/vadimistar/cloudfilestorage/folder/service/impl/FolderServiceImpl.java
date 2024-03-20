@@ -40,8 +40,9 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public synchronized void uploadFolder(long userId, MultipartFile[] files, String path) {
         path = PathUtils.makeDirectoryPath(path);
-        Collection<String> fileDirectories = getFileDirectories(files, path);
-        createSubdirectories(userId, fileDirectories);
+        validateFolderExists(userId, path);
+        Set<String> fileDirectories = getFileDirectories(files);
+        createSubdirectories(userId, fileDirectories, path);
         for (MultipartFile file : files) {
             uploadFile(userId, path, file);
         }
@@ -114,30 +115,32 @@ public class FolderServiceImpl implements FolderService {
 
     private static final long FOLDER_OBJECT_SIZE = 0;
 
-    private Collection<String> getFileDirectories(MultipartFile[] files, String path) {
+    private Set<String> getFileDirectories(MultipartFile[] files) {
         Set<String> fileDirectories = new HashSet<>();
         for (MultipartFile file : files) {
-            if (file.getSize() == 0) {
-                throw new UploadFolderException("Unable to upload files with size equal to 0", path);
-            }
             String parentDirectory = PathUtils.getParentDirectory(file.getOriginalFilename());
             if (!parentDirectory.isEmpty()) {
                 parentDirectory = PathUtils.makeDirectoryPath(parentDirectory);
-                fileDirectories.add(PathUtils.join(path, parentDirectory));
+                fileDirectories.add(parentDirectory);
             }
         }
         return fileDirectories;
     }
 
-    private void createSubdirectories(long userId, Iterable<String> fileDirectories) {
+    private void createSubdirectories(long userId, Iterable<String> fileDirectories, String path) {
         SortedSet<String> subdirectories = new TreeSet<>(pathDepthComparator);
         for (String directory : fileDirectories) {
-            subdirectories.addAll(PathUtils.getSubdirectories(directory));
-            subdirectories.add(directory);
+            subdirectories.addAll(getSubdirectories(directory, path));
         }
         for (String subdirectory : subdirectories) {
             createFolder(userId, subdirectory);
         }
+    }
+
+    private static List<String> getSubdirectories(String directory, String path) {
+        return PathUtils.getSubdirectories(directory).stream()
+                .map(dir -> PathUtils.join(path, dir))
+                .toList();
     }
 
     private void uploadFile(long userId, String path, MultipartFile file) {

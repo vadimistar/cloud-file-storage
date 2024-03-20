@@ -1,6 +1,7 @@
 package com.vadimistar.cloudfilestorage.file.service.impl;
 
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
+import com.vadimistar.cloudfilestorage.file.exception.InvalidFilePathException;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
@@ -19,6 +20,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public synchronized void uploadFile(long userId, InputStream inputStream, long objectSize, String path){
         MinioUtils.validateResourceNotExists(minioService, userId, path);
+        validateFilePath(path);
         minioService.putObject(MinioUtils.getMinioPath(userId, path), inputStream, objectSize);
     }
 
@@ -30,6 +32,7 @@ public class FileServiceImpl implements FileService {
             return path;
         }
         MinioUtils.validateResourceNotExists(minioService, userId, newPath);
+        validateFilePath(newPath);
         minioService.copyObject(
                 MinioUtils.getMinioPath(userId, path),
                 MinioUtils.getMinioPath(userId, newPath)
@@ -56,7 +59,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public boolean isFileExists(long userId, String path) {
-        return minioService.isFileExists(MinioUtils.getMinioPath(userId, path));
+        return isFilePathValid(path) && minioService.isFileExists(MinioUtils.getMinioPath(userId, path));
     }
 
     private void validateFileExists(long userId, String path) {
@@ -64,4 +67,18 @@ public class FileServiceImpl implements FileService {
             throw new FileNotFoundException("File is not found: " + path);
         }
     }
+
+    private static boolean isFilePathValid(String path) {
+        return !path.isBlank() && !path.endsWith("/");
+    }
+
+    private static void validateFilePath(String path) {
+        if (path.isBlank()) {
+            throw new InvalidFilePathException("File path is empty");
+        }
+        if (path.endsWith("/")) {
+            throw new InvalidFilePathException("File path is invalid, it ends with '/': " + path);
+        }
+    }
+
 }

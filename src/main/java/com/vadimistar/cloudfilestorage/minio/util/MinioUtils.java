@@ -7,6 +7,8 @@ import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
 import lombok.experimental.UtilityClass;
 
+import java.nio.file.Path;
+
 @UtilityClass
 public class MinioUtils {
 
@@ -21,7 +23,7 @@ public class MinioUtils {
     }
 
     public static boolean isDirectory(ListObjectsResponseDto listObjectsResponseDto) {
-        return listObjectsResponseDto.isDirectory() || listObjectsResponseDto.getSize() == 0;
+        return listObjectsResponseDto.getSize() == 0 && listObjectsResponseDto.getName().endsWith("/");
     }
 
     public static void validateResourceNotExists(MinioService minioService, long userId, String path) {

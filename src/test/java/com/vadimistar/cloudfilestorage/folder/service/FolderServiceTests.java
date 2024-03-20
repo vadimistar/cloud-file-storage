@@ -2,7 +2,9 @@ package com.vadimistar.cloudfilestorage.folder.service;
 
 import com.vadimistar.cloudfilestorage.common.TestUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
+import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.folder.exception.FolderNotFoundException;
+import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
 import com.vadimistar.cloudfilestorage.minio.exception.ResourceAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.minio.util.MinioUtils;
@@ -36,6 +38,9 @@ public class FolderServiceTests {
     private FolderService folderService;
 
     @Autowired
+    private FileService fileService;
+
+    @Autowired
     private MinioRepository minioRepository;
 
     @BeforeEach
@@ -45,6 +50,7 @@ public class FolderServiceTests {
             minioRepository.removeBucket();
         }
         minioRepository.makeBucket();
+        folderService.createFolder(USER_ID, "/");
     }
 
     @SneakyThrows
@@ -64,9 +70,10 @@ public class FolderServiceTests {
     }
 
     @Test
-    public void uploadFolder_noFilesSpecified_doesNothing() {
+    public void uploadFolder_noFilesSpecified_createsEmptyFolder() {
+        folderService.createFolder(USER_ID, "a/b/c");
         folderService.uploadFolder(USER_ID, new MultipartFile[]{}, "a/b/c");
-        Assertions.assertEquals(0, minioRepository.listObjects("", true).count());
+        Assertions.assertTrue(minioRepository.isObjectExists(USER_ID_DIRECTORY + "a/b/c/"));
     }
 
     @Test
@@ -87,6 +94,13 @@ public class FolderServiceTests {
     }
 
     @Test
+    public void createFolder_isFolder_notFile() {
+        folderService.createFolder(USER_ID, "a");
+        Assertions.assertTrue(folderService.isFolderExists(USER_ID, "a"));
+        Assertions.assertFalse(fileService.isFileExists(USER_ID, "a"));
+    }
+
+    @Test
     public void renameFolder_emptyFolder_folderExists_createsNewFolder_deletesOldFolder() {
         folderService.createFolder(USER_ID, "a");
         folderService.renameFolder(USER_ID, "a", "b");
@@ -96,6 +110,7 @@ public class FolderServiceTests {
 
     @Test
     public void renameFolder_nonEmptyFolder_folderExists_copiesContents_deletesOldContents() {
+        folderService.createFolder(USER_ID, "a");
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "a");
         folderService.renameFolder(USER_ID, "a", "b");
 
@@ -108,7 +123,9 @@ public class FolderServiceTests {
 
     @Test
     public void renameFolder_folderWithThisNameAlreadyExists_throwsResourceAlreadyExistsException() {
+        folderService.createFolder(USER_ID, "a");
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "a");
+        folderService.createFolder(USER_ID, "b");
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "b");
         Assertions.assertThrows(
                 ResourceAlreadyExistsException.class,
@@ -134,10 +151,13 @@ public class FolderServiceTests {
     }
 
     @Test
-    public void deleteFolder_folderExists_noContentAtStorage() {
+    public void deleteFolder_folderExists_onlyUserHomeFolderLeft() {
+        folderService.createFolder(USER_ID, "a");
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "a");
         folderService.deleteFolder(USER_ID, "a");
-        Assertions.assertEquals(0, minioRepository.listObjects("", true).count());
+        List<ListObjectsResponseDto> leftObjects = minioRepository.listObjects("", true).toList();
+        Assertions.assertEquals(1, leftObjects.size());
+        Assertions.assertEquals(USER_ID_DIRECTORY, leftObjects.get(0).getName());
     }
 
     @Test
@@ -150,6 +170,7 @@ public class FolderServiceTests {
 
     @Test
     public void getFolderContent_folderWithSingleFile_returnsSingleFile() {
+        folderService.createFolder(USER_ID, "a");
         folderService.uploadFolder(USER_ID, new MultipartFile[]{ getMockFile() }, "a");
         List<FileDto> files = folderService.getFolderContent(USER_ID, "a").toList();
         Assertions.assertEquals(1, files.size());
@@ -160,6 +181,7 @@ public class FolderServiceTests {
 
     @Test
     public void getFolderContent_folderWithFolder_returnsFolder() {
+        folderService.createFolder(USER_ID, "a/b");
         folderService.uploadFolder(USER_ID, new MultipartFile[]{ getMockFile() }, "a/b");
         List<FileDto> files = folderService.getFolderContent(USER_ID, "a").toList();
         Assertions.assertEquals(1, files.size());
@@ -189,6 +211,7 @@ public class FolderServiceTests {
     @SneakyThrows
     @Test
     public void downloadFolder_folderExists_returnsFolderZip() {
+        folderService.createFolder(USER_ID, "a");
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "a");
         byte[] folderContents = folderService.downloadFolder(USER_ID, "a");
         try (ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(folderContents))) {
@@ -212,6 +235,7 @@ public class FolderServiceTests {
 
     @Test
     public void isFolderExists_folderExists_returnsTrue() {
+        folderService.createFolder(USER_ID, "a");
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "a");
         Assertions.assertTrue(folderService.isFolderExists(USER_ID, "a"));
     }

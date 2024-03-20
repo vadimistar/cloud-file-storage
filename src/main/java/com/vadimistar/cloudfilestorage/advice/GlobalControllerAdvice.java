@@ -2,6 +2,7 @@ package com.vadimistar.cloudfilestorage.advice;
 
 import com.vadimistar.cloudfilestorage.common.exception.ResourceNotFoundException;
 import com.vadimistar.cloudfilestorage.file.exception.FileActionException;
+import com.vadimistar.cloudfilestorage.file.exception.InvalidFilePathException;
 import com.vadimistar.cloudfilestorage.folder.exception.FolderActionException;
 import com.vadimistar.cloudfilestorage.folder.exception.UploadFolderException;
 import com.vadimistar.cloudfilestorage.index.exception.InvalidIndexPageException;
@@ -71,6 +72,12 @@ public class GlobalControllerAdvice {
     public RedirectView handleInvalidSearchPageException(Exception e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
         return new RedirectView("/search", true);
+    }
+
+    @ExceptionHandler(InvalidFilePathException.class)
+    public RedirectView handleInvalidFilePathException(Exception e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", e.getMessage());
+        return new RedirectView("/", true);
     }
 
     @ExceptionHandler(Exception.class)
