@@ -31,7 +31,7 @@ public class FolderServiceImpl implements FolderService {
     private final PathDepthComparator pathDepthComparator;
 
     @Override
-    public void createFolder(long userId, String path) {
+    public synchronized void createFolder(long userId, String path) {
         MinioUtils.validateResourceNotExists(minioService, userId, path);
         path = PathUtils.makeDirectoryPath(path);
         minioService.putObject(MinioUtils.getMinioPath(userId, path), getFolderObjectContent(), FOLDER_OBJECT_SIZE);
