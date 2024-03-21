@@ -18,7 +18,7 @@
                     <ul hidden class="list-group mt-2" style="max-height: 200px; overflow-y: scroll">
                     </ul>
                     <div class="form-group mt-2">
-                        <button type="submit" class="btn btn-primary w-100">Upload files</button>
+                        <button type="submit" class="btn btn-primary w-100 disabled">Upload files</button>
                     </div>
                     <input type="hidden" th:value="${param.path}" name="path" />
                 </form>
@@ -29,7 +29,7 @@
                     <ul hidden class="list-group mt-2" style="max-height: 200px; overflow-y: scroll">
                     </ul>
                     <div class="form-group mt-2">
-                        <button type="submit" class="btn btn-primary w-100">Upload folder</button>
+                        <button type="submit" class="btn btn-primary w-100 disabled">Upload folder</button>
                     </div>
                     <input type="hidden" th:value="${param.path}" name="path">
                 </form>
