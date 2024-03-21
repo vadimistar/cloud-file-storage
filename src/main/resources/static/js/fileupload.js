@@ -52,7 +52,11 @@ filesElements.forEach(fileInput => {
             li.appendChild(removeButton);
 
             const filename = document.createElement('span');
-            filename.textContent = file.name;
+            if ('webkitRelativePath' in file) {
+                filename.textContent = file.webkitRelativePath;
+            } else {
+                filename.textContent = file.name;
+            }
             li.appendChild(filename);
 
             const filesize = document.createElement('span');
