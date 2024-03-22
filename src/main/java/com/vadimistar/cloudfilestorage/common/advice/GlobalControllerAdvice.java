@@ -10,7 +10,6 @@ import com.vadimistar.cloudfilestorage.minio.exception.ResourceAlreadyExistsExce
 import com.vadimistar.cloudfilestorage.search.exception.InvalidSearchPageException;
 import com.vadimistar.cloudfilestorage.security.exception.UserNotLoggedInException;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
-import com.vadimistar.cloudfilestorage.common.util.URLUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

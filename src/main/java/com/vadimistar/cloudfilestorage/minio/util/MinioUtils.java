@@ -7,8 +7,6 @@ import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
 import lombok.experimental.UtilityClass;
 
-import java.nio.file.Path;
-
 @UtilityClass
 public class MinioUtils {
 
