@@ -143,9 +143,6 @@ public class FolderServiceImpl implements FolderService {
     }
 
     private void uploadFile(long userId, String path, MultipartFile file) {
-        if (file.getName().isBlank()) {
-            return;
-        }
         String filePath = PathUtils.join(path, file.getOriginalFilename());
         try {
             MinioUtils.validateResourceNotExists(minioService, userId, filePath);
