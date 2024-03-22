@@ -27,6 +27,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/register", "/login").permitAll()
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/**/favicon.ico").permitAll()
+                        .requestMatchers("/static/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/error").permitAll()
                         .anyRequest().authenticated()
                 )
