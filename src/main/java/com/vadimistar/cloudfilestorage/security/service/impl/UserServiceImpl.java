@@ -23,7 +23,6 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
     @Override
@@ -41,11 +40,7 @@ public class UserServiceImpl implements UserService {
                 throw new RegisterUserException("User with this email already exists");
             }
         }
-        User user = User.builder()
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .build();
+        User user = userMapper.makeUser(request);
         userRepository.save(user);
         return userMapper.makeUserDto(user);
     }
