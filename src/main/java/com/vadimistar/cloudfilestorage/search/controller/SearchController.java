@@ -6,7 +6,7 @@ import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
 import com.vadimistar.cloudfilestorage.search.exception.InvalidSearchPageException;
 import com.vadimistar.cloudfilestorage.security.dto.UserDto;
 import com.vadimistar.cloudfilestorage.common.exception.InvalidPageException;
-import com.vadimistar.cloudfilestorage.argument_resolver.AuthorizedUser;
+import com.vadimistar.cloudfilestorage.common.argument_resolver.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.common.util.page.PageButtonDto;
 import com.vadimistar.cloudfilestorage.common.util.page.PageUtils;
 import jakarta.servlet.http.HttpServletRequest;

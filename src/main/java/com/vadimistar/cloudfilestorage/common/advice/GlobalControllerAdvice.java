@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.advice;
+package com.vadimistar.cloudfilestorage.common.advice;
 
 import com.vadimistar.cloudfilestorage.common.exception.ResourceNotFoundException;
 import com.vadimistar.cloudfilestorage.file.exception.FileActionException;

@@ -1,7 +1,7 @@
 package com.vadimistar.cloudfilestorage.index.controller;
 
 import com.vadimistar.cloudfilestorage.config.ApplicationConfig;
-import com.vadimistar.cloudfilestorage.argument_resolver.AuthorizedUser;
+import com.vadimistar.cloudfilestorage.common.argument_resolver.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.index.exception.InvalidIndexPageException;
 import com.vadimistar.cloudfilestorage.index.breadcrumbs.BreadcrumbsUtils;
 import com.vadimistar.cloudfilestorage.security.dto.UserDto;

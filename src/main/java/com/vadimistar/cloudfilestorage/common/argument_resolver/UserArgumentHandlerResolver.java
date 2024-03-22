@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.argument_resolver;
+package com.vadimistar.cloudfilestorage.common.argument_resolver;
 
 import com.vadimistar.cloudfilestorage.security.exception.UserNotLoggedInException;
 import com.vadimistar.cloudfilestorage.security.service.UserService;

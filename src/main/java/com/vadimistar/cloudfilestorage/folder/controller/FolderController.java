@@ -6,7 +6,7 @@ import com.vadimistar.cloudfilestorage.folder.service.FolderService;
 import com.vadimistar.cloudfilestorage.folder.exception.UploadFolderException;
 import com.vadimistar.cloudfilestorage.folder.dto.*;
 import com.vadimistar.cloudfilestorage.security.dto.UserDto;
-import com.vadimistar.cloudfilestorage.argument_resolver.AuthorizedUser;
+import com.vadimistar.cloudfilestorage.common.argument_resolver.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
 import com.vadimistar.cloudfilestorage.common.validation.ValidationUtils;

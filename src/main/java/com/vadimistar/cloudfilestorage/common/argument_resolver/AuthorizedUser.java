@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.argument_resolver;
+package com.vadimistar.cloudfilestorage.common.argument_resolver;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
