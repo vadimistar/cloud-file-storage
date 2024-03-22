@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
-@Table(indexes = {
-        @Index(columnList = "username", unique = true),
-        @Index(columnList = "email", unique = true)
+@Table(name = "users", indexes = {
+        @Index(name = "username_index", columnList = "username", unique = true),
+        @Index(name = "email_index", columnList = "email", unique = true)
 })
 @Builder
 @Getter

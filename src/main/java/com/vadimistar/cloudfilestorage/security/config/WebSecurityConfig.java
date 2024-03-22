@@ -25,9 +25,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.GET, "/register", "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/register", "/login").permitAll()
-                        .requestMatchers("/public/**").permitAll()
-                        .requestMatchers("/**/favicon.ico").permitAll()
-                        .requestMatchers("/static/**").permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/public/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/**/favicon.ico")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/static/**")).permitAll()
                         .requestMatchers(HttpMethod.GET, "/error").permitAll()
                         .anyRequest().authenticated()
                 )
