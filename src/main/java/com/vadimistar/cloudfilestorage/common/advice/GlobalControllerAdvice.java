@@ -47,7 +47,7 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(ResourceNotFoundException.class)
     public RedirectView handleResourceNotFoundException(ResourceNotFoundException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return new RedirectView("/error", true);
+        return new RedirectView("/", true);
     }
 
     @ExceptionHandler(UploadFolderException.class)
@@ -69,7 +69,7 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(InvalidIndexPageException.class)
     public RedirectView handleInvalidIndexPageException(Exception e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return new RedirectView("/error", true);
+        return new RedirectView("/", true);
     }
 
     @ExceptionHandler(InvalidSearchPageException.class)
@@ -81,7 +81,7 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(InvalidFilePathException.class)
     public RedirectView handleInvalidFilePathException(Exception e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return new RedirectView("/error", true);
+        return new RedirectView("/", true);
     }
 
     @ExceptionHandler(Exception.class)
@@ -91,7 +91,6 @@ public class GlobalControllerAdvice {
                 .map(StackTraceElement::toString)
                 .collect(Collectors.joining("\n"));
         log.error(stackTrace);
-        redirectAttributes.addFlashAttribute("error", "Internal error occurred, please try again later");
         return new RedirectView("/error", true);
     }
 }
