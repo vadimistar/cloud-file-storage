@@ -33,13 +33,15 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(FileActionException.class)
     public RedirectView handleFileActionException(FileActionException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return new RedirectView("/file?path=" + URLUtils.encode(e.getPath()), true);
+        redirectAttributes.addAttribute("path", e.getPath());
+        return new RedirectView("/file", true);
     }
 
     @ExceptionHandler(FolderActionException.class)
     public RedirectView handleFolderActionException(FolderActionException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return new RedirectView("/folder?path=" + URLUtils.encode(e.getPath()), true);
+        redirectAttributes.addAttribute("path", e.getPath());
+        return new RedirectView("/folder", true);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -52,14 +54,16 @@ public class GlobalControllerAdvice {
     public RedirectView handleUploadFileException(UploadFolderException e, RedirectAttributes redirectAttributes) {
         String path = Objects.requireNonNullElse(e.getPath(), "");
         redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return new RedirectView("/?path=" + URLUtils.encode(path), true);
+        redirectAttributes.addAttribute("path", path);
+        return new RedirectView("/", true);
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     public RedirectView handleResourceAlreadyExistsException(ResourceAlreadyExistsException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
         String parentDirectory = PathUtils.getParentDirectory(e.getPath());
-        return new RedirectView("/?path=" + URLUtils.encode(parentDirectory), true);
+        redirectAttributes.addAttribute("path", parentDirectory);
+        return new RedirectView("/", true);
     }
 
     @ExceptionHandler(InvalidIndexPageException.class)
