@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.minio.util;
+package com.vadimistar.cloudfilestorage.common.util;
 
 import com.vadimistar.cloudfilestorage.minio.exception.ResourceAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;

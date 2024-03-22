@@ -2,7 +2,7 @@ package com.vadimistar.cloudfilestorage.common.mapper;
 
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
-import com.vadimistar.cloudfilestorage.minio.util.MinioUtils;
+import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
 import org.springframework.stereotype.Component;
 
 @Component

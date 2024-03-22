@@ -4,7 +4,7 @@ import com.vadimistar.cloudfilestorage.common.mapper.FileMapper;
 import com.vadimistar.cloudfilestorage.folder.exception.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
-import com.vadimistar.cloudfilestorage.minio.util.MinioUtils;
+import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
 import com.vadimistar.cloudfilestorage.common.util.path.PathDepthComparator;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
