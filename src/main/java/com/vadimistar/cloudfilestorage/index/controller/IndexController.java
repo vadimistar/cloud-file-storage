@@ -40,7 +40,7 @@ public class IndexController {
         }
 
         if (!folderService.isFolderExists(user.getId(), path)) {
-            throw new FolderNotFoundException("Home directory does not exist");
+            throw new FolderNotFoundException("Directory does not exist: " + path);
         }
 
         List<BreadcrumbsElementDto> breadcrumbs = BreadcrumbsUtils.createBreadcrumbs(path);
