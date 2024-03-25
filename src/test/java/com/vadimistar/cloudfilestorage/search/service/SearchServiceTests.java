@@ -53,7 +53,7 @@ public class SearchServiceTests {
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "eabcd");
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "abcde");
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "bcde");
-        List<FoundFileDto> foundFiles = searchService.searchFiles(USER_ID, "abc")
+        List<FoundFileDto> foundFiles = searchService.searchFiles(USER_ID, "abc").stream()
                 .sorted(Comparator.comparing(FoundFileDto::getName))
                 .toList();
         Assertions.assertEquals(3, foundFiles.size());

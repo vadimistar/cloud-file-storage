@@ -46,7 +46,7 @@ public class IndexController {
         List<BreadcrumbsElementDto> breadcrumbs = BreadcrumbsUtils.createBreadcrumbs(path);
         model.addAttribute("breadcrumbs", breadcrumbs);
 
-        List<FileDto> folderContent = folderService.getFolderContent(user.getId(), path).toList();
+        List<FileDto> folderContent = folderService.getFolderContent(user.getId(), path);
         try {
             List<FileDto> pageFiles = PageUtils.getPage(folderContent, appConfig.getIndexPageSize(), page);
             model.addAttribute("files", pageFiles);

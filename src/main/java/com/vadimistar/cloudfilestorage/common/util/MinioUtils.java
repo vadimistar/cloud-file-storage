@@ -1,10 +1,9 @@
 package com.vadimistar.cloudfilestorage.common.util;
 
 import com.vadimistar.cloudfilestorage.minio.exception.ResourceAlreadyExistsException;
-import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
+import com.vadimistar.cloudfilestorage.minio.dto.MinioObjectDto;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
-import com.vadimistar.cloudfilestorage.common.util.URLUtils;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -20,8 +19,8 @@ public class MinioUtils {
         return PathUtils.trimIndexDirectory(minioPath);
     }
 
-    public static boolean isDirectory(ListObjectsResponseDto listObjectsResponseDto) {
-        return listObjectsResponseDto.getSize() == 0 && listObjectsResponseDto.getName().endsWith("/");
+    public static boolean isDirectory(MinioObjectDto minioObjectDto) {
+        return minioObjectDto.getSize() == 0 && minioObjectDto.getName().endsWith("/");
     }
 
     public static void validateResourceNotExists(MinioService minioService, long userId, String path) {

@@ -7,7 +7,7 @@ import com.vadimistar.cloudfilestorage.search.service.SearchService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -17,9 +17,10 @@ public class SearchServiceImpl implements SearchService {
     private final FoundFileMapper foundFileMapper;
 
     @Override
-    public Stream<FoundFileDto> searchFiles(long userId, String query) {
-        return folderService.getAllContent(userId)
+    public List<FoundFileDto> searchFiles(long userId, String query) {
+        return folderService.getAllContent(userId).stream()
                 .filter(file -> file.getName().contains(query))
-                .map(foundFileMapper::makeFoundFileDto);
+                .map(foundFileMapper::makeFoundFileDto)
+                .toList();
     }
 }

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ListObjectsResponseDto {
+public class MinioObjectDto {
 
     private String name;
     private long size;

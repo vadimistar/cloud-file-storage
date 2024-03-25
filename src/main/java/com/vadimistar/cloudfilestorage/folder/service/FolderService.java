@@ -4,7 +4,7 @@ import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 public interface FolderService {
 
@@ -16,9 +16,9 @@ public interface FolderService {
 
     void deleteFolder(long userId, String path);
 
-    Stream<FileDto> getFolderContent(long userId, String path);
+    List<FileDto> getFolderContent(long userId, String path);
 
-    Stream<FileDto> getAllContent(long userId);
+    List<FileDto> getAllContent(long userId);
 
     byte[] downloadFolder(long userId, String path);
 

@@ -31,7 +31,7 @@ public class SearchController {
                          @AuthorizedUser UserDto user,
                          Model model,
                          HttpServletRequest request) {
-        List<FoundFileDto> foundFiles = searchService.searchFiles(user.getId(), query).toList();
+        List<FoundFileDto> foundFiles = searchService.searchFiles(user.getId(), query);
 
         try {
             List<FoundFileDto> pageFiles = PageUtils.getPage(foundFiles, appConfig.getSearchPageSize(), page);

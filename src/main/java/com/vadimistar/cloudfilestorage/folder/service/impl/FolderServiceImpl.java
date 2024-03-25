@@ -17,7 +17,6 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -78,13 +77,13 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public Stream<FileDto> getFolderContent(long userId, String path) {
+    public List<FileDto> getFolderContent(long userId, String path) {
         validateFolderExists(userId, path);
         return listFiles(userId, path, false);
     }
 
     @Override
-    public Stream<FileDto> getAllContent(long userId) {
+    public List<FileDto> getAllContent(long userId) {
         return listFiles(userId, "/", true);
     }
 
@@ -195,20 +194,21 @@ public class FolderServiceImpl implements FolderService {
         });
     }
 
-    private Stream<FileDto> listFiles(long userId, String path, boolean recursive) {
+    private List<FileDto> listFiles(long userId, String path, boolean recursive) {
         path = PathUtils.makeDirectoryPath(path);
         String prefix = MinioUtils.getMinioPath(userId, path);
-        return minioService.listObjects(prefix, recursive)
+        return minioService.listObjects(prefix, recursive).stream()
                 .filter(item -> !item.getName().equals(prefix))
-                .map(fileMapper::makeFileDto);
+                .map(fileMapper::makeFileDto)
+                .toList();
     }
 
     private List<FileDto> getFilesToDownload(long userId, String path) {
-        List<FileDto> notFolderFiles = listFiles(userId, path, true)
+        List<FileDto> notFolderFiles = listFiles(userId, path, true).stream()
                 .filter(file -> !file.isFolder())
                 .toList();
         if (notFolderFiles.isEmpty()) {
-            return listFiles(userId, path, true).toList();
+            return listFiles(userId, path, true);
         } else {
             return notFolderFiles;
         }

@@ -1,7 +1,7 @@
 package com.vadimistar.cloudfilestorage.minio.repository.impl;
 
 import com.vadimistar.cloudfilestorage.minio.config.MinioConfig;
-import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
+import com.vadimistar.cloudfilestorage.minio.dto.MinioObjectDto;
 import com.vadimistar.cloudfilestorage.minio.exception.MinioException;
 import com.vadimistar.cloudfilestorage.minio.mapper.ListObjectsResponseMapper;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.stream.Stream;
+import java.util.List;
 
 @Repository
 @AllArgsConstructor
@@ -27,7 +27,7 @@ public class MinioRepositoryImpl implements MinioRepository {
     private final ListObjectsResponseMapper listObjectsResponseMapper;
 
     @Override
-    public Stream<ListObjectsResponseDto> listObjects(String prefix, boolean recursive) {
+    public List<MinioObjectDto> listObjects(String prefix, boolean recursive) {
         Iterable<Result<Item>> items = minioClient.listObjects(ListObjectsArgs.builder()
                 .bucket(minioConfig.getBucketName())
                 .prefix(prefix)
@@ -38,8 +38,9 @@ public class MinioRepositoryImpl implements MinioRepository {
                 return itemResult.get();
             } catch (Exception e) {
                 throw new MinioException(e.getMessage());
-            }
-        }).map(listObjectsResponseMapper::makeListObjectsResponseDto);
+            }})
+                .map(listObjectsResponseMapper::makeListObjectsResponseDto)
+                .toList();
     }
 
     @Override
@@ -136,7 +137,7 @@ public class MinioRepositoryImpl implements MinioRepository {
 
     @Override
     public void removeObjects(String prefix) {
-        Iterator<DeleteObject> objects = listObjects(prefix, true)
+        Iterator<DeleteObject> objects = listObjects(prefix, true).stream()
                 .map(item -> new DeleteObject(item.getName()))
                 .iterator();
         minioClient.removeObjects(RemoveObjectsArgs.builder()

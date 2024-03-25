@@ -1,9 +1,9 @@
 package com.vadimistar.cloudfilestorage.minio.service;
 
-import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
+import com.vadimistar.cloudfilestorage.minio.dto.MinioObjectDto;
 
 import java.io.InputStream;
-import java.util.stream.Stream;
+import java.util.List;
 
 public interface MinioService {
 
@@ -13,5 +13,5 @@ public interface MinioService {
     void copyObject(String from, String to);
     void removeObject(String object);
     InputStream getObject(String object);
-    Stream<ListObjectsResponseDto> listObjects(String prefix, boolean recursive);
+    List<MinioObjectDto> listObjects(String prefix, boolean recursive);
 }

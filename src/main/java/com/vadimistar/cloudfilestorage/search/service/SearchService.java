@@ -2,9 +2,9 @@ package com.vadimistar.cloudfilestorage.search.service;
 
 import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 public interface SearchService {
 
-    Stream<FoundFileDto> searchFiles(long userId, String query);
+    List<FoundFileDto> searchFiles(long userId, String query);
 }

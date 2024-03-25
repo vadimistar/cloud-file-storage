@@ -4,7 +4,7 @@ import com.vadimistar.cloudfilestorage.common.TestUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.folder.exception.FolderNotFoundException;
-import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
+import com.vadimistar.cloudfilestorage.minio.dto.MinioObjectDto;
 import com.vadimistar.cloudfilestorage.minio.exception.ResourceAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
@@ -155,7 +155,7 @@ public class FolderServiceTests {
         folderService.createFolder(USER_ID, "a");
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "a");
         folderService.deleteFolder(USER_ID, "a");
-        List<ListObjectsResponseDto> leftObjects = minioRepository.listObjects("", true).toList();
+        List<MinioObjectDto> leftObjects = minioRepository.listObjects("", true);
         Assertions.assertEquals(1, leftObjects.size());
         Assertions.assertEquals(USER_ID_DIRECTORY, leftObjects.get(0).getName());
     }
@@ -172,7 +172,7 @@ public class FolderServiceTests {
     public void getFolderContent_folderWithSingleFile_returnsSingleFile() {
         folderService.createFolder(USER_ID, "a");
         folderService.uploadFolder(USER_ID, new MultipartFile[]{ getMockFile() }, "a");
-        List<FileDto> files = folderService.getFolderContent(USER_ID, "a").toList();
+        List<FileDto> files = folderService.getFolderContent(USER_ID, "a");
         Assertions.assertEquals(1, files.size());
         Assertions.assertEquals(MOCK_FILE_NAME, files.get(0).getName());
         Assertions.assertEquals("a/" + MOCK_FILE_NAME, files.get(0).getPath());
@@ -183,7 +183,7 @@ public class FolderServiceTests {
     public void getFolderContent_folderWithFolder_returnsFolder() {
         folderService.createFolder(USER_ID, "a/b");
         folderService.uploadFolder(USER_ID, new MultipartFile[]{ getMockFile() }, "a/b");
-        List<FileDto> files = folderService.getFolderContent(USER_ID, "a").toList();
+        List<FileDto> files = folderService.getFolderContent(USER_ID, "a");
         Assertions.assertEquals(1, files.size());
         Assertions.assertEquals("b", files.get(0).getName());
         Assertions.assertEquals("a/b/", files.get(0).getPath());
@@ -201,7 +201,7 @@ public class FolderServiceTests {
     @Test
     public void getAllContent_returnsAllContent() {
         folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "");
-        List<FileDto> files = folderService.getAllContent(USER_ID).toList();
+        List<FileDto> files = folderService.getAllContent(USER_ID);
         Assertions.assertEquals(1, files.size());
         Assertions.assertEquals(MOCK_FILE_NAME, files.get(0).getName());
         Assertions.assertEquals(MOCK_FILE_NAME, files.get(0).getPath());

@@ -1,18 +1,18 @@
 package com.vadimistar.cloudfilestorage.common.mapper;
 
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
-import com.vadimistar.cloudfilestorage.minio.dto.ListObjectsResponseDto;
+import com.vadimistar.cloudfilestorage.minio.dto.MinioObjectDto;
 import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FileMapper {
 
-    public FileDto makeFileDto(ListObjectsResponseDto listObjectsResponseDto) {
+    public FileDto makeFileDto(MinioObjectDto minioObjectDto) {
         return FileDto.builder()
-                .name(MinioUtils.getNormalFilename(listObjectsResponseDto.getName()))
-                .isFolder(MinioUtils.isDirectory(listObjectsResponseDto))
-                .path(MinioUtils.getNormalPath(listObjectsResponseDto.getName()))
+                .name(MinioUtils.getNormalFilename(minioObjectDto.getName()))
+                .isFolder(MinioUtils.isDirectory(minioObjectDto))
+                .path(MinioUtils.getNormalPath(minioObjectDto.getName()))
                 .build();
     }
 }
