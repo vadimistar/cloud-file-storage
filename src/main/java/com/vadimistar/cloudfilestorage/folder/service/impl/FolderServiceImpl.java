@@ -10,6 +10,10 @@ import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,6 +84,19 @@ public class FolderServiceImpl implements FolderService {
     public List<FileDto> getFolderContent(long userId, String path) {
         validateFolderExists(userId, path);
         return listFiles(userId, path, false);
+    }
+
+    @Override
+    public Page<FileDto> getFolderContent(long userId, String path, Pageable pageable) {
+        int start = pageable.getPageNumber() * pageable.getPageSize();
+        List<FileDto> files = getFolderContent(userId, path);
+        List<FileDto> pageFiles = files.stream()
+                .skip(start)
+                .limit(pageable.getPageSize())
+                .toList();
+        return new PageImpl<>(pageFiles,
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
+                files.size());
     }
 
     @Override

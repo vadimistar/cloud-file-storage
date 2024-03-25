@@ -1,19 +1,16 @@
 package com.vadimistar.cloudfilestorage.index.controller;
 
 import com.vadimistar.cloudfilestorage.config.ApplicationConfig;
-import com.vadimistar.cloudfilestorage.index.exception.InvalidIndexPageException;
 import com.vadimistar.cloudfilestorage.index.breadcrumbs.BreadcrumbsUtils;
 import com.vadimistar.cloudfilestorage.security.details.UserDetailsImpl;
-import com.vadimistar.cloudfilestorage.common.exception.InvalidPageException;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
-import com.vadimistar.cloudfilestorage.common.util.page.PageButtonDto;
 import com.vadimistar.cloudfilestorage.index.breadcrumbs.BreadcrumbsElementDto;
 import com.vadimistar.cloudfilestorage.folder.exception.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
-import com.vadimistar.cloudfilestorage.common.util.page.PageUtils;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,8 +30,7 @@ public class IndexController {
     public String indexPage(@RequestParam(required = false, defaultValue = "") String path,
                             @RequestParam(required = false, defaultValue = "1") int page,
                             Model model,
-                            @AuthenticationPrincipal UserDetailsImpl userDetails,
-                            HttpServletRequest request) {
+                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (PathUtils.isHomeDirectory(path)) {
             createHomeDirectoryIfNotExists(userDetails.getUserId());
         }
@@ -46,18 +42,13 @@ public class IndexController {
         List<BreadcrumbsElementDto> breadcrumbs = BreadcrumbsUtils.createBreadcrumbs(path);
         model.addAttribute("breadcrumbs", breadcrumbs);
 
-        List<FileDto> folderContent = folderService.getFolderContent(userDetails.getUserId(), path);
-        try {
-            List<FileDto> pageFiles = PageUtils.getPage(folderContent, appConfig.getIndexPageSize(), page);
-            model.addAttribute("files", pageFiles);
-        } catch (InvalidPageException e) {
-            throw new InvalidIndexPageException("Invalid page");
-        }
-
-        List<PageButtonDto> pageButtons = PageUtils.createPageButtons(
-                folderContent.size(), appConfig.getIndexPageSize(), page, request
-        );
-        model.addAttribute("pageButtons", pageButtons);
+        Page<FileDto> filesPage = folderService.getFolderContent(
+                userDetails.getUserId(),
+                path,
+                PageRequest.of(page - 1, appConfig.getIndexPageSize()));
+        model.addAttribute("filesPage", filesPage);
+        model.addAttribute("totalPages", filesPage.getTotalPages());
+        model.addAttribute("currentPage", page);
 
         return "index";
     }

@@ -59,7 +59,7 @@
         </div>
         <div class="container">
             <div class="row">
-                <div class="col-auto" th:each="file : ${files}">
+                <div class="col-auto" th:each="file, istat : ${filesPage}">
                     <div class="my-2">
                         <div class="bg-light" style="width: 180px; height: 270px;">
                             <div class="text-end">

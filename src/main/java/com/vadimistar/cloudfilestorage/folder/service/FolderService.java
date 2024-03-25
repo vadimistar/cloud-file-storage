@@ -2,6 +2,8 @@ package com.vadimistar.cloudfilestorage.folder.service;
 
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,6 +19,8 @@ public interface FolderService {
     void deleteFolder(long userId, String path);
 
     List<FileDto> getFolderContent(long userId, String path);
+
+    Page<FileDto> getFolderContent(long userId, String path, Pageable pageable);
 
     List<FileDto> getAllContent(long userId);
 
