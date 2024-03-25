@@ -4,13 +4,13 @@ import com.vadimistar.cloudfilestorage.config.ApplicationConfig;
 import com.vadimistar.cloudfilestorage.search.service.SearchService;
 import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
 import com.vadimistar.cloudfilestorage.search.exception.InvalidSearchPageException;
-import com.vadimistar.cloudfilestorage.security.dto.UserDto;
+import com.vadimistar.cloudfilestorage.security.details.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.common.exception.InvalidPageException;
-import com.vadimistar.cloudfilestorage.common.argument_resolver.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.common.util.page.PageButtonDto;
 import com.vadimistar.cloudfilestorage.common.util.page.PageUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,10 +28,10 @@ public class SearchController {
     @GetMapping("/search")
     public String search(@RequestParam String query,
                          @RequestParam(required = false, defaultValue = "1") int page,
-                         @AuthorizedUser UserDto user,
+                         @AuthenticationPrincipal UserDetailsImpl userDetails,
                          Model model,
                          HttpServletRequest request) {
-        List<FoundFileDto> foundFiles = searchService.searchFiles(user.getId(), query);
+        List<FoundFileDto> foundFiles = searchService.searchFiles(userDetails.getUserId(), query);
 
         try {
             List<FoundFileDto> pageFiles = PageUtils.getPage(foundFiles, appConfig.getSearchPageSize(), page);

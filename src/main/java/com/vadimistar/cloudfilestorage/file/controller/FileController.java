@@ -7,8 +7,8 @@ import com.vadimistar.cloudfilestorage.file.dto.FileViewRequestDto;
 import com.vadimistar.cloudfilestorage.file.dto.RenameFileRequestDto;
 import com.vadimistar.cloudfilestorage.file.exception.FileActionException;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
+import com.vadimistar.cloudfilestorage.security.details.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.security.dto.UserDto;
-import com.vadimistar.cloudfilestorage.common.argument_resolver.AuthorizedUser;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
 import com.vadimistar.cloudfilestorage.common.validation.ValidationUtils;
@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,14 +34,14 @@ public class FileController {
     @GetMapping
     public String file(@ModelAttribute @Valid FileViewRequestDto request,
                        BindingResult bindingResult,
-                       @AuthorizedUser UserDto user,
+                       @AuthenticationPrincipal UserDetailsImpl userDetails,
                        Model model) {
         if (bindingResult.hasErrors()) {
             throw new FileActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        if (!fileService.isFileExists(user.getId(), request.getPath())) {
+        if (!fileService.isFileExists(userDetails.getUser().getId(), request.getPath())) {
             throw new FileNotFoundException("File is not found: " + request.getPath());
         }
         model.addAttribute("name", PathUtils.getFilename(request.getPath()));
@@ -50,14 +51,14 @@ public class FileController {
     @GetMapping("/download")
     public ResponseEntity<?> download(@ModelAttribute @Valid DownloadFileRequestDto request,
                                       BindingResult bindingResult,
-                                      @AuthorizedUser UserDto user) {
+                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (bindingResult.hasErrors()) {
             throw new FileActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
         ByteArrayResource byteArrayResource = new ByteArrayResource(
-                fileService.downloadFile(user.getId(), request.getPath())
+                fileService.downloadFile(userDetails.getUser().getId(), request.getPath())
         );
         String filename = URLUtils.encode(PathUtils.getFilename(request.getPath()));
         return ResponseEntity.ok()
@@ -68,14 +69,14 @@ public class FileController {
     @PostMapping("/rename")
     public String rename(@ModelAttribute @Valid RenameFileRequestDto request,
                          BindingResult bindingResult,
-                         @AuthorizedUser UserDto user,
+                         @AuthenticationPrincipal UserDetailsImpl userDetails,
                          RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             throw new FileActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        String newPath = fileService.renameFile(user.getId(), request.getPath(), request.getName());
+        String newPath = fileService.renameFile(userDetails.getUser().getId(), request.getPath(), request.getName());
         redirectAttributes.addAttribute("path", newPath);
         return "redirect:/file";
     }
@@ -83,14 +84,14 @@ public class FileController {
     @PostMapping("/delete")
     public String delete(@ModelAttribute @Valid DeleteFileRequestDto request,
                          BindingResult bindingResult,
-                         @AuthorizedUser UserDto user,
+                         @AuthenticationPrincipal UserDetailsImpl userDetails,
                          RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             throw new FileActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        fileService.deleteFile(user.getId(), request.getPath());
+        fileService.deleteFile(userDetails.getUserId(), request.getPath());
         String parentDirectory = PathUtils.getParentDirectory(request.getPath());
         redirectAttributes.addAttribute("path", parentDirectory);
         return "redirect:/";

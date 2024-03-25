@@ -1,5 +1,6 @@
 package com.vadimistar.cloudfilestorage.security.service.impl;
 
+import com.vadimistar.cloudfilestorage.security.details.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.security.dto.RegisterUserRequestDto;
 import com.vadimistar.cloudfilestorage.security.dto.UserDto;
 import com.vadimistar.cloudfilestorage.security.entity.User;
@@ -47,12 +48,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.getUserByUsername(username)
-                .map(user -> new org.springframework.security.core.userdetails.User(
-                        username,
-                        user.getPassword(),
-                        List.of(new SimpleGrantedAuthority("user"))
-                ))
-                .orElseThrow(() -> new UsernameNotFoundException("User with this username is not found"));
+                .map(UserDetailsImpl::new)
+                .orElseThrow(() -> new UsernameNotFoundException("Username is not found"));
     }
 
     @Override
