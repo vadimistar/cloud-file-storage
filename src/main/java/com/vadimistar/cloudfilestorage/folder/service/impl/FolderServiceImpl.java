@@ -81,20 +81,15 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public List<FileDto> getFolderContent(long userId, String path) {
-        validateFolderExists(userId, path);
-        return listFiles(userId, path, false);
-    }
-
-    @Override
     public Page<FileDto> getFolderContent(long userId, String path, Pageable pageable) {
+        validateFolderExists(userId, path);
         int start = pageable.getPageNumber() * pageable.getPageSize();
-        List<FileDto> files = getFolderContent(userId, path);
-        List<FileDto> pageFiles = files.stream()
+        List<FileDto> files = listFiles(userId, path, false)
+                .stream()
                 .skip(start)
                 .limit(pageable.getPageSize())
                 .toList();
-        return new PageImpl<>(pageFiles,
+        return new PageImpl<>(files,
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
                 files.size());
     }

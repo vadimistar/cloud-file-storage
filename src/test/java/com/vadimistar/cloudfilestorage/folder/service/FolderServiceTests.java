@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -172,7 +173,7 @@ public class FolderServiceTests {
     public void getFolderContent_folderWithSingleFile_returnsSingleFile() {
         folderService.createFolder(USER_ID, "a");
         folderService.uploadFolder(USER_ID, new MultipartFile[]{ getMockFile() }, "a");
-        List<FileDto> files = folderService.getFolderContent(USER_ID, "a");
+        List<FileDto> files = folderService.getFolderContent(USER_ID, "a", ALL_ITEMS).toList();
         Assertions.assertEquals(1, files.size());
         Assertions.assertEquals(MOCK_FILE_NAME, files.get(0).getName());
         Assertions.assertEquals("a/" + MOCK_FILE_NAME, files.get(0).getPath());
@@ -183,7 +184,7 @@ public class FolderServiceTests {
     public void getFolderContent_folderWithFolder_returnsFolder() {
         folderService.createFolder(USER_ID, "a/b");
         folderService.uploadFolder(USER_ID, new MultipartFile[]{ getMockFile() }, "a/b");
-        List<FileDto> files = folderService.getFolderContent(USER_ID, "a");
+        List<FileDto> files = folderService.getFolderContent(USER_ID, "a", ALL_ITEMS).toList();
         Assertions.assertEquals(1, files.size());
         Assertions.assertEquals("b", files.get(0).getName());
         Assertions.assertEquals("a/b/", files.get(0).getPath());
@@ -194,7 +195,7 @@ public class FolderServiceTests {
     public void getFolderContent_folderNotExists_throwsFolderNotFoundException() {
         Assertions.assertThrows(
                 FolderNotFoundException.class,
-                () -> folderService.getFolderContent(USER_ID, "a")
+                () -> folderService.getFolderContent(USER_ID, "a", ALL_ITEMS)
         );
     }
 
@@ -251,6 +252,7 @@ public class FolderServiceTests {
     private static final String MOCK_FILE_ORIGINAL_FILENAME = "Mock file name";
     private static final String MOCK_FILE_NAME = MOCK_FILE_ORIGINAL_FILENAME;
     private static final String MOCK_FILE_CONTENT_TYPE = "";
+    private static final PageRequest ALL_ITEMS = PageRequest.ofSize(Integer.MAX_VALUE);
 
     private MultipartFile getMockFile() {
         return new MockMultipartFile(

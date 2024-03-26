@@ -21,22 +21,15 @@ public class SearchServiceImpl implements SearchService {
     private final FoundFileMapper foundFileMapper;
 
     @Override
-    public List<FoundFileDto> searchFiles(long userId, String query) {
-        return folderService.getAllContent(userId).stream()
-                .filter(file -> file.getName().contains(query))
-                .map(foundFileMapper::makeFoundFileDto)
-                .toList();
-    }
-
-    @Override
     public Page<FoundFileDto> searchFiles(long userId, String query, Pageable pageable) {
         int start = pageable.getPageNumber() * pageable.getPageSize();
-        List<FoundFileDto> foundFiles = searchFiles(userId, query);
-        List<FoundFileDto> pageFiles = foundFiles.stream()
+        List<FoundFileDto> foundFiles = folderService.getAllContent(userId).stream()
+                .filter(file -> file.getName().contains(query))
                 .skip(start)
                 .limit(pageable.getPageSize())
+                .map(foundFileMapper::makeFoundFileDto)
                 .toList();
-        return new PageImpl<>(pageFiles,
+        return new PageImpl<>(foundFiles,
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
                 foundFiles.size());
     }

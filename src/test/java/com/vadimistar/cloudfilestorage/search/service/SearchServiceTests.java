@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -53,7 +54,8 @@ public class SearchServiceTests {
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "eabcd");
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "abcde");
         fileService.uploadFile(USER_ID, mockFile.getInputStream(), mockFile.contentLength(), "bcde");
-        List<FoundFileDto> foundFiles = searchService.searchFiles(USER_ID, "abc").stream()
+        List<FoundFileDto> foundFiles = searchService.searchFiles(USER_ID, "abc", ALL_ITEMS)
+                .stream()
                 .sorted(Comparator.comparing(FoundFileDto::getName))
                 .toList();
         Assertions.assertEquals(3, foundFiles.size());
@@ -63,6 +65,7 @@ public class SearchServiceTests {
     }
 
     private static final long USER_ID = 1;
+    private static final PageRequest ALL_ITEMS = PageRequest.ofSize(Integer.MAX_VALUE);
 
     private ByteArrayResource getMockFile() {
         return new ByteArrayResource("Mock file contents".getBytes(StandardCharsets.UTF_8));

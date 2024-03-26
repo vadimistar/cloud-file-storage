@@ -18,8 +18,6 @@ public interface FolderService {
 
     void deleteFolder(long userId, String path);
 
-    List<FileDto> getFolderContent(long userId, String path);
-
     Page<FileDto> getFolderContent(long userId, String path, Pageable pageable);
 
     List<FileDto> getAllContent(long userId);
