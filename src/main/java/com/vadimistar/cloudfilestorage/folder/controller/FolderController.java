@@ -8,7 +8,7 @@ import com.vadimistar.cloudfilestorage.folder.dto.*;
 import com.vadimistar.cloudfilestorage.security.details.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import com.vadimistar.cloudfilestorage.common.util.URLUtils;
-import com.vadimistar.cloudfilestorage.common.validation.ValidationUtils;
+import com.vadimistar.cloudfilestorage.common.util.ValidationUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
