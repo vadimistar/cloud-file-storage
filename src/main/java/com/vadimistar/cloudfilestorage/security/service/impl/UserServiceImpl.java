@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto registerUser(RegisterUserRequestDto request) {
+    public void registerUser(RegisterUserRequestDto request) {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new RegisterUserException("Passwords don't match");
         }
@@ -40,7 +40,6 @@ public class UserServiceImpl implements UserService {
         }
         User user = userMapper.makeUser(request);
         userRepository.save(user);
-        return userMapper.makeUserDto(user);
     }
 
     @Override

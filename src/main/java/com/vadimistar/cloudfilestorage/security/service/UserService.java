@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
 
-    UserDto registerUser(RegisterUserRequestDto request);
+    void registerUser(RegisterUserRequestDto request);
     Optional<UserDto> getUserByUsername(String username);
 }
