@@ -35,10 +35,6 @@ public class IndexController {
             createHomeDirectoryIfNotExists(userDetails.getUserId());
         }
 
-        if (!folderService.isFolderExists(userDetails.getUserId(), path)) {
-            throw new FolderNotFoundException("Directory does not exist: " + path);
-        }
-
         List<BreadcrumbsElementDto> breadcrumbs = BreadcrumbsUtils.createBreadcrumbs(path);
         model.addAttribute("breadcrumbs", breadcrumbs);
 
