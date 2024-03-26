@@ -48,7 +48,6 @@ public class IndexController {
                 PageRequest.of(page - 1, appConfig.getIndexPageSize()));
         model.addAttribute("filesPage", filesPage);
         model.addAttribute("totalPages", filesPage.getTotalPages());
-        model.addAttribute("currentPage", page);
 
         return "index";
     }

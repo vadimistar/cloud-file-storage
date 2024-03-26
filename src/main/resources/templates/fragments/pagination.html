@@ -6,20 +6,21 @@
 <body>
 <div th:fragment="pagination">
     <nav aria-label="Pagination" th:if="${totalPages > 0}">
-        <ul class="pagination" th:with="urlBuilder=${T(com.vadimistar.cloudfilestorage.web.utils.ServletUriComponentsBuilderWrapper).fromCurrentRequest()}">
-            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled' : ''">
+        <ul class="pagination"
+            th:with="urlBuilder=${T(com.vadimistar.cloudfilestorage.web.utils.ServletUriComponentsBuilderWrapper).fromCurrentRequest()},currentPage=${(param.page != null) ? T(java.lang.Integer).valueOf(param.page[0]) : 1}">
+            <li th:class="page-item" th:classappend="${(currentPage == 1) ? 'disabled' : ''}">
                 <a class="page-link"
                    th:href="${urlBuilder.replaceQueryParam('page', currentPage - 1).build().toUriString()}"
                    th:text="Previous"></a>
             </li>
             <li class="page-item"
                 th:each="page : ${#numbers.sequence(1, totalPages)}"
-                th:classappend="${currentPage == page ? 'active' : ''}">
+                th:classappend="${(currentPage == page) ? 'active' : ''}">
                 <a class="page-link"
                    th:href="${urlBuilder.replaceQueryParam('page', page).build().toUriString()}"
                    th:text="${page}"></a>
             </li>
-            <li class="page-item" th:classappend="${currentPage >= totalPages} ? 'disabled' : ''">
+            <li class="page-item" th:classappend="${(currentPage >= totalPages) ? 'disabled' : ''}">
                 <a class="page-link"
                    th:href="${urlBuilder.replaceQueryParam('page', currentPage + 1).build().toUriString()}"
                    th:text="Next"></a>
