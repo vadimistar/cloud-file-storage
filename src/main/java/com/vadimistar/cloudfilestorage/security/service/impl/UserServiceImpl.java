@@ -2,7 +2,6 @@ package com.vadimistar.cloudfilestorage.security.service.impl;
 
 import com.vadimistar.cloudfilestorage.security.details.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.security.dto.RegisterUserRequestDto;
-import com.vadimistar.cloudfilestorage.security.dto.UserDto;
 import com.vadimistar.cloudfilestorage.security.entity.User;
 import com.vadimistar.cloudfilestorage.security.exception.RegisterUserException;
 import com.vadimistar.cloudfilestorage.security.mapper.UserMapper;
@@ -47,11 +46,5 @@ public class UserServiceImpl implements UserService {
         return userRepository.getUserByUsername(username)
                 .map(UserDetailsImpl::new)
                 .orElseThrow(() -> new UsernameNotFoundException("Username is not found"));
-    }
-
-    @Override
-    public Optional<UserDto> getUserByUsername(String username) {
-        return userRepository.getUserByUsername(username)
-                .map(userMapper::makeUserDto);
     }
 }
