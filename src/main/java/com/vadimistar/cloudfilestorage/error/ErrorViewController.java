@@ -16,7 +16,9 @@ public class ErrorViewController implements ErrorController {
     @GetMapping
     public String error(HttpServletRequest request, Model model) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-        model.addAttribute("error", getErrorMessage(status));
+        if (!model.containsAttribute("error")) {
+            model.addAttribute("error", getErrorMessage(status));
+        }
         return "error";
     }
 

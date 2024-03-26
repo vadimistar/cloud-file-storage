@@ -13,6 +13,7 @@ import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -63,6 +64,12 @@ public class GlobalControllerAdvice {
         String parentDirectory = PathUtils.getParentDirectory(e.getPath());
         redirectAttributes.addAttribute("path", parentDirectory);
         return new RedirectView("/", true);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public RedirectView handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", String.format("Invalid value '%s' for parameter '%s'", e.getValue(), e.getName()));
+        return new RedirectView("/error", true);
     }
 
     @ExceptionHandler(InvalidIndexPageException.class)
