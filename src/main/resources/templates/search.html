@@ -11,7 +11,7 @@
             <div th:insert="~{fragments/search-bar.html :: search-bar}"></div>
         </div>
         <div class="row">
-            <div th:insert="~{fragments/pagination.html :: pagination}"></div>
+            <div th:insert="~{fragments/pagination.html :: pagination(totalPages=${filesPage.totalPages})}"></div>
         </div>
         <div class="row bg-light px-4 py-4" th:each="file, istat : ${filesPage}">
             <a class="d-flex gap-3" th:href="@{'/?path=' + ${file.getParentPath()}}">

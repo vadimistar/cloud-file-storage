@@ -30,7 +30,6 @@ public class SearchController {
                 query,
                 PageRequest.of(page - 1, appConfig.getSearchPageSize()));
         model.addAttribute("filesPage", filesPage);
-        model.addAttribute("totalPages", filesPage.getTotalPages());
 
         return "search";
     }

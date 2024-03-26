@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
 </head>
 <body>
-<div th:fragment="pagination">
+<div th:fragment="pagination(totalPages)">
     <nav aria-label="Pagination" th:if="${totalPages > 0}">
         <ul class="pagination"
             th:with="urlBuilder=${T(com.vadimistar.cloudfilestorage.web.utils.ServletUriComponentsBuilderWrapper).fromCurrentRequest()},currentPage=${(param.page != null) ? T(java.lang.Integer).valueOf(param.page[0]) : 1}">
