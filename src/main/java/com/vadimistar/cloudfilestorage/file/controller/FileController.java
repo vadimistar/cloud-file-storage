@@ -40,7 +40,7 @@ public class FileController {
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        if (!fileService.isFileExists(userDetails.getUser().getId(), request.getPath())) {
+        if (!fileService.isFileExists(userDetails.getUserId(), request.getPath())) {
             throw new FileNotFoundException("File is not found: " + request.getPath());
         }
         model.addAttribute("name", PathUtils.getFilename(request.getPath()));
@@ -57,7 +57,7 @@ public class FileController {
             );
         }
         ByteArrayResource byteArrayResource = new ByteArrayResource(
-                fileService.downloadFile(userDetails.getUser().getId(), request.getPath())
+                fileService.downloadFile(userDetails.getUserId(), request.getPath())
         );
         String filename = URLUtils.encode(PathUtils.getFilename(request.getPath()));
         return ResponseEntity.ok()
@@ -75,7 +75,7 @@ public class FileController {
                     ValidationUtils.getMessage(bindingResult), request.getPath()
             );
         }
-        String newPath = fileService.renameFile(userDetails.getUser().getId(), request.getPath(), request.getName());
+        String newPath = fileService.renameFile(userDetails.getUserId(), request.getPath(), request.getName());
         redirectAttributes.addAttribute("path", newPath);
         return "redirect:/file";
     }
