@@ -29,10 +29,10 @@ public class FolderController {
     private final FolderService folderService;
 
     @GetMapping
-    public String folder(@ModelAttribute @Valid FolderViewRequestDto request,
-                         BindingResult bindingResult,
-                         @AuthenticationPrincipal UserDetailsImpl userDetails,
-                         Model model) {
+    public String view(@ModelAttribute @Valid ViewFolderRequestDto request,
+                       BindingResult bindingResult,
+                       @AuthenticationPrincipal UserDetailsImpl userDetails,
+                       Model model) {
         if (bindingResult.hasErrors()) {
             throw new FolderActionException(
                     ValidationUtils.getMessage(bindingResult), request.getPath()
@@ -46,9 +46,9 @@ public class FolderController {
     }
 
     @PostMapping("/create")
-    public String createFolder(@RequestParam(required = false, defaultValue = "") String path,
-                               @AuthenticationPrincipal UserDetailsImpl userDetails,
-                               RedirectAttributes redirectAttributes) {
+    public String create(@RequestParam(required = false, defaultValue = "") String path,
+                         @AuthenticationPrincipal UserDetailsImpl userDetails,
+                         RedirectAttributes redirectAttributes) {
         folderService.createUnnamedFolder(userDetails.getUserId(), path, MAX_NEW_FOLDER_ATTEMPTS);
         redirectAttributes.addAttribute("path", path);
         return "redirect:/";

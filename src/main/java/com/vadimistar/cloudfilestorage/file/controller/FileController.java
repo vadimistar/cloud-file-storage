@@ -3,7 +3,7 @@ package com.vadimistar.cloudfilestorage.file.controller;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.file.dto.DeleteFileRequestDto;
 import com.vadimistar.cloudfilestorage.file.dto.DownloadFileRequestDto;
-import com.vadimistar.cloudfilestorage.file.dto.FileViewRequestDto;
+import com.vadimistar.cloudfilestorage.file.dto.ViewFileRequestDto;
 import com.vadimistar.cloudfilestorage.file.dto.RenameFileRequestDto;
 import com.vadimistar.cloudfilestorage.file.exception.FileActionException;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
@@ -31,7 +31,7 @@ public class FileController {
     private final FileService fileService;
 
     @GetMapping
-    public String file(@ModelAttribute @Valid FileViewRequestDto request,
+    public String view(@ModelAttribute @Valid ViewFileRequestDto request,
                        BindingResult bindingResult,
                        @AuthenticationPrincipal UserDetailsImpl userDetails,
                        Model model) {
