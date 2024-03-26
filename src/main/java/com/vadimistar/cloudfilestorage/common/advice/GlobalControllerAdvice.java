@@ -5,9 +5,7 @@ import com.vadimistar.cloudfilestorage.file.exception.FileActionException;
 import com.vadimistar.cloudfilestorage.file.exception.InvalidFilePathException;
 import com.vadimistar.cloudfilestorage.folder.exception.FolderActionException;
 import com.vadimistar.cloudfilestorage.folder.exception.UploadFolderException;
-import com.vadimistar.cloudfilestorage.index.exception.InvalidIndexPageException;
 import com.vadimistar.cloudfilestorage.minio.exception.ResourceAlreadyExistsException;
-import com.vadimistar.cloudfilestorage.search.exception.InvalidSearchPageException;
 import com.vadimistar.cloudfilestorage.security.exception.UserNotLoggedInException;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import lombok.extern.log4j.Log4j2;
@@ -70,18 +68,6 @@ public class GlobalControllerAdvice {
     public RedirectView handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", String.format("Invalid value '%s' for parameter '%s'", e.getValue(), e.getName()));
         return new RedirectView("/error", true);
-    }
-
-    @ExceptionHandler(InvalidIndexPageException.class)
-    public RedirectView handleInvalidIndexPageException(Exception e, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return new RedirectView("/", true);
-    }
-
-    @ExceptionHandler(InvalidSearchPageException.class)
-    public RedirectView handleInvalidSearchPageException(Exception e, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return new RedirectView("/search", true);
     }
 
     @ExceptionHandler(InvalidFilePathException.class)
