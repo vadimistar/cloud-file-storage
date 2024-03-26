@@ -90,7 +90,7 @@ public class FolderController {
                 .body(result);
     }
 
-    @PostMapping("/rename")
+    @PatchMapping
     public String rename(@ModelAttribute @Valid RenameFolderRequestDto request,
                          BindingResult bindingResult,
                          @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -105,7 +105,7 @@ public class FolderController {
         return "redirect:/folder";
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping
     public String delete(@ModelAttribute @Valid DeleteFolderRequestDto request,
                          BindingResult bindingResult,
                          @AuthenticationPrincipal UserDetailsImpl userDetails,

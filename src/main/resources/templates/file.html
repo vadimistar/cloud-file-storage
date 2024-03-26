@@ -18,7 +18,7 @@
                 </div>
                 <div th:if="${param.rename}">
                     <div class="my-3">
-                        <form th:action="@{/file/rename}" th:object="${request}" th:method="post">
+                        <form th:action="@{/file}" th:object="${request}" th:method="patch">
                             <div class="w-100">
                                 <input class="h4 text-center" th:value="${name}" name="name" required />
                             </div>
@@ -36,7 +36,7 @@
                             <button type="submit" class="btn btn-success">Download</button>
                             <input type="hidden" th:value="${param.path}" name="path">
                         </form>
-                        <form class="d-inline-block" th:action="@{/file/delete}" th:object="${request}" th:method="post">
+                        <form class="d-inline-block" th:action="@{/file}" th:object="${request}" th:method="delete">
                             <button type="submit" class="btn btn-danger">Delete</button>
                             <input type="hidden" th:value="${param.path}" name="path">
                         </form>

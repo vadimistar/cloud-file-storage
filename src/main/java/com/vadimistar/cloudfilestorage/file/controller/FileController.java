@@ -65,7 +65,7 @@ public class FileController {
                 .body(byteArrayResource);
     }
 
-    @PostMapping("/rename")
+    @PatchMapping
     public String rename(@ModelAttribute @Valid RenameFileRequestDto request,
                          BindingResult bindingResult,
                          @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -80,7 +80,7 @@ public class FileController {
         return "redirect:/file";
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping
     public String delete(@ModelAttribute @Valid DeleteFileRequestDto request,
                          BindingResult bindingResult,
                          @AuthenticationPrincipal UserDetailsImpl userDetails,
