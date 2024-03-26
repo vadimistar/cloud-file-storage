@@ -1,11 +1,9 @@
 package com.vadimistar.cloudfilestorage.index.controller;
 
-import com.vadimistar.cloudfilestorage.config.ApplicationConfig;
 import com.vadimistar.cloudfilestorage.index.breadcrumbs.BreadcrumbsUtils;
 import com.vadimistar.cloudfilestorage.security.details.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.index.breadcrumbs.BreadcrumbsElementDto;
-import com.vadimistar.cloudfilestorage.folder.exception.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import lombok.AllArgsConstructor;
@@ -24,11 +22,11 @@ import java.util.List;
 public class IndexController {
 
     private final FolderService folderService;
-    private final ApplicationConfig appConfig;
 
     @GetMapping("/")
     public String indexPage(@RequestParam(required = false, defaultValue = "") String path,
                             @RequestParam(required = false, defaultValue = "1") int page,
+                            @RequestParam(required = false, defaultValue = "30") int size,
                             Model model,
                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (PathUtils.isHomeDirectory(path)) {
@@ -41,7 +39,7 @@ public class IndexController {
         Page<FileDto> filesPage = folderService.getFolderContent(
                 userDetails.getUserId(),
                 path,
-                PageRequest.of(page - 1, appConfig.getIndexPageSize()));
+                PageRequest.of(page - 1, size));
         model.addAttribute("filesPage", filesPage);
 
         return "index";

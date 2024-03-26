@@ -1,6 +1,5 @@
 package com.vadimistar.cloudfilestorage.search.controller;
 
-import com.vadimistar.cloudfilestorage.config.ApplicationConfig;
 import com.vadimistar.cloudfilestorage.search.service.SearchService;
 import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
 import com.vadimistar.cloudfilestorage.security.details.UserDetailsImpl;
@@ -18,17 +17,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class SearchController {
 
     private final SearchService searchService;
-    private final ApplicationConfig appConfig;
 
     @GetMapping("/search")
     public String search(@RequestParam String query,
                          @RequestParam(required = false, defaultValue = "1") int page,
+                         @RequestParam(required = false, defaultValue = "30") int size,
                          @AuthenticationPrincipal UserDetailsImpl userDetails,
                          Model model) {
         Page<FoundFileDto> filesPage = searchService.searchFiles(
                 userDetails.getUserId(),
                 query,
-                PageRequest.of(page - 1, appConfig.getSearchPageSize()));
+                PageRequest.of(page - 1, size));
         model.addAttribute("filesPage", filesPage);
 
         return "search";
