@@ -11,7 +11,7 @@
             <div class="col-4 card">
                 <div class="card-body">
                     <form method="post" th:action="@{/login}">
-                        <div th:if="${param.registered}" class="alert alert-success mt-3">
+                        <div th:if="${registered}" class="alert alert-success mt-3">
                             <p>
                                 You have successfully registered! Use your credentials to log in.
                             </p>

@@ -44,6 +44,7 @@ public class RegisterController {
             bindingResult.addError(new ObjectError("error", e.getMessage()));
             return "register";
         }
-        return "redirect:/login?registered";
+        redirectAttributes.addFlashAttribute("registered", true);
+        return "redirect:/login";
     }
 }
