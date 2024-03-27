@@ -63,8 +63,8 @@
                     <div class="my-2">
                         <div class="bg-light" style="width: 180px; height: 270px;">
                             <div class="text-end">
-                                <a class="btn btn-light" th:if="${file.isFolder()}" th:href="@{/folder(path=${file.getPath()})}">●●●</a>
-                                <a class="btn btn-light" th:unless="${file.isFolder()}" th:href="@{/file(path=${file.getPath()})}">●●●</a>
+                                <a class="btn btn-light" th:if="${file.isFolder()}" th:href="@{/folder/action(path=${file.getPath()})}">●●●</a>
+                                <a class="btn btn-light" th:unless="${file.isFolder()}" th:href="@{/file/action(path=${file.getPath()})}">●●●</a>
                             </div>
                             <div th:if="${file.isFolder()}">
                                 <a th:href="@{/(path=${file.getPath()})}">

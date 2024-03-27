@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class ViewFolderRequestDto {
+public class FolderActionRequestDto {
 
     @NotBlank(message = "Path cannot be blank")
     private String path;

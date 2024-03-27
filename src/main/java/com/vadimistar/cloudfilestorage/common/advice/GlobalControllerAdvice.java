@@ -32,14 +32,14 @@ public class GlobalControllerAdvice {
     public RedirectView handleFileActionException(FileActionException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
         redirectAttributes.addAttribute("path", e.getPath());
-        return new RedirectView("/file", true);
+        return new RedirectView("/file/action", true);
     }
 
     @ExceptionHandler(FolderActionException.class)
     public RedirectView handleFolderActionException(FolderActionException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
         redirectAttributes.addAttribute("path", e.getPath());
-        return new RedirectView("/folder", true);
+        return new RedirectView("/folder/action", true);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

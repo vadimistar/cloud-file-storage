@@ -3,7 +3,7 @@ package com.vadimistar.cloudfilestorage.file.controller;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.file.dto.DeleteFileRequestDto;
 import com.vadimistar.cloudfilestorage.file.dto.DownloadFileRequestDto;
-import com.vadimistar.cloudfilestorage.file.dto.ViewFileRequestDto;
+import com.vadimistar.cloudfilestorage.file.dto.FileActionRequestDto;
 import com.vadimistar.cloudfilestorage.file.dto.RenameFileRequestDto;
 import com.vadimistar.cloudfilestorage.file.exception.FileActionException;
 import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
@@ -30,8 +30,8 @@ public class FileController {
 
     private final FileService fileService;
 
-    @GetMapping
-    public String view(@ModelAttribute @Valid ViewFileRequestDto request,
+    @GetMapping("/action")
+    public String action(@ModelAttribute @Valid FileActionRequestDto request,
                        BindingResult bindingResult,
                        @AuthenticationPrincipal UserDetailsImpl userDetails,
                        Model model) {
@@ -44,10 +44,10 @@ public class FileController {
             throw new FileNotFoundException("File is not found: " + request.getPath());
         }
         model.addAttribute("name", PathUtils.getFilename(request.getPath()));
-        return "file";
+        return "file-action";
     }
 
-    @GetMapping("/download")
+    @GetMapping
     public ResponseEntity<?> download(@ModelAttribute @Valid DownloadFileRequestDto request,
                                       BindingResult bindingResult,
                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -77,7 +77,7 @@ public class FileController {
         }
         String newPath = fileService.renameFile(userDetails.getUserId(), request.getPath(), request.getName());
         redirectAttributes.addAttribute("path", newPath);
-        return "redirect:/file";
+        return "redirect:/file/action";
     }
 
     @DeleteMapping

@@ -28,8 +28,8 @@ public class FolderController {
 
     private final FolderService folderService;
 
-    @GetMapping
-    public String view(@ModelAttribute @Valid ViewFolderRequestDto request,
+    @GetMapping("/action")
+    public String action(@ModelAttribute @Valid FolderActionRequestDto request,
                        BindingResult bindingResult,
                        @AuthenticationPrincipal UserDetailsImpl userDetails,
                        Model model) {
@@ -42,7 +42,7 @@ public class FolderController {
             throw new FolderNotFoundException("Folder is not found: " + request.getPath());
         }
         model.addAttribute("name", PathUtils.getFilename(request.getPath()));
-        return "folder";
+        return "folder-action";
     }
 
     @PostMapping("/create")
@@ -70,7 +70,7 @@ public class FolderController {
         return "redirect:/";
     }
 
-    @GetMapping("/download")
+    @GetMapping
     public ResponseEntity<?> download(@ModelAttribute @Valid DownloadFolderRequestDto request,
                                       BindingResult bindingResult,
                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -102,7 +102,7 @@ public class FolderController {
         }
         String newPath = folderService.renameFolder(userDetails.getUserId(), request.getPath(), request.getName());
         redirectAttributes.addAttribute("path", newPath);
-        return "redirect:/folder";
+        return "redirect:/folder/action";
     }
 
     @DeleteMapping
