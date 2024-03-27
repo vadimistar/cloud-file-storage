@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 public class IndexConfig {
 
-    @Value("cloudfilestorage.index.page-size")
+    @Value("${cloudfilestorage.index.page-size}")
     private Integer pageSize;
 }
