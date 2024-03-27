@@ -1,6 +1,7 @@
 package com.vadimistar.cloudfilestorage.index.controller;
 
 import com.vadimistar.cloudfilestorage.index.breadcrumbs.BreadcrumbsUtils;
+import com.vadimistar.cloudfilestorage.index.config.IndexConfig;
 import com.vadimistar.cloudfilestorage.security.details.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.index.breadcrumbs.BreadcrumbsElementDto;
@@ -22,11 +23,11 @@ import java.util.List;
 public class IndexController {
 
     private final FolderService folderService;
+    private final IndexConfig indexConfig;
 
     @GetMapping("/")
     public String indexPage(@RequestParam(required = false, defaultValue = "") String path,
                             @RequestParam(required = false, defaultValue = "1") int page,
-                            @RequestParam(required = false, defaultValue = "30") int size,
                             Model model,
                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (PathUtils.isHomeDirectory(path)) {
@@ -39,7 +40,7 @@ public class IndexController {
         Page<FileDto> filesPage = folderService.getFolderContent(
                 userDetails.getUserId(),
                 path,
-                PageRequest.of(page - 1, size));
+                PageRequest.of(page - 1, indexConfig.getPageSize()));
         model.addAttribute("filesPage", filesPage);
 
         return "index";
