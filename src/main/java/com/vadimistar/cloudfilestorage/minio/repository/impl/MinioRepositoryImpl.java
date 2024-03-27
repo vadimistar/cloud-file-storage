@@ -39,7 +39,7 @@ public class MinioRepositoryImpl implements MinioRepository {
             } catch (Exception e) {
                 throw new MinioException(e.getMessage());
             }})
-                .map(listObjectsResponseMapper::makeListObjectsResponseDto)
+                .map(listObjectsResponseMapper::makeMinioObjectDto)
                 .toList();
     }
 

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ListObjectsResponseMapper {
 
-    public MinioObjectDto makeListObjectsResponseDto(Item item) {
+    public MinioObjectDto makeMinioObjectDto(Item item) {
         return MinioObjectDto.builder()
                 .name(item.objectName())
                 .size(item.size())
