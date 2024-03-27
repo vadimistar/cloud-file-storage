@@ -20,8 +20,6 @@ public interface FolderService {
 
     Page<FileDto> getFolderContent(long userId, String path, Pageable pageable);
 
-    List<FileDto> getAllContent(long userId);
-
     byte[] downloadFolder(long userId, String path);
 
     boolean isFolderExists(long userId, String path);

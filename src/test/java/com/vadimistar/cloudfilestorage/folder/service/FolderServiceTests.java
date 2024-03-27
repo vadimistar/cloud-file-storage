@@ -199,16 +199,6 @@ public class FolderServiceTests {
         );
     }
 
-    @Test
-    public void getAllContent_returnsAllContent() {
-        folderService.uploadFolder(USER_ID, new MultipartFile[] { getMockFile() }, "");
-        List<FileDto> files = folderService.getAllContent(USER_ID);
-        Assertions.assertEquals(1, files.size());
-        Assertions.assertEquals(MOCK_FILE_NAME, files.get(0).getName());
-        Assertions.assertEquals(MOCK_FILE_NAME, files.get(0).getPath());
-        Assertions.assertFalse(files.get(0).isFolder());
-    }
-
     @SneakyThrows
     @Test
     public void downloadFolder_folderExists_returnsFolderZip() {

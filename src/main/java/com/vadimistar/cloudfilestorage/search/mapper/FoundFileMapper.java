@@ -1,6 +1,7 @@
 package com.vadimistar.cloudfilestorage.search.mapper;
 
-import com.vadimistar.cloudfilestorage.common.dto.FileDto;
+import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
+import com.vadimistar.cloudfilestorage.minio.dto.MinioObjectDto;
 import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
 import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
 import org.springframework.stereotype.Component;
@@ -8,11 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class FoundFileMapper {
 
-    public FoundFileDto makeFoundFileDto(FileDto fileDto) {
+    public FoundFileDto makeFoundFileDto(MinioObjectDto minioObjectDto) {
+        String normalPath = MinioUtils.getNormalPath(minioObjectDto.getName());
         return FoundFileDto.builder()
-                .name(fileDto.getName())
-                .isFolder(fileDto.isFolder())
-                .parentPath(PathUtils.getParentDirectory(fileDto.getPath()))
+                .name(PathUtils.getFilename(normalPath))
+                .isFolder(MinioUtils.isDirectory(minioObjectDto))
+                .parentPath(PathUtils.getParentDirectory(normalPath))
                 .build();
     }
 }

@@ -1,6 +1,9 @@
 package com.vadimistar.cloudfilestorage.search.service.impl;
 
+import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
+import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
+import com.vadimistar.cloudfilestorage.minio.service.MinioService;
 import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
 import com.vadimistar.cloudfilestorage.search.mapper.FoundFileMapper;
 import com.vadimistar.cloudfilestorage.search.service.SearchService;
@@ -17,17 +20,17 @@ import java.util.List;
 @AllArgsConstructor
 public class SearchServiceImpl implements SearchService {
 
-    private final FolderService folderService;
+    private final MinioService minioService;
     private final FoundFileMapper foundFileMapper;
 
     @Override
     public Page<FoundFileDto> searchFiles(long userId, String query, Pageable pageable) {
         int start = pageable.getPageNumber() * pageable.getPageSize();
-        List<FoundFileDto> foundFiles = folderService.getAllContent(userId).stream()
+        List<FoundFileDto> foundFiles = minioService.listObjects(MinioUtils.getMinioPath(userId, "/"), true).stream()
+                .map(foundFileMapper::makeFoundFileDto)
                 .filter(file -> file.getName().contains(query))
                 .skip(start)
                 .limit(pageable.getPageSize())
-                .map(foundFileMapper::makeFoundFileDto)
                 .toList();
         return new PageImpl<>(foundFiles,
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),

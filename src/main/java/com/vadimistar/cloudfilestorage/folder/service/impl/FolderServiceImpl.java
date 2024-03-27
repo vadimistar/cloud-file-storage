@@ -95,11 +95,6 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public List<FileDto> getAllContent(long userId) {
-        return listFiles(userId, "/", true);
-    }
-
-    @Override
     public byte[] downloadFolder(long userId, String path) {
         validateFolderExists(userId, path);
         ByteArrayOutputStream result = new ByteArrayOutputStream();
