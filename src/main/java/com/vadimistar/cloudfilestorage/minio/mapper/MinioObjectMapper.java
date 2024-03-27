@@ -5,7 +5,7 @@ import io.minio.messages.Item;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ListObjectsResponseMapper {
+public class MinioObjectMapper {
 
     public MinioObjectDto makeMinioObjectDto(Item item) {
         return MinioObjectDto.builder()

@@ -3,7 +3,7 @@ package com.vadimistar.cloudfilestorage.minio.repository.impl;
 import com.vadimistar.cloudfilestorage.minio.config.MinioConfig;
 import com.vadimistar.cloudfilestorage.minio.dto.MinioObjectDto;
 import com.vadimistar.cloudfilestorage.minio.exception.MinioException;
-import com.vadimistar.cloudfilestorage.minio.mapper.ListObjectsResponseMapper;
+import com.vadimistar.cloudfilestorage.minio.mapper.MinioObjectMapper;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
 import com.vadimistar.cloudfilestorage.common.util.StreamUtils;
 import io.minio.*;
@@ -24,7 +24,7 @@ public class MinioRepositoryImpl implements MinioRepository {
 
     private final MinioClient minioClient;
     private final MinioConfig minioConfig;
-    private final ListObjectsResponseMapper listObjectsResponseMapper;
+    private final MinioObjectMapper minioObjectMapper;
 
     @Override
     public List<MinioObjectDto> listObjects(String prefix, boolean recursive) {
@@ -39,7 +39,7 @@ public class MinioRepositoryImpl implements MinioRepository {
             } catch (Exception e) {
                 throw new MinioException(e.getMessage());
             }})
-                .map(listObjectsResponseMapper::makeMinioObjectDto)
+                .map(minioObjectMapper::makeMinioObjectDto)
                 .toList();
     }
 
