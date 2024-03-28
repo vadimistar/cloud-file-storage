@@ -114,13 +114,13 @@ public class FolderServiceImpl implements FolderService {
         return minioService.isFolderExists(MinioUtils.getMinioPath(userId, path));
     }
 
-    private InputStream getFolderObjectContent() {
+    private static InputStream getFolderObjectContent() {
         return new ByteArrayInputStream(new byte[] {});
     }
 
     private static final long FOLDER_OBJECT_SIZE = 0;
 
-    private Set<String> getFileDirectories(MultipartFile[] files) {
+    private static Set<String> getFileDirectories(MultipartFile[] files) {
         Set<String> fileDirectories = new HashSet<>();
         for (MultipartFile file : files) {
             String parentDirectory = PathUtils.getParentDirectory(file.getOriginalFilename());
