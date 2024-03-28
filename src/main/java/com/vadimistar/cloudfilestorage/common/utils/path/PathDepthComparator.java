@@ -1,6 +1,6 @@
-package com.vadimistar.cloudfilestorage.common.util.path;
+package com.vadimistar.cloudfilestorage.common.utils.path;
 
-import com.vadimistar.cloudfilestorage.common.util.StringUtils;
+import com.vadimistar.cloudfilestorage.common.utils.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;

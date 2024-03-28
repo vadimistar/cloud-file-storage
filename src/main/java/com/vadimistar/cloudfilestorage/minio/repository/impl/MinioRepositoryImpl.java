@@ -5,7 +5,7 @@ import com.vadimistar.cloudfilestorage.minio.dto.MinioObjectDto;
 import com.vadimistar.cloudfilestorage.minio.exception.MinioException;
 import com.vadimistar.cloudfilestorage.minio.mapper.MinioObjectMapper;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
-import com.vadimistar.cloudfilestorage.common.util.StreamUtils;
+import com.vadimistar.cloudfilestorage.common.utils.StreamUtils;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.messages.DeleteError;

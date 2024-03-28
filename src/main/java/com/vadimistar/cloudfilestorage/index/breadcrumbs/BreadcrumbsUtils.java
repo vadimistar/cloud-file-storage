@@ -1,6 +1,6 @@
 package com.vadimistar.cloudfilestorage.index.breadcrumbs;
 
-import com.vadimistar.cloudfilestorage.common.util.URLUtils;
+import com.vadimistar.cloudfilestorage.common.utils.URLUtils;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;

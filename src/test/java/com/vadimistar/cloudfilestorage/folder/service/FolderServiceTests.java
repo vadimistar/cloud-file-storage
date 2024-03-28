@@ -7,7 +7,7 @@ import com.vadimistar.cloudfilestorage.folder.exception.FolderNotFoundException;
 import com.vadimistar.cloudfilestorage.minio.dto.MinioObjectDto;
 import com.vadimistar.cloudfilestorage.minio.exception.ResourceAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
-import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
+import com.vadimistar.cloudfilestorage.common.utils.MinioUtils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

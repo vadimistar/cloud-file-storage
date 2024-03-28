@@ -4,8 +4,8 @@ import com.vadimistar.cloudfilestorage.file.exception.FileNotFoundException;
 import com.vadimistar.cloudfilestorage.file.exception.InvalidFilePathException;
 import com.vadimistar.cloudfilestorage.file.service.FileService;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
-import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
-import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
+import com.vadimistar.cloudfilestorage.common.utils.path.PathUtils;
+import com.vadimistar.cloudfilestorage.common.utils.MinioUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

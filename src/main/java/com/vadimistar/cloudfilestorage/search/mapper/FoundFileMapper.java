@@ -1,9 +1,9 @@
 package com.vadimistar.cloudfilestorage.search.mapper;
 
-import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
+import com.vadimistar.cloudfilestorage.common.utils.MinioUtils;
 import com.vadimistar.cloudfilestorage.minio.dto.MinioObjectDto;
 import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
-import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
+import com.vadimistar.cloudfilestorage.common.utils.path.PathUtils;
 import org.springframework.stereotype.Component;
 
 @Component

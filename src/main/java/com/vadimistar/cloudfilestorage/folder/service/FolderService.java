@@ -1,12 +1,10 @@
 package com.vadimistar.cloudfilestorage.folder.service;
 
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
-import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
+import com.vadimistar.cloudfilestorage.common.utils.path.PathUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 public interface FolderService {
 

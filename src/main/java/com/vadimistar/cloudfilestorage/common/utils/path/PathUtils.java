@@ -1,7 +1,7 @@
-package com.vadimistar.cloudfilestorage.common.util.path;
+package com.vadimistar.cloudfilestorage.common.utils.path;
 
-import com.vadimistar.cloudfilestorage.common.util.StringUtils;
-import com.vadimistar.cloudfilestorage.common.util.URLUtils;
+import com.vadimistar.cloudfilestorage.common.utils.StringUtils;
+import com.vadimistar.cloudfilestorage.common.utils.URLUtils;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;

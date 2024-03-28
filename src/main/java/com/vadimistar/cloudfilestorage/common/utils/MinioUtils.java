@@ -1,9 +1,9 @@
-package com.vadimistar.cloudfilestorage.common.util;
+package com.vadimistar.cloudfilestorage.common.utils;
 
 import com.vadimistar.cloudfilestorage.minio.exception.ResourceAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.minio.dto.MinioObjectDto;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
-import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
+import com.vadimistar.cloudfilestorage.common.utils.path.PathUtils;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

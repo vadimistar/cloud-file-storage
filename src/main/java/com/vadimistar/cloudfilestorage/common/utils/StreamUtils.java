@@ -1,4 +1,4 @@
-package com.vadimistar.cloudfilestorage.common.util;
+package com.vadimistar.cloudfilestorage.common.utils;
 
 import lombok.experimental.UtilityClass;
 

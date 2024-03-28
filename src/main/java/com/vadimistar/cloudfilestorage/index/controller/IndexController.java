@@ -6,7 +6,7 @@ import com.vadimistar.cloudfilestorage.security.details.UserDetailsImpl;
 import com.vadimistar.cloudfilestorage.common.dto.FileDto;
 import com.vadimistar.cloudfilestorage.index.breadcrumbs.BreadcrumbsElementDto;
 import com.vadimistar.cloudfilestorage.folder.service.FolderService;
-import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
+import com.vadimistar.cloudfilestorage.common.utils.path.PathUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

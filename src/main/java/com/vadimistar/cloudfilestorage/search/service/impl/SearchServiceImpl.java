@@ -1,8 +1,6 @@
 package com.vadimistar.cloudfilestorage.search.service.impl;
 
-import com.vadimistar.cloudfilestorage.common.util.MinioUtils;
-import com.vadimistar.cloudfilestorage.folder.service.FolderService;
-import com.vadimistar.cloudfilestorage.minio.repository.MinioRepository;
+import com.vadimistar.cloudfilestorage.common.utils.MinioUtils;
 import com.vadimistar.cloudfilestorage.minio.service.MinioService;
 import com.vadimistar.cloudfilestorage.search.dto.FoundFileDto;
 import com.vadimistar.cloudfilestorage.search.mapper.FoundFileMapper;

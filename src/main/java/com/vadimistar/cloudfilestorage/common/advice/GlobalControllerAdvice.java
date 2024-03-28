@@ -7,7 +7,7 @@ import com.vadimistar.cloudfilestorage.folder.exception.FolderActionException;
 import com.vadimistar.cloudfilestorage.folder.exception.UploadFolderException;
 import com.vadimistar.cloudfilestorage.minio.exception.ResourceAlreadyExistsException;
 import com.vadimistar.cloudfilestorage.security.exception.UserNotLoggedInException;
-import com.vadimistar.cloudfilestorage.common.util.path.PathUtils;
+import com.vadimistar.cloudfilestorage.common.utils.path.PathUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
