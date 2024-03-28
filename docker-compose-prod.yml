@@ -42,6 +42,6 @@ volumes:
   db:
     driver: local
   minio:
-
+    driver: local
   redis:
     driver: local
