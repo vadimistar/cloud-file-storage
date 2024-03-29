@@ -23,14 +23,6 @@ function removeFile(fileInput, fileIndex) {
 
 let filesElements = document.getElementsByName("files");
 
-function setHiddenAttribute(fileList, hidden) {
-    if (hidden) {
-        fileList.setAttribute('hidden', true);
-    } else {
-        fileList.removeAttribute('hidden');
-    }
-}
-
 function createListItem() {
     const li = document.createElement('li');
     li.className = 'list-group-item align-middle';
@@ -91,7 +83,12 @@ filesElements.forEach(fileInput => {
     const submitButton = fileForm.querySelector('button[type="submit"]');
 
     fileInput.addEventListener('change', function() {
-        setHiddenAttribute(fileList, this.files.length <= 0);
+        if (this.files.length <= 0) {
+            fileList.setAttribute('hidden', null);
+            return;
+        } else {
+            fileList.removeAttribute('hidden');
+        }
 
         let totalSize = 0;
         fileList.innerHTML = '<li></li>'; // Only header element inside
