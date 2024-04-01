@@ -17,6 +17,7 @@ services:
   minio:
     image: minio/minio:RELEASE.2024-02-26T09-33-48Z.fips
     command: server /data --console-address ":9001"
+    restart: always
     volumes:
       - minio:/data
     environment:
